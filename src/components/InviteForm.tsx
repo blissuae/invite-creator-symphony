@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { ColorPalette } from "./form/ColorPalette";
 import { StyleSelector } from "./form/StyleSelector";
@@ -6,8 +5,10 @@ import { DeadlinePicker } from "./form/DeadlinePicker";
 import { ContentEditor } from "./form/ContentEditor";
 import { AdditionalDetails } from "./form/AdditionalDetails";
 import { FormProgress } from "./form/FormProgress";
+import { BasicDetails } from "./form/BasicDetails";
 
 const STEPS = [
+  "Basic Details",
   "Color Palette",
   "Style",
   "Deadline",
@@ -18,11 +19,13 @@ const STEPS = [
 export const InviteForm = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({
+    fullName: "",
+    occasion: "",
+    customOccasion: "",
     colorPalette: "",
     style: "",
     deadline: null as Date | null,
     content: "",
-    occasion: "",
     guestCount: "",
     specialRequirements: "",
   });
@@ -47,33 +50,40 @@ export const InviteForm = () => {
     switch (currentStep) {
       case 0:
         return (
+          <BasicDetails
+            formData={formData}
+            onChange={updateFormData}
+          />
+        );
+      case 1:
+        return (
           <ColorPalette
             selected={formData.colorPalette}
             onSelect={(value) => updateFormData("colorPalette", value)}
           />
         );
-      case 1:
+      case 2:
         return (
           <StyleSelector
             selected={formData.style}
             onSelect={(value) => updateFormData("style", value)}
           />
         );
-      case 2:
+      case 3:
         return (
           <DeadlinePicker
             selected={formData.deadline}
             onSelect={(value) => updateFormData("deadline", value)}
           />
         );
-      case 3:
+      case 4:
         return (
           <ContentEditor
             content={formData.content}
             onChange={(value) => updateFormData("content", value)}
           />
         );
-      case 4:
+      case 5:
         return (
           <AdditionalDetails
             formData={formData}
