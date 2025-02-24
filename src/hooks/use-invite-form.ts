@@ -6,6 +6,9 @@ export interface InviteFormData {
   fullName: string;
   occasion: string;
   customOccasion: string;
+  hasCharacters: boolean;
+  showFaces: boolean;
+  characterCount: string;
   colorPalette: string;
   style: string;
   animationStyles: string[];
@@ -17,6 +20,7 @@ export interface InviteFormData {
 
 export const FORM_STEPS = [
   "Basic Details",
+  "Character Options",
   "Color Palette",
   "Animation Style",
   "Design Style",
@@ -34,6 +38,9 @@ export const useInviteForm = () => {
     fullName: "",
     occasion: "",
     customOccasion: "",
+    hasCharacters: false,
+    showFaces: false,
+    characterCount: "",
     colorPalette: "",
     style: "",
     animationStyles: [],
