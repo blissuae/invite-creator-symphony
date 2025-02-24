@@ -2,7 +2,7 @@
 import { Progress } from "@/components/ui/progress";
 
 interface FormProgressProps {
-  steps: string[];
+  steps: readonly string[];
   currentStep: number;
 }
 
