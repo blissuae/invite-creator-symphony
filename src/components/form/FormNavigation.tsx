@@ -25,6 +25,7 @@ export const FormNavigation = ({
         Back
       </button>
       <button
+        data-continue
         onClick={currentStep === totalSteps - 1 ? onSubmit : onNext}
         className="px-4 sm:px-6 py-2 bg-elegant-primary text-white rounded-lg hover:bg-elegant-primary/90 transition-colors text-sm sm:text-base font-serif"
       >

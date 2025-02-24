@@ -29,11 +29,16 @@ export const StyleSelector = ({ selected, onSelect }: StyleSelectorProps) => {
         {STYLES.map((style) => (
           <div
             key={style.id}
-            onClick={() => onSelect(style.id)}
-            className="flex flex-col items-center space-y-4"
+            onClick={() => {
+              onSelect(style.id);
+              setTimeout(() => {
+                document.querySelector('button[data-continue]')?.click();
+              }, 300);
+            }}
+            className="flex flex-col items-center space-y-4 cursor-pointer"
           >
             <div
-              className={`relative w-56 h-56 rounded-full overflow-hidden cursor-pointer transition-all ${
+              className={`relative w-56 h-56 rounded-full overflow-hidden transition-all ${
                 selected === style.id
                   ? "ring-4 ring-elegant-primary ring-offset-4"
                   : "hover:ring-2 hover:ring-elegant-secondary hover:ring-offset-2"

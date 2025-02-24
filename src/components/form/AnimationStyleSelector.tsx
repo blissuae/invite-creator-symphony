@@ -64,16 +64,27 @@ export const AnimationStyleSelector = ({ selected, onSelect }: AnimationStyleSel
   const { toast } = useToast();
 
   const handleStyleSelection = (styleId: string) => {
+    let newSelected: string[];
     if (selected.includes(styleId)) {
-      onSelect(selected.filter((id) => id !== styleId));
+      newSelected = selected.filter((id) => id !== styleId);
     } else if (selected.length >= 3) {
       toast({
         title: "Selection limit reached",
         description: "You can only select up to 3 styles",
         variant: "destructive",
       });
+      return;
     } else {
-      onSelect([...selected, styleId]);
+      newSelected = [...selected, styleId];
+    }
+    
+    onSelect(newSelected);
+
+    // Auto-advance if exactly one style is selected
+    if (newSelected.length === 1) {
+      setTimeout(() => {
+        document.querySelector('button[data-continue]')?.click();
+      }, 300);
     }
   };
 

@@ -35,11 +35,17 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
         {PALETTES.map((palette) => (
           <div
             key={palette.id}
-            onClick={() => onSelect(palette.id)}
-            className="flex flex-col items-center space-y-4"
+            onClick={() => {
+              onSelect(palette.id);
+              // Add a small delay before moving to next step to show the selection
+              setTimeout(() => {
+                document.querySelector('button[data-continue]')?.click();
+              }, 300);
+            }}
+            className="flex flex-col items-center space-y-4 cursor-pointer"
           >
             <div
-              className={`relative w-48 h-48 rounded-full overflow-hidden cursor-pointer transition-all ${
+              className={`relative w-48 h-48 rounded-full overflow-hidden transition-all ${
                 selected === palette.id
                   ? "ring-4 ring-black ring-offset-4"
                   : "hover:ring-2 hover:ring-gray-200 hover:ring-offset-2"
