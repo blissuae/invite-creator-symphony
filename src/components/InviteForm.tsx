@@ -10,12 +10,13 @@ import { BasicDetails } from "./form/BasicDetails";
 import { ReviewDetails } from "./form/ReviewDetails";
 import { SuccessScreen } from "./form/SuccessScreen";
 import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
+import { AnimationStyleSelector } from "./form/AnimationStyleSelector";
 
 const STEPS = [
   "Basic Details",
   "Color Palette",
-  "Style",
+  "Animation Style",
+  "Design Style",
   "Deadline",
   "Content",
   "Additional Details",
@@ -26,13 +27,13 @@ export const InviteForm = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { toast } = useToast();
-  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     fullName: "",
     occasion: "",
     customOccasion: "",
     colorPalette: "",
     style: "",
+    animationStyles: [] as string[],
     deadline: null as Date | null,
     content: "",
     guestCount: "",
@@ -44,8 +45,12 @@ export const InviteForm = () => {
   };
 
   const nextStep = () => {
-    if (currentStep === 2) { // At the Style step
-      navigate('/animation-styles');
+    if (currentStep === 2 && formData.animationStyles.length === 0) {
+      toast({
+        title: "Please select at least one style",
+        description: "Choose up to 3 animation styles to continue",
+        variant: "destructive",
+      });
       return;
     }
     if (currentStep < STEPS.length - 1) {
@@ -124,33 +129,40 @@ Special Requirements: ${formData.specialRequirements}
         );
       case 2:
         return (
+          <AnimationStyleSelector
+            selected={formData.animationStyles}
+            onSelect={(value) => updateFormData("animationStyles", value)}
+          />
+        );
+      case 3:
+        return (
           <StyleSelector
             selected={formData.style}
             onSelect={(value) => updateFormData("style", value)}
           />
         );
-      case 3:
+      case 4:
         return (
           <DeadlinePicker
             selected={formData.deadline}
             onSelect={(value) => updateFormData("deadline", value)}
           />
         );
-      case 4:
+      case 5:
         return (
           <ContentEditor
             content={formData.content}
             onChange={(value) => updateFormData("content", value)}
           />
         );
-      case 5:
+      case 6:
         return (
           <AdditionalDetails
             formData={formData}
             onChange={updateFormData}
           />
         );
-      case 6:
+      case 7:
         return (
           <ReviewDetails
             formData={formData}
