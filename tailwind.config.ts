@@ -54,10 +54,19 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
         form: {
-          100: "#F7F7F8",
-          200: "#E8E8EA",
-          300: "#DCDCE0",
+          100: "#FDE1D3",
+          200: "#E5DEFF",
+          300: "#FEF7CD",
         },
+        elegant: {
+          primary: "#7E69AB",
+          secondary: "#D6BCFA",
+          beige: "#F5F0E6",
+          brown: "#8B7355",
+        },
+      },
+      fontFamily: {
+        serif: ["Playfair Display", "serif"],
       },
       borderRadius: {
         lg: "var(--radius)",
