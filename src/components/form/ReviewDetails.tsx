@@ -6,6 +6,9 @@ interface ReviewDetailsProps {
     fullName: string;
     occasion: string;
     customOccasion: string;
+    hasCharacters: boolean;
+    showFaces: boolean;
+    characterCount: string;
     colorPalette: string;
     style: string;
     deadline: Date | null;
@@ -34,6 +37,18 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
         
         {renderSection("Occasion", 
           formData.occasion === "Other" ? formData.customOccasion : formData.occasion
+        )}
+        
+        {renderSection("Character Details", 
+          <div className="space-y-2">
+            <p>Include Characters: {formData.hasCharacters ? "Yes" : "No"}</p>
+            {formData.hasCharacters && (
+              <>
+                <p>Show Faces: {formData.showFaces ? "Yes" : "No"}</p>
+                <p>Number of Characters: {formData.characterCount}</p>
+              </>
+            )}
+          </div>
         )}
         
         {renderSection("Selected Style", 
