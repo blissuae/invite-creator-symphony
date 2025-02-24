@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -27,7 +26,6 @@ export const FORM_STEPS = [
   "Design Style",
   "Deadline",
   "Content",
-  "Additional Details",
   "Review",
 ] as const;
 

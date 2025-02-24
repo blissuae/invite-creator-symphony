@@ -6,7 +6,6 @@ import { ColorPalette } from "./form/ColorPalette";
 import { StyleSelector } from "./form/StyleSelector";
 import { DeadlinePicker } from "./form/DeadlinePicker";
 import { ContentEditor } from "./form/ContentEditor";
-import { AdditionalDetails } from "./form/AdditionalDetails";
 import { ReviewDetails } from "./form/ReviewDetails";
 import { SuccessScreen } from "./form/SuccessScreen";
 import { AnimationStyleSelector } from "./form/AnimationStyleSelector";
@@ -80,13 +79,6 @@ export const InviteForm = () => {
           />
         );
       case 7:
-        return (
-          <AdditionalDetails
-            formData={formData}
-            onChange={updateFormData}
-          />
-        );
-      case 8:
         return (
           <ReviewDetails
             formData={formData}
