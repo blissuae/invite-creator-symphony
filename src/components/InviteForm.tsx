@@ -98,17 +98,21 @@ export const InviteForm = () => {
   }
 
   return (
-    <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-elegant-secondary/20 overflow-hidden animate-fadeIn">
+    <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-elegant-secondary/20 overflow-hidden animate-fadeIn flex flex-col h-[calc(100vh-12rem)]">
       <FormProgress steps={FORM_STEPS} currentStep={currentStep} />
-      <div className="p-4 sm:p-8">
-        <div className="min-h-[300px] sm:min-h-[400px]">{renderStep()}</div>
-        <FormNavigation
-          currentStep={currentStep}
-          totalSteps={FORM_STEPS.length}
-          onNext={nextStep}
-          onPrev={prevStep}
-          onSubmit={handleSubmit}
-        />
+      <div className="flex flex-col flex-1 overflow-hidden">
+        <div className="p-4 sm:p-8 flex-1 overflow-y-auto">
+          <div className="min-h-[300px] sm:min-h-[400px]">{renderStep()}</div>
+        </div>
+        <div className="p-4 sm:p-8 border-t border-elegant-secondary/20 bg-white">
+          <FormNavigation
+            currentStep={currentStep}
+            totalSteps={FORM_STEPS.length}
+            onNext={nextStep}
+            onPrev={prevStep}
+            onSubmit={handleSubmit}
+          />
+        </div>
       </div>
     </div>
   );
