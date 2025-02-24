@@ -4,6 +4,7 @@ import { format } from "date-fns";
 interface ReviewDetailsProps {
   formData: {
     fullName: string;
+    instagramId: string;
     occasion: string;
     customOccasion: string;
     hasCharacters: boolean;
@@ -34,6 +35,8 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
 
       <div className="grid gap-6 p-6 bg-elegant-beige/20 rounded-lg border border-elegant-secondary/20">
         {renderSection("Full Name", formData.fullName)}
+        
+        {renderSection("Instagram ID", formData.instagramId || "Not provided")}
         
         {renderSection("Occasion", 
           formData.occasion === "Other" ? formData.customOccasion : formData.occasion

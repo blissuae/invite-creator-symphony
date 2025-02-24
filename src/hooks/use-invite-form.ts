@@ -4,6 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 
 export interface InviteFormData {
   fullName: string;
+  instagramId: string;
   occasion: string;
   customOccasion: string;
   hasCharacters: boolean;
@@ -36,6 +37,7 @@ export const useInviteForm = () => {
   const { toast } = useToast();
   const [formData, setFormData] = useState<InviteFormData>({
     fullName: "",
+    instagramId: "",
     occasion: "",
     customOccasion: "",
     hasCharacters: false,

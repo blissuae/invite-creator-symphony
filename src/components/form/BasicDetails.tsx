@@ -12,6 +12,7 @@ import { Cake, Heart, Gift, GraduationCap, PartyPopper, Sparkles } from "lucide-
 interface BasicDetailsProps {
   formData: {
     fullName: string;
+    instagramId: string;
     occasion: string;
     customOccasion: string;
   };
@@ -72,6 +73,17 @@ export const BasicDetails = ({ formData, onChange }: BasicDetailsProps) => {
             value={formData.fullName}
             onChange={(e) => onChange("fullName", e.target.value)}
             placeholder="Enter your full name"
+            className="w-full border-elegant-secondary/30 focus:border-elegant-primary h-9 sm:h-10 text-sm sm:text-base"
+          />
+        </label>
+
+        <label className="block">
+          <span className="text-elegant-brown font-serif block mb-1.5 sm:mb-2 text-sm sm:text-base">Instagram ID</span>
+          <Input
+            type="text"
+            value={formData.instagramId}
+            onChange={(e) => onChange("instagramId", e.target.value)}
+            placeholder="@yourusername"
             className="w-full border-elegant-secondary/30 focus:border-elegant-primary h-9 sm:h-10 text-sm sm:text-base"
           />
         </label>
