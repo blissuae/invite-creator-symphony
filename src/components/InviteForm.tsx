@@ -10,6 +10,7 @@ import { BasicDetails } from "./form/BasicDetails";
 import { ReviewDetails } from "./form/ReviewDetails";
 import { SuccessScreen } from "./form/SuccessScreen";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 const STEPS = [
   "Basic Details",
@@ -25,6 +26,7 @@ export const InviteForm = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     fullName: "",
     occasion: "",
@@ -42,6 +44,10 @@ export const InviteForm = () => {
   };
 
   const nextStep = () => {
+    if (currentStep === 2) { // At the Style step
+      navigate('/animation-styles');
+      return;
+    }
     if (currentStep < STEPS.length - 1) {
       setCurrentStep(currentStep + 1);
     }
