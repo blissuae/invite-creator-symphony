@@ -52,6 +52,15 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
         Review Your Details
       </h2>
 
+      <div className="bg-elegant-beige/40 p-6 rounded-lg border-2 border-elegant-primary/20 mb-6">
+        <div className="text-center">
+          <h3 className="text-elegant-brown font-serif text-lg mb-2">Estimated Price Range</h3>
+          <div className="text-2xl sm:text-3xl font-medium text-elegant-primary">
+            {calculatePriceRange()}
+          </div>
+        </div>
+      </div>
+
       <div className="grid gap-6 p-6 bg-elegant-beige/20 rounded-lg border border-elegant-secondary/20">
         {renderSection("Full Name", formData.fullName)}
         
@@ -104,12 +113,6 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
         {formData.specialRequirements && renderSection("Special Requirements",
           <div className="whitespace-pre-wrap">
             {formData.specialRequirements}
-          </div>
-        )}
-
-        {renderSection("Estimated Price Range",
-          <div className="font-medium text-lg text-elegant-primary">
-            {calculatePriceRange()}
           </div>
         )}
       </div>
