@@ -30,7 +30,7 @@ export const FormProgress = ({ steps, currentStep }: FormProgressProps) => {
                   {index + 1}
                 </div>
                 <div 
-                  className={`absolute top-12 left-1/2 -translate-x-1/2 whitespace-nowrap text-sm font-serif transform transition-all duration-300 ${
+                  className={`absolute top-12 left-1/2 -translate-x-1/2 whitespace-nowrap text-sm font-serif transform transition-all duration-300 hidden md:block ${
                     index === currentStep 
                       ? "text-elegant-primary font-medium translate-y-0 opacity-100" 
                       : "text-elegant-brown/70 translate-y-1 opacity-70"
