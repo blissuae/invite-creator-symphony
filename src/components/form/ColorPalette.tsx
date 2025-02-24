@@ -37,7 +37,6 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
             key={palette.id}
             onClick={() => {
               onSelect(palette.id);
-              // Add a small delay before moving to next step to show the selection
               setTimeout(() => {
                 const continueButton = document.querySelector('button[data-continue]') as HTMLButtonElement;
                 continueButton?.click();
@@ -46,10 +45,10 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
             className="flex flex-col items-center space-y-4 cursor-pointer"
           >
             <div
-              className={`relative w-48 h-48 rounded-full overflow-hidden transition-all ${
+              className={`relative w-40 h-40 rounded-lg overflow-hidden transition-all ${
                 selected === palette.id
-                  ? "ring-4 ring-black ring-offset-4"
-                  : "hover:ring-2 hover:ring-gray-200 hover:ring-offset-2"
+                  ? "ring-4 ring-elegant-primary ring-offset-4"
+                  : "hover:ring-2 hover:ring-elegant-secondary hover:ring-offset-2"
               }`}
             >
               <img
@@ -57,7 +56,7 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
                 alt={palette.name}
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-black bg-opacity-20 hover:bg-opacity-30 transition-opacity" />
+              <div className="absolute inset-0 bg-elegant-primary/20 hover:bg-elegant-primary/30 transition-opacity" />
             </div>
             <div className="text-center">
               <h3 className="font-medium mb-2">{palette.name}</h3>

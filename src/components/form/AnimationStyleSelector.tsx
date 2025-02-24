@@ -80,7 +80,6 @@ export const AnimationStyleSelector = ({ selected, onSelect }: AnimationStyleSel
     
     onSelect(newSelected);
 
-    // Auto-advance only when exactly 3 styles are selected
     if (newSelected.length === 3) {
       setTimeout(() => {
         const continueButton = document.querySelector('button[data-continue]') as HTMLButtonElement;
@@ -99,18 +98,20 @@ export const AnimationStyleSelector = ({ selected, onSelect }: AnimationStyleSel
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {ANIMATION_STYLES.map((style) => (
           <div
             key={style.id}
             onClick={() => handleStyleSelection(style.id)}
-            className={`relative group cursor-pointer rounded-lg overflow-hidden transition-all duration-300 transform hover:scale-105 ${
-              selected.includes(style.id)
-                ? "ring-4 ring-elegant-primary"
-                : "hover:ring-2 hover:ring-elegant-secondary"
-            }`}
+            className="flex flex-col items-center space-y-4 cursor-pointer"
           >
-            <div className="aspect-square relative">
+            <div
+              className={`relative w-40 h-40 rounded-lg overflow-hidden transition-all ${
+                selected.includes(style.id)
+                  ? "ring-4 ring-elegant-primary ring-offset-4"
+                  : "hover:ring-2 hover:ring-elegant-secondary hover:ring-offset-2"
+              }`}
+            >
               <img
                 src={style.imageUrl}
                 alt={style.title}
@@ -125,9 +126,9 @@ export const AnimationStyleSelector = ({ selected, onSelect }: AnimationStyleSel
                 </div>
               )}
             </div>
-            <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent">
-              <h3 className="text-white font-serif mb-1">{style.title}</h3>
-              <p className="text-white/80 text-sm">{style.description}</p>
+            <div className="text-center">
+              <h3 className="font-serif text-lg mb-1 text-elegant-brown">{style.title}</h3>
+              <p className="text-sm text-gray-600">{style.description}</p>
             </div>
           </div>
         ))}
