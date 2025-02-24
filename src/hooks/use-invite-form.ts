@@ -55,7 +55,7 @@ export const useInviteForm = () => {
   };
 
   const nextStep = () => {
-    if (currentStep === 2 && formData.animationStyles.length === 0) {
+    if (currentStep === 3 && formData.animationStyles.length === 0) {
       toast({
         title: "Please select at least one style",
         description: "Choose up to 3 animation styles to continue",
