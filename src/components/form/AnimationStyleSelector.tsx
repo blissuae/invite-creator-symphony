@@ -80,10 +80,11 @@ export const AnimationStyleSelector = ({ selected, onSelect }: AnimationStyleSel
     
     onSelect(newSelected);
 
-    // Auto-advance if exactly one style is selected
-    if (newSelected.length === 1) {
+    // Auto-advance only when exactly 3 styles are selected
+    if (newSelected.length === 3) {
       setTimeout(() => {
-        document.querySelector('button[data-continue]')?.click();
+        const continueButton = document.querySelector('button[data-continue]') as HTMLButtonElement;
+        continueButton?.click();
       }, 300);
     }
   };

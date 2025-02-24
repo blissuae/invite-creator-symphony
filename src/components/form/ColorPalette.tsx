@@ -39,7 +39,8 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
               onSelect(palette.id);
               // Add a small delay before moving to next step to show the selection
               setTimeout(() => {
-                document.querySelector('button[data-continue]')?.click();
+                const continueButton = document.querySelector('button[data-continue]') as HTMLButtonElement;
+                continueButton?.click();
               }, 300);
             }}
             className="flex flex-col items-center space-y-4 cursor-pointer"
