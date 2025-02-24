@@ -7,6 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Cake, Heart, Gift, GraduationCap, PartyPopper, Sparkles } from "lucide-react";
 
 interface BasicDetailsProps {
   formData: {
@@ -17,13 +18,43 @@ interface BasicDetailsProps {
   onChange: (field: string, value: string) => void;
 }
 
-const OCCASIONS = [
-  "Wedding",
-  "Engagement",
-  "Newborn Baby",
-  "Graduation",
-  "Birthday",
-  "Other",
+interface OccasionOption {
+  value: string;
+  label: string;
+  icon: React.ReactNode;
+}
+
+const OCCASIONS: OccasionOption[] = [
+  {
+    value: "Wedding",
+    label: "Wedding",
+    icon: <Heart className="w-4 h-4 mr-2 text-pink-500" />,
+  },
+  {
+    value: "Engagement",
+    label: "Engagement",
+    icon: <Gift className="w-4 h-4 mr-2 text-rose-500" />,
+  },
+  {
+    value: "Newborn Baby",
+    label: "Newborn Baby",
+    icon: <PartyPopper className="w-4 h-4 mr-2 text-blue-500" />,
+  },
+  {
+    value: "Graduation",
+    label: "Graduation",
+    icon: <GraduationCap className="w-4 h-4 mr-2 text-purple-500" />,
+  },
+  {
+    value: "Birthday",
+    label: "Birthday",
+    icon: <Cake className="w-4 h-4 mr-2 text-orange-500" />,
+  },
+  {
+    value: "Other",
+    label: "Other",
+    icon: <Sparkles className="w-4 h-4 mr-2 text-gray-500" />,
+  },
 ];
 
 export const BasicDetails = ({ formData, onChange }: BasicDetailsProps) => {
@@ -57,11 +88,12 @@ export const BasicDetails = ({ formData, onChange }: BasicDetailsProps) => {
             <SelectContent className="bg-white">
               {OCCASIONS.map((occasion) => (
                 <SelectItem
-                  key={occasion}
-                  value={occasion}
-                  className="font-serif"
+                  key={occasion.value}
+                  value={occasion.value}
+                  className="font-serif flex items-center"
                 >
-                  {occasion}
+                  {occasion.icon}
+                  {occasion.label}
                 </SelectItem>
               ))}
             </SelectContent>
