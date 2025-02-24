@@ -31,28 +31,30 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
       <h2 className="text-2xl font-light text-center mb-8">
         Choose Your Color Palette
       </h2>
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
         {PALETTES.map((palette) => (
           <div
             key={palette.id}
             onClick={() => onSelect(palette.id)}
-            className={`group cursor-pointer rounded-xl overflow-hidden border-2 transition-all ${
-              selected === palette.id
-                ? "border-black shadow-md"
-                : "border-transparent hover:border-gray-200"
-            }`}
+            className="flex flex-col items-center space-y-4"
           >
-            <div className="relative h-48">
+            <div
+              className={`relative w-48 h-48 rounded-full overflow-hidden cursor-pointer transition-all ${
+                selected === palette.id
+                  ? "ring-4 ring-black ring-offset-4"
+                  : "hover:ring-2 hover:ring-gray-200 hover:ring-offset-2"
+              }`}
+            >
               <img
                 src={palette.image}
                 alt={palette.name}
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-black bg-opacity-20 group-hover:bg-opacity-30 transition-opacity" />
+              <div className="absolute inset-0 bg-black bg-opacity-20 hover:bg-opacity-30 transition-opacity" />
             </div>
-            <div className="p-4">
+            <div className="text-center">
               <h3 className="font-medium mb-2">{palette.name}</h3>
-              <div className="flex gap-2">
+              <div className="flex justify-center gap-2">
                 {palette.colors.map((color) => (
                   <div
                     key={color}
