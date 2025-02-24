@@ -175,21 +175,21 @@ Special Requirements: ${formData.specialRequirements}
 
   if (isSubmitted) {
     return (
-      <div className="bg-white rounded-2xl shadow-sm border border-elegant-secondary/20 overflow-hidden animate-fadeIn">
+      <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-elegant-secondary/20 overflow-hidden animate-fadeIn">
         {renderStep()}
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-elegant-secondary/20 overflow-hidden animate-fadeIn">
+    <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-elegant-secondary/20 overflow-hidden animate-fadeIn">
       <FormProgress steps={STEPS} currentStep={currentStep} />
-      <div className="p-8">
-        <div className="min-h-[400px]">{renderStep()}</div>
-        <div className="mt-8 flex justify-between">
+      <div className="p-4 sm:p-8">
+        <div className="min-h-[300px] sm:min-h-[400px]">{renderStep()}</div>
+        <div className="mt-6 sm:mt-8 flex justify-between">
           <button
             onClick={prevStep}
-            className={`px-6 py-2 rounded-lg text-elegant-brown hover:bg-elegant-beige transition-colors font-serif ${
+            className={`px-4 sm:px-6 py-2 rounded-lg text-sm sm:text-base text-elegant-brown hover:bg-elegant-beige transition-colors font-serif ${
               currentStep === 0 ? "invisible" : ""
             }`}
           >
@@ -197,7 +197,7 @@ Special Requirements: ${formData.specialRequirements}
           </button>
           <button
             onClick={currentStep === STEPS.length - 1 ? handleSubmit : nextStep}
-            className="px-6 py-2 bg-elegant-primary text-white rounded-lg hover:bg-elegant-primary/90 transition-colors font-serif"
+            className="px-4 sm:px-6 py-2 bg-elegant-primary text-white rounded-lg hover:bg-elegant-primary/90 transition-colors text-sm sm:text-base font-serif"
           >
             {currentStep === STEPS.length - 1 ? "Submit" : "Continue"}
           </button>

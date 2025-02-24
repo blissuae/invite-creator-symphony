@@ -59,30 +59,30 @@ const OCCASIONS: OccasionOption[] = [
 
 export const BasicDetails = ({ formData, onChange }: BasicDetailsProps) => {
   return (
-    <div className="space-y-8 animate-fadeIn">
-      <h2 className="text-2xl font-serif text-center mb-8 text-elegant-brown">
+    <div className="space-y-6 sm:space-y-8 animate-fadeIn">
+      <h2 className="text-xl sm:text-2xl font-serif text-center mb-6 sm:mb-8 text-elegant-brown">
         Tell Us About Your Event
       </h2>
       
       <div className="space-y-4">
         <label className="block">
-          <span className="text-elegant-brown font-serif block mb-2">Your Full Name</span>
+          <span className="text-elegant-brown font-serif block mb-1.5 sm:mb-2 text-sm sm:text-base">Your Full Name</span>
           <Input
             type="text"
             value={formData.fullName}
             onChange={(e) => onChange("fullName", e.target.value)}
             placeholder="Enter your full name"
-            className="w-full border-elegant-secondary/30 focus:border-elegant-primary"
+            className="w-full border-elegant-secondary/30 focus:border-elegant-primary h-9 sm:h-10 text-sm sm:text-base"
           />
         </label>
 
         <label className="block">
-          <span className="text-elegant-brown font-serif block mb-2">Occasion</span>
+          <span className="text-elegant-brown font-serif block mb-1.5 sm:mb-2 text-sm sm:text-base">Occasion</span>
           <Select
             value={formData.occasion}
             onValueChange={(value) => onChange("occasion", value)}
           >
-            <SelectTrigger className="w-full border-elegant-secondary/30 focus:border-elegant-primary">
+            <SelectTrigger className="w-full border-elegant-secondary/30 focus:border-elegant-primary h-9 sm:h-10">
               <SelectValue placeholder="Select an occasion" />
             </SelectTrigger>
             <SelectContent className="bg-white">
@@ -90,7 +90,7 @@ export const BasicDetails = ({ formData, onChange }: BasicDetailsProps) => {
                 <SelectItem
                   key={occasion.value}
                   value={occasion.value}
-                  className="font-serif flex items-center"
+                  className="font-serif flex items-center text-sm sm:text-base py-1.5 sm:py-2"
                 >
                   {occasion.icon}
                   {occasion.label}
@@ -102,19 +102,19 @@ export const BasicDetails = ({ formData, onChange }: BasicDetailsProps) => {
 
         {formData.occasion === "Other" && (
           <label className="block">
-            <span className="text-elegant-brown font-serif block mb-2">Custom Occasion</span>
+            <span className="text-elegant-brown font-serif block mb-1.5 sm:mb-2 text-sm sm:text-base">Custom Occasion</span>
             <Input
               type="text"
               value={formData.customOccasion}
               onChange={(e) => onChange("customOccasion", e.target.value)}
               placeholder="Enter your occasion"
-              className="w-full border-elegant-secondary/30 focus:border-elegant-primary"
+              className="w-full border-elegant-secondary/30 focus:border-elegant-primary h-9 sm:h-10 text-sm sm:text-base"
             />
           </label>
         )}
       </div>
 
-      <div className="text-sm text-gray-500 text-center font-serif mt-8">
+      <div className="text-xs sm:text-sm text-gray-500 text-center font-serif mt-6 sm:mt-8">
         This information will help us personalize your invitation design
       </div>
     </div>
