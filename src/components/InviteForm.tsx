@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { ColorPalette } from "./form/ColorPalette";
 import { StyleSelector } from "./form/StyleSelector";
@@ -6,6 +7,7 @@ import { ContentEditor } from "./form/ContentEditor";
 import { AdditionalDetails } from "./form/AdditionalDetails";
 import { FormProgress } from "./form/FormProgress";
 import { BasicDetails } from "./form/BasicDetails";
+import { ReviewDetails } from "./form/ReviewDetails";
 
 const STEPS = [
   "Basic Details",
@@ -14,6 +16,7 @@ const STEPS = [
   "Deadline",
   "Content",
   "Additional Details",
+  "Review",
 ];
 
 export const InviteForm = () => {
@@ -88,6 +91,12 @@ export const InviteForm = () => {
           <AdditionalDetails
             formData={formData}
             onChange={updateFormData}
+          />
+        );
+      case 6:
+        return (
+          <ReviewDetails
+            formData={formData}
           />
         );
       default:
