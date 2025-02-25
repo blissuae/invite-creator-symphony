@@ -40,6 +40,23 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
     return isUrgent ? `${formattedDate} (Urgent Delivery)` : formattedDate;
   };
 
+  const formatColorPalette = (paletteId: string) => {
+    if (paletteId.startsWith('custom-')) {
+      const colors = paletteId.split('-').slice(1);
+      return {
+        name: "Custom Palette",
+        colors
+      };
+    }
+    
+    // Extract random palette name from the ID
+    const nameParts = paletteId.split('-')[1]?.split('_') || [];
+    return {
+      name: nameParts.join(' '),
+      colors: ['#E5E5E5', '#D4D4D4', '#FAFAFA'] // Default colors if palette not found
+    };
+  };
+
   const calculatePriceRange = () => {
     let priceRange = "";
     
@@ -144,6 +161,24 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
       yPos += lineHeight * (lines.length + 1);
     };
 
+    const addColorPalette = () => {
+      const palette = formatColorPalette(formData.colorPalette);
+      const circleSize = 4;
+      const circleSpacing = 6;
+      let colorText = `${palette.name} (`;
+      
+      palette.colors.forEach((color, index) => {
+        // Draw circle
+        doc.setFillColor(color);
+        doc.circle(contentStartX + (index * (circleSize + circleSpacing)), yPos - 2, circleSize / 2, 'F');
+        colorText += `${color}${index < palette.colors.length - 1 ? ', ' : ''}`;
+      });
+      
+      colorText += ')';
+      doc.text(colorText, contentStartX + (palette.colors.length * (circleSize + circleSpacing)) + 5, yPos);
+      yPos += lineHeight * 2;
+    };
+
     const sections = [
       { title: "Full Name:", content: toTitleCase(formData.fullName) },
       { title: "Instagram ID:", content: toTitleCase(formData.instagramId || "Not Provided") },
@@ -153,13 +188,31 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
       { title: "Video Idea:", content: formData.hasVideoIdea ? formData.videoIdea : "No specific idea provided" },
       { title: "Content:", content: formData.content.split("\n\nVideo Idea:")[0].split("\n\nAdditional Requests:")[0] },
       { title: "Style:", content: toTitleCase(formData.style || "Not Selected") },
-      { title: "Animation Styles:", content: toTitleCase(formData.animationStyles.join(", ") || "Not Selected") },
-      { title: "Color Palette:", content: toTitleCase(formData.colorPalette || "Not Selected") },
-      { title: "Event Deadline:", content: formatDeadline(formData.deadline, formData.isUrgent || false) },
-      { title: "Additional Requests:", content: formData.content.match(/Additional Requests:\n([\s\S]*?)$/)?.[1] || "None" }
+      { title: "Animation Styles:", content: toTitleCase(formData.animationStyles.join(", ") || "Not Selected") }
     ];
 
     sections.forEach((section) => {
+      if (yPos > 250) {
+        doc.addPage();
+        yPos = 20;
+      }
+      addSection(section.title, section.content);
+    });
+
+    if (yPos > 250) {
+      doc.addPage();
+      yPos = 20;
+    }
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(secondaryColor);
+    doc.text("Color Palette:", leftMargin, yPos);
+    addColorPalette();
+
+    const remainingSections = [
+      { title: "Event Deadline:", content: formatDeadline(formData.deadline, formData.isUrgent || false) }
+    ];
+
+    remainingSections.forEach((section) => {
       if (yPos > 250) {
         doc.addPage();
         yPos = 20;
@@ -288,9 +341,25 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
           </div>
         )}
         
-        {renderSection("Color Palette", 
-          <div className="flex items-center gap-2">
-            <span className="capitalize">{formData.colorPalette || "Not selected"}</span>
+        {renderSection("Selected Palette", 
+          <div className="flex items-center gap-4">
+            {(() => {
+              const palette = formatColorPalette(formData.colorPalette);
+              return (
+                <>
+                  <div className="flex gap-2">
+                    {palette.colors.map((color, index) => (
+                      <div
+                        key={index}
+                        style={{ backgroundColor: color }}
+                        className="w-6 h-6 rounded-full border border-gray-200"
+                      />
+                    ))}
+                  </div>
+                  <span>{palette.name}</span>
+                </>
+              );
+            })()}
           </div>
         )}
         
