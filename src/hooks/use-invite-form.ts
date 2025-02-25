@@ -15,6 +15,8 @@ export interface InviteFormData {
   animationStyles: string[];
   deadline: Date | null;
   content: string;
+  videoIdea: string;  // Add new field
+  hasVideoIdea: boolean;  // Add new field
   guestCount: string;
   specialRequirements: string;
   deliveryFormats: {
@@ -22,18 +24,18 @@ export interface InviteFormData {
     stillInvite: boolean;
     logo: boolean;
   };
-  isUrgent: boolean;  // Changed from optional to required
+  isUrgent: boolean;
 }
 
 export const FORM_STEPS = [
   "Basic Details",
   "Delivery Formats",
   "Character Options",
+  "Content",  // Moved to position 4
   "Color Palette",
   "Animation Style",
   "Design Style",
   "Deadline",
-  "Content",
   "Review"
 ] as const;
 
@@ -54,6 +56,8 @@ export const useInviteForm = () => {
     animationStyles: [],
     deadline: null,
     content: "",
+    videoIdea: "",  // Initialize new field
+    hasVideoIdea: false,  // Initialize new field
     guestCount: "",
     specialRequirements: "",
     deliveryFormats: {
@@ -61,7 +65,7 @@ export const useInviteForm = () => {
       stillInvite: true,
       logo: true,
     },
-    isUrgent: false,  // Added default value
+    isUrgent: false,
   });
 
   const updateFormData = (field: keyof InviteFormData, value: any) => {
@@ -94,19 +98,29 @@ export const useInviteForm = () => {
       }
     }
 
-    if (currentStep === 4 && formData.animationStyles.length === 0) {
+    if (currentStep === 3) {  // Updated validation for Content page
+      if (formData.hasVideoIdea === undefined) {
+        toast({
+          title: "Selection Required",
+          description: "Please indicate whether you have a video idea.",
+          variant: "destructive",
+        });
+        return;
+      }
+      if (isContentReadyNotSelected(formData.content)) {
+        toast({
+          title: "Selection Required",
+          description: "Please indicate whether you have the writing ready.",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
+    if (currentStep === 5 && formData.animationStyles.length === 0) {
       toast({
         title: "Please select at least one style",
         description: "Choose up to 3 animation styles to continue",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (currentStep === 7 && isContentReadyNotSelected(formData.content)) {
-      toast({
-        title: "Selection Required",
-        description: "Please indicate whether you have the writing ready.",
         variant: "destructive",
       });
       return;

@@ -8,6 +8,8 @@ interface ContentEditorProps {
 
 export const ContentEditor = ({ content, onChange }: ContentEditorProps) => {
   const [isContentReady, setIsContentReady] = useState<boolean | null>(null);
+  const [hasVideoIdea, setHasVideoIdea] = useState<boolean | null>(null);
+  const [videoIdea, setVideoIdea] = useState("");
   const [additionalRequests, setAdditionalRequests] = useState("");
 
   const handleAdditionalRequestsChange = (value: string) => {
@@ -30,6 +32,55 @@ export const ContentEditor = ({ content, onChange }: ContentEditorProps) => {
       </h2>
 
       <div className="space-y-6">
+        {/* Video Idea Section */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-medium">
+            Do you have an idea for the video? <span className="text-red-500">*</span>
+          </h3>
+          <div className="flex gap-4">
+            <button
+              onClick={() => setHasVideoIdea(true)}
+              className={`px-6 py-3 rounded-lg border transition-all ${
+                hasVideoIdea === true
+                  ? "bg-elegant-primary text-white border-elegant-primary"
+                  : "border-elegant-secondary hover:border-elegant-primary"
+              }`}
+            >
+              Yes
+            </button>
+            <button
+              onClick={() => {
+                setHasVideoIdea(false);
+                setVideoIdea("");
+              }}
+              className={`px-6 py-3 rounded-lg border transition-all ${
+                hasVideoIdea === false
+                  ? "bg-elegant-primary text-white border-elegant-primary"
+                  : "border-elegant-secondary hover:border-elegant-primary"
+              }`}
+            >
+              No
+            </button>
+          </div>
+        </div>
+
+        {hasVideoIdea === true && (
+          <div className="space-y-4">
+            <textarea
+              value={videoIdea}
+              onChange={(e) => setVideoIdea(e.target.value)}
+              placeholder="Please describe your video idea..."
+              className="w-full h-32 p-4 rounded-lg border border-form-200 focus:border-black focus:ring-1 focus:ring-black transition-colors resize-none"
+            />
+          </div>
+        )}
+
+        {hasVideoIdea === false && (
+          <p className="text-gray-600 italic">
+            No worries! We'll think of a beautiful idea for you :)
+          </p>
+        )}
+
         <div className="space-y-4">
           <h3 className="text-lg font-medium">
             Do you have the writing ready? <span className="text-red-500">*</span>
