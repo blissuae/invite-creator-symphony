@@ -106,7 +106,7 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
     const doc = new jsPDF();
     
     const logoWidth = 40;
-    const logoHeight = 15;
+    const logoHeight = 10;
     doc.addImage("/lovable-uploads/f566f022-debc-49f9-85e0-e54a4d70cfbd.png", "PNG", 20, 20, logoWidth, logoHeight);
 
     let yPos = 50;
@@ -201,26 +201,19 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
 
   return (
     <div className="space-y-8 animate-fadeIn">
-      <div className="flex flex-col items-center gap-6 mb-8">
-        <img 
-          src="/lovable-uploads/f566f022-debc-49f9-85e0-e54a4d70cfbd.png" 
-          alt="Bliss Logo" 
-          className="h-8 object-contain"
-        />
-        <div className="flex justify-between items-center w-full">
-          <h2 className="text-2xl font-serif text-center text-[#8b7256]">
-            Review Your Details
-          </h2>
-          <button
-            onClick={downloadPDF}
-            className="px-4 py-2 bg-[#8b7256] text-white rounded-lg hover:bg-[#8b7256]/90 transition-colors flex items-center gap-2"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3M3 17v3a2 2 0 002 2h14a2 2 0 002-2v-3" />
-            </svg>
-            Download PDF
-          </button>
-        </div>
+      <div className="flex justify-between items-center mb-8">
+        <h2 className="text-2xl font-serif text-center text-[#8b7256]">
+          Review Your Details
+        </h2>
+        <button
+          onClick={downloadPDF}
+          className="px-4 py-2 bg-[#8b7256] text-white rounded-lg hover:bg-[#8b7256]/90 transition-colors flex items-center gap-2"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3M3 17v3a2 2 0 002 2h14a2 2 0 002-2v-3" />
+          </svg>
+          Download PDF
+        </button>
       </div>
 
       <div className="bg-[#8b7256]/10 p-6 rounded-lg border-2 border-[#8b7256]/20 mb-6">

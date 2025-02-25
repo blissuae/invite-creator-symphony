@@ -29,13 +29,7 @@ export const StyleSelector = ({ selected, onSelect }: StyleSelectorProps) => {
         {STYLES.map((style) => (
           <div
             key={style.id}
-            onClick={() => {
-              onSelect(style.id);
-              setTimeout(() => {
-                const continueButton = document.querySelector('button[data-continue]') as HTMLButtonElement;
-                continueButton?.click();
-              }, 300);
-            }}
+            onClick={() => onSelect(style.id)}
             className="flex flex-col items-center space-y-4 cursor-pointer"
           >
             <div
