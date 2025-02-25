@@ -1,70 +1,86 @@
+
 import { useState, useEffect } from "react";
 
 interface ContentEditorProps {
   content: string;
   onChange: (value: string) => void;
+  hasVideoIdea?: boolean;
+  onVideoIdeaChange?: (hasIdea: boolean, idea: string) => void;
 }
 
-export const ContentEditor = ({ content, onChange }: ContentEditorProps) => {
+export const ContentEditor = ({ 
+  content, 
+  onChange,
+  hasVideoIdea: initialHasVideoIdea,
+  onVideoIdeaChange 
+}: ContentEditorProps) => {
   const [isContentReady, setIsContentReady] = useState<boolean | null>(
     content === "Content will be shared later." ? false : content ? true : null
   );
   
-  const [hasVideoIdea, setHasVideoIdea] = useState<boolean | null>(null);
+  const [hasVideoIdea, setHasVideoIdea] = useState<boolean | null>(initialHasVideoIdea ?? null);
   const [videoIdea, setVideoIdea] = useState("");
+  const [mainContent, setMainContent] = useState("");
   const [additionalRequests, setAdditionalRequests] = useState("");
 
-  // Initialize the states from content when component mounts or when content changes
+  // Initialize states from content when component mounts or when content changes
   useEffect(() => {
-    // Extract video idea state from content if it exists
-    if (content.includes("Video Idea:")) {
-      setHasVideoIdea(true);
-      const videoIdeaMatch = content.match(/Video Idea:\n([\s\S]*?)(?=\n\n|$)/);
-      if (videoIdeaMatch) {
-        setVideoIdea(videoIdeaMatch[1]);
-      }
+    const mainContentPart = content.split("\n\nVideo Idea:")[0].split("\n\nAdditional Requests:")[0];
+    setMainContent(mainContentPart === "Content will be shared later." ? "" : mainContentPart);
+
+    const videoIdeaMatch = content.match(/Video Idea:\n([\s\S]*?)(?=\n\nAdditional Requests:|$)/);
+    if (videoIdeaMatch) {
+      setVideoIdea(videoIdeaMatch[1]);
     }
 
-    // Extract additional requests if they exist
     const additionalRequestsMatch = content.match(/Additional Requests:\n([\s\S]*?)$/);
     if (additionalRequestsMatch) {
       setAdditionalRequests(additionalRequestsMatch[1]);
     }
 
-    // Extract main content
-    const mainContent = content.split("\n\nVideo Idea:")[0].split("\n\nAdditional Requests:")[0];
-    if (mainContent && mainContent !== "Content will be shared later.") {
+    if (mainContentPart && mainContentPart !== "Content will be shared later.") {
       setIsContentReady(true);
+    } else if (mainContentPart === "Content will be shared later.") {
+      setIsContentReady(false);
     }
-  }, [content]); // Add content as a dependency to update state when content changes
+  }, [content]);
+
+  // Sync hasVideoIdea with parent component
+  useEffect(() => {
+    if (initialHasVideoIdea !== undefined && initialHasVideoIdea !== hasVideoIdea) {
+      setHasVideoIdea(initialHasVideoIdea);
+    }
+  }, [initialHasVideoIdea]);
+
+  const handleVideoIdeaChange = (value: string) => {
+    setVideoIdea(value);
+    onVideoIdeaChange?.(true, value);
+    updateCompleteContent(
+      isContentReady ? mainContent : "Content will be shared later.",
+      value,
+      additionalRequests
+    );
+  };
+
+  const handleMainContentChange = (value: string) => {
+    setMainContent(value);
+    updateCompleteContent(value, videoIdea, additionalRequests);
+  };
 
   const handleAdditionalRequestsChange = (value: string) => {
     setAdditionalRequests(value);
     updateCompleteContent(
-      isContentReady ? content.split("\n\nAdditional Requests:")[0] : "Content will be shared later.",
-      value,
-      hasVideoIdea ? videoIdea : null
-    );
-  };
-
-  const handleContentChange = (value: string) => {
-    updateCompleteContent(value, additionalRequests, hasVideoIdea ? videoIdea : null);
-  };
-
-  const handleVideoIdeaChange = (value: string) => {
-    setVideoIdea(value);
-    updateCompleteContent(
-      isContentReady ? content.split("\n\nVideo Idea:")[0].split("\n\nAdditional Requests:")[0] : "Content will be shared later.",
-      additionalRequests,
+      isContentReady ? mainContent : "Content will be shared later.",
+      videoIdea,
       value
     );
   };
 
-  const updateCompleteContent = (mainContent: string, requests: string, videoIdeaContent: string | null) => {
-    let finalContent = mainContent;
+  const updateCompleteContent = (main: string, video: string, requests: string) => {
+    let finalContent = main;
     
-    if (videoIdeaContent !== null) {
-      finalContent += "\n\nVideo Idea:\n" + videoIdeaContent;
+    if (hasVideoIdea && video) {
+      finalContent += "\n\nVideo Idea:\n" + video;
     }
     
     finalContent += "\n\nAdditional Requests:\n" + requests;
@@ -86,7 +102,15 @@ export const ContentEditor = ({ content, onChange }: ContentEditorProps) => {
           </h3>
           <div className="flex gap-4">
             <button
-              onClick={() => setHasVideoIdea(true)}
+              onClick={() => {
+                setHasVideoIdea(true);
+                onVideoIdeaChange?.(true, videoIdea);
+                updateCompleteContent(
+                  isContentReady ? mainContent : "Content will be shared later.",
+                  videoIdea,
+                  additionalRequests
+                );
+              }}
               className={`px-6 py-3 rounded-lg border transition-all ${
                 hasVideoIdea === true
                   ? "bg-elegant-primary text-white border-elegant-primary"
@@ -99,10 +123,11 @@ export const ContentEditor = ({ content, onChange }: ContentEditorProps) => {
               onClick={() => {
                 setHasVideoIdea(false);
                 setVideoIdea("");
+                onVideoIdeaChange?.(false, "");
                 updateCompleteContent(
-                  isContentReady ? content.split("\n\nVideo Idea:")[0].split("\n\nAdditional Requests:")[0] : "Content will be shared later.",
-                  additionalRequests,
-                  null
+                  isContentReady ? mainContent : "Content will be shared later.",
+                  "",
+                  additionalRequests
                 );
               }}
               className={`px-6 py-3 rounded-lg border transition-all ${
@@ -141,7 +166,7 @@ export const ContentEditor = ({ content, onChange }: ContentEditorProps) => {
             <button
               onClick={() => {
                 setIsContentReady(true);
-                handleContentChange("");
+                updateCompleteContent("", videoIdea, additionalRequests);
               }}
               className={`px-6 py-3 rounded-lg border transition-all ${
                 isContentReady === true
@@ -154,7 +179,7 @@ export const ContentEditor = ({ content, onChange }: ContentEditorProps) => {
             <button
               onClick={() => {
                 setIsContentReady(false);
-                updateCompleteContent("Content will be shared later.", additionalRequests, hasVideoIdea ? videoIdea : null);
+                updateCompleteContent("Content will be shared later.", videoIdea, additionalRequests);
               }}
               className={`px-6 py-3 rounded-lg border transition-all ${
                 isContentReady === false
@@ -170,13 +195,13 @@ export const ContentEditor = ({ content, onChange }: ContentEditorProps) => {
         {isContentReady === true && (
           <div className="space-y-4">
             <textarea
-              value={content.split("\n\nVideo Idea:")[0].split("\n\nAdditional Requests:")[0]}
-              onChange={(e) => handleContentChange(e.target.value)}
+              value={mainContent}
+              onChange={(e) => handleMainContentChange(e.target.value)}
               placeholder="Enter the text for your digital invite..."
               className="w-full h-48 p-4 rounded-lg border border-form-200 focus:border-black focus:ring-1 focus:ring-black transition-colors resize-none"
             />
             <p className="text-sm text-gray-500 text-right">
-              {content.split("\n\nVideo Idea:")[0].split("\n\nAdditional Requests:")[0].length} characters
+              {mainContent.length} characters
             </p>
           </div>
         )}
