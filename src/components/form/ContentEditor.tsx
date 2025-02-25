@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface ContentEditorProps {
   content: string;
@@ -7,22 +7,70 @@ interface ContentEditorProps {
 }
 
 export const ContentEditor = ({ content, onChange }: ContentEditorProps) => {
-  const [isContentReady, setIsContentReady] = useState<boolean | null>(null);
+  const [isContentReady, setIsContentReady] = useState<boolean | null>(
+    content === "Content will be shared later." ? false : content ? true : null
+  );
+  
   const [hasVideoIdea, setHasVideoIdea] = useState<boolean | null>(null);
   const [videoIdea, setVideoIdea] = useState("");
   const [additionalRequests, setAdditionalRequests] = useState("");
 
+  // Initialize the states from content when component mounts
+  useEffect(() => {
+    // Extract video idea state from content if it exists
+    if (content.includes("Video Idea:")) {
+      setHasVideoIdea(true);
+      const videoIdeaMatch = content.match(/Video Idea:\n([\s\S]*?)(?=\n\n|$)/);
+      if (videoIdeaMatch) {
+        setVideoIdea(videoIdeaMatch[1]);
+      }
+    }
+
+    // Extract additional requests if they exist
+    const additionalRequestsMatch = content.match(/Additional Requests:\n([\s\S]*?)$/);
+    if (additionalRequestsMatch) {
+      setAdditionalRequests(additionalRequestsMatch[1]);
+    }
+
+    // Extract main content
+    const mainContent = content.split("\n\nVideo Idea:")[0].split("\n\nAdditional Requests:")[0];
+    if (mainContent && mainContent !== "Content will be shared later.") {
+      setIsContentReady(true);
+    }
+  }, []); // Empty dependency array as we only want to run this once on mount
+
   const handleAdditionalRequestsChange = (value: string) => {
     setAdditionalRequests(value);
-    if (isContentReady) {
-      onChange(`${content.split("\n\nAdditional Requests:")[0]}\n\nAdditional Requests:\n${value}`);
-    } else {
-      onChange(`Content will be shared later.\n\nAdditional Requests:\n${value}`);
-    }
+    updateCompleteContent(
+      isContentReady ? content.split("\n\nAdditional Requests:")[0] : "Content will be shared later.",
+      value,
+      hasVideoIdea ? videoIdea : null
+    );
   };
 
   const handleContentChange = (value: string) => {
-    onChange(`${value}\n\nAdditional Requests:\n${additionalRequests}`);
+    updateCompleteContent(value, additionalRequests, hasVideoIdea ? videoIdea : null);
+  };
+
+  const handleVideoIdeaChange = (value: string) => {
+    setVideoIdea(value);
+    updateCompleteContent(
+      isContentReady ? content.split("\n\nVideo Idea:")[0].split("\n\nAdditional Requests:")[0] : "Content will be shared later.",
+      additionalRequests,
+      value
+    );
+  };
+
+  const updateCompleteContent = (mainContent: string, requests: string, videoIdeaContent: string | null) => {
+    let finalContent = mainContent;
+    
+    if (videoIdeaContent !== null) {
+      finalContent += "\n\nVideo Idea:\n" + videoIdeaContent;
+    }
+    
+    finalContent += "\n\nAdditional Requests:\n" + requests;
+    
+    onChange(finalContent);
   };
 
   return (
@@ -52,6 +100,11 @@ export const ContentEditor = ({ content, onChange }: ContentEditorProps) => {
               onClick={() => {
                 setHasVideoIdea(false);
                 setVideoIdea("");
+                updateCompleteContent(
+                  isContentReady ? content.split("\n\nVideo Idea:")[0].split("\n\nAdditional Requests:")[0] : "Content will be shared later.",
+                  additionalRequests,
+                  null
+                );
               }}
               className={`px-6 py-3 rounded-lg border transition-all ${
                 hasVideoIdea === false
@@ -68,7 +121,7 @@ export const ContentEditor = ({ content, onChange }: ContentEditorProps) => {
           <div className="space-y-4">
             <textarea
               value={videoIdea}
-              onChange={(e) => setVideoIdea(e.target.value)}
+              onChange={(e) => handleVideoIdeaChange(e.target.value)}
               placeholder="Please describe your video idea..."
               className="w-full h-32 p-4 rounded-lg border border-form-200 focus:border-black focus:ring-1 focus:ring-black transition-colors resize-none"
             />
@@ -87,7 +140,10 @@ export const ContentEditor = ({ content, onChange }: ContentEditorProps) => {
           </h3>
           <div className="flex gap-4">
             <button
-              onClick={() => setIsContentReady(true)}
+              onClick={() => {
+                setIsContentReady(true);
+                handleContentChange("");
+              }}
               className={`px-6 py-3 rounded-lg border transition-all ${
                 isContentReady === true
                   ? "bg-elegant-primary text-white border-elegant-primary"
@@ -99,7 +155,7 @@ export const ContentEditor = ({ content, onChange }: ContentEditorProps) => {
             <button
               onClick={() => {
                 setIsContentReady(false);
-                onChange("Content will be shared later.");
+                updateCompleteContent("Content will be shared later.", additionalRequests, hasVideoIdea ? videoIdea : null);
               }}
               className={`px-6 py-3 rounded-lg border transition-all ${
                 isContentReady === false
@@ -115,13 +171,13 @@ export const ContentEditor = ({ content, onChange }: ContentEditorProps) => {
         {isContentReady === true && (
           <div className="space-y-4">
             <textarea
-              value={content.split("\n\nAdditional Requests:")[0]}
+              value={content.split("\n\nVideo Idea:")[0].split("\n\nAdditional Requests:")[0]}
               onChange={(e) => handleContentChange(e.target.value)}
               placeholder="Enter the text for your digital invite..."
               className="w-full h-48 p-4 rounded-lg border border-form-200 focus:border-black focus:ring-1 focus:ring-black transition-colors resize-none"
             />
             <p className="text-sm text-gray-500 text-right">
-              {content.split("\n\nAdditional Requests:")[0].length} characters
+              {content.split("\n\nVideo Idea:")[0].split("\n\nAdditional Requests:")[0].length} characters
             </p>
           </div>
         )}
