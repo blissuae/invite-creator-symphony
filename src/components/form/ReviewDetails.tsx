@@ -39,45 +39,60 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
   };
 
   const calculatePriceRange = () => {
+    let priceRange = "";
+    
     if (formData.deliveryFormats.videoInvite) {
       if (!formData.hasCharacters) {
-        return "1500-1800 AED";
+        priceRange = "1500-1800 AED";
+      } else if (!formData.showFaces) {
+        priceRange = "1800-2000 AED";
+      } else {
+        const characterCount = parseInt(formData.characterCount) || 0;
+        const basePrice = 2000;
+        const priceIncrement = 200;
+        const minPrice = basePrice + (characterCount - 1) * priceIncrement;
+        const maxPrice = minPrice + 200;
+        priceRange = `${minPrice}-${maxPrice} AED`;
       }
-      if (!formData.showFaces) {
-        return "1800-2000 AED";
-      }
-      const characterCount = parseInt(formData.characterCount) || 0;
-      const basePrice = 2000;
-      const priceIncrement = 200;
-      const minPrice = basePrice + (characterCount - 1) * priceIncrement;
-      const maxPrice = minPrice + 200;
-      return `${minPrice}-${maxPrice} AED`;
-    }
-
-    if (formData.deliveryFormats.stillInvite) {
+    } else if (formData.deliveryFormats.stillInvite) {
       if (!formData.hasCharacters || !formData.showFaces) {
-        return "800 AED";
+        priceRange = "800 AED";
+      } else {
+        const characterCount = parseInt(formData.characterCount) || 0;
+        let price;
+        switch (characterCount) {
+          case 1:
+            price = 1000;
+            break;
+          case 2:
+            price = 1200;
+            break;
+          case 3:
+            price = 1300;
+            break;
+          default:
+            price = 1400;
+            break;
+        }
+        priceRange = `${price} AED`;
       }
-      const characterCount = parseInt(formData.characterCount) || 0;
-      let price;
-      switch (characterCount) {
-        case 1:
-          price = 1000;
-          break;
-        case 2:
-          price = 1200;
-          break;
-        case 3:
-          price = 1300;
-          break;
-        default:
-          price = 1400;
-          break;
-      }
-      return `${price} AED`;
+    } else {
+      return "Contact us for pricing";
     }
 
-    return "Contact us for pricing";
+    if (formData.isUrgent) {
+      if (priceRange.includes("-")) {
+        const [min, max] = priceRange.split("-");
+        const minPrice = parseInt(min);
+        const maxPrice = parseInt(max.replace(" AED", ""));
+        priceRange = `${minPrice + 300}-${maxPrice + 300} AED`;
+      } else {
+        const price = parseInt(priceRange.replace(" AED", ""));
+        priceRange = `${price + 300} AED`;
+      }
+    }
+
+    return priceRange;
   };
 
   const renderSection = (title: string, content: React.ReactNode) => (
@@ -155,6 +170,13 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
     doc.text("Estimated Price:", leftMargin, yPos);
     doc.text(calculatePriceRange(), contentStartX, yPos);
 
+    if (formData.isUrgent) {
+      yPos += lineHeight;
+      doc.setFontSize(9);
+      doc.setTextColor('#666666');
+      doc.text("* 300 AED have been added to the total as urgent delivery charges", leftMargin, yPos);
+    }
+
     yPos += lineHeight * 3;
     doc.setFontSize(10);
     doc.setTextColor('#666666');
@@ -186,6 +208,11 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
           <div className="text-2xl sm:text-3xl font-medium text-elegant-primary">
             {calculatePriceRange()}
           </div>
+          {formData.isUrgent && (
+            <div className="text-sm text-gray-600 mt-2 italic">
+              300 AED have been added to the total as urgent delivery charges
+            </div>
+          )}
         </div>
       </div>
 
