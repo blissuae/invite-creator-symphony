@@ -21,10 +21,23 @@ interface ReviewDetailsProps {
       stillInvite: boolean;
       logo: boolean;
     };
+    isUrgent: boolean;
   };
 }
 
 export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
+  const toTitleCase = (str: string) => {
+    return str.replace(/\w\S*/g, (txt) => {
+      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
+  };
+
+  const formatDeadline = (date: Date | null, isUrgent: boolean) => {
+    if (!date) return "Not selected";
+    const formattedDate = format(date, "MMMM d, yyyy");
+    return isUrgent ? `${formattedDate} (Urgent Delivery)` : formattedDate;
+  };
+
   const calculatePriceRange = () => {
     if (formData.deliveryFormats.videoInvite) {
       if (!formData.hasCharacters) {
@@ -115,16 +128,16 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
     };
 
     const sections = [
-      { title: "Full Name:", content: formData.fullName },
-      { title: "Instagram ID:", content: formData.instagramId || "Not provided" },
-      { title: "Occasion:", content: formData.occasion === "Other" ? formData.customOccasion : formData.occasion },
+      { title: "Full Name:", content: toTitleCase(formData.fullName) },
+      { title: "Instagram ID:", content: toTitleCase(formData.instagramId || "Not Provided") },
+      { title: "Occasion:", content: toTitleCase(formData.occasion === "Other" ? formData.customOccasion : formData.occasion) },
       { title: "Delivery Formats:", content: `Video: ${formData.deliveryFormats.videoInvite ? "Yes" : "No"}, Still: ${formData.deliveryFormats.stillInvite ? "Yes" : "No"}, Logo: ${formData.deliveryFormats.logo ? "Yes" : "No"}` },
-      { title: "Character Details:", content: `Characters: ${formData.hasCharacters ? "Yes" : "No"}${formData.hasCharacters ? `, Faces: ${formData.showFaces ? "Yes" : "No"}, Count: ${formData.characterCount}` : ""}` },
-      { title: "Style:", content: formData.style || "Not selected" },
-      { title: "Animation Styles:", content: formData.animationStyles.join(", ") || "Not selected" },
-      { title: "Color Palette:", content: formData.colorPalette || "Not selected" },
-      { title: "Event Deadline:", content: formData.deadline ? format(formData.deadline, "MMMM d, yyyy") : "Not selected" },
-      { title: "Content:", content: formData.content || "No content added" }
+      { title: "Character Details:", content: toTitleCase(`Characters: ${formData.hasCharacters ? "Yes" : "No"}${formData.hasCharacters ? `, Faces: ${formData.showFaces ? "Yes" : "No"}, Count: ${formData.characterCount}` : ""}`) },
+      { title: "Style:", content: toTitleCase(formData.style || "Not Selected") },
+      { title: "Animation Styles:", content: toTitleCase(formData.animationStyles.join(", ") || "Not Selected") },
+      { title: "Color Palette:", content: toTitleCase(formData.colorPalette || "Not Selected") },
+      { title: "Event Deadline:", content: formatDeadline(formData.deadline, formData.isUrgent || false) },
+      { title: "Content:", content: toTitleCase(formData.content || "No Content Added") }
     ];
 
     sections.forEach((section) => {
@@ -224,9 +237,7 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
         )}
         
         {renderSection("Event Deadline", 
-          formData.deadline 
-            ? format(formData.deadline, "MMMM d, yyyy")
-            : "Not selected"
+          formatDeadline(formData.deadline, formData.isUrgent || false)
         )}
         
         {renderSection("Invitation Content", 

@@ -1,4 +1,3 @@
-
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -60,10 +59,9 @@ const OCCASIONS: OccasionOption[] = [
 
 export const BasicDetails = ({ formData, onChange }: BasicDetailsProps) => {
   const isFormValid = () => {
-    const hasValidInstagram = formData.instagramId.trim().startsWith('@');
     return (
       formData.fullName.trim() !== '' &&
-      hasValidInstagram &&
+      formData.instagramId.trim() !== '' &&
       formData.occasion !== '' &&
       (formData.occasion !== 'Other' || formData.customOccasion.trim() !== '')
     );
@@ -98,13 +96,10 @@ export const BasicDetails = ({ formData, onChange }: BasicDetailsProps) => {
             type="text"
             value={formData.instagramId}
             onChange={(e) => onChange("instagramId", e.target.value)}
-            placeholder="@yourusername"
+            placeholder="Your Instagram username"
             className="w-full border-elegant-secondary/30 focus:border-elegant-primary h-9 sm:h-10 text-sm sm:text-base"
             required
           />
-          {formData.instagramId && !formData.instagramId.startsWith('@') && (
-            <p className="text-red-500 text-sm mt-1">Instagram ID must start with @</p>
-          )}
         </label>
 
         <label className="block">

@@ -33,7 +33,7 @@ export const FORM_STEPS = [
   "Design Style",
   "Deadline",
   "Content",
-  "Review",
+  "Review"
 ] as const;
 
 export const useInviteForm = () => {
@@ -74,14 +74,6 @@ export const useInviteForm = () => {
         toast({
           title: "Required Fields Missing",
           description: "Please fill in all required fields to continue.",
-          variant: "destructive",
-        });
-        return;
-      }
-      if (!formData.instagramId.startsWith('@')) {
-        toast({
-          title: "Invalid Instagram ID",
-          description: "Instagram ID must start with @",
           variant: "destructive",
         });
         return;
