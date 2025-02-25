@@ -151,7 +151,6 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
       { title: "Delivery Formats:", content: `Video: ${formData.deliveryFormats.videoInvite ? "Yes" : "No"}, Still: ${formData.deliveryFormats.stillInvite ? "Yes" : "No"}, Logo: ${formData.deliveryFormats.logo ? "Yes" : "No"}` },
       { title: "Character Details:", content: toTitleCase(`Characters: ${formData.hasCharacters ? "Yes" : "No"}${formData.hasCharacters ? `, Faces: ${formData.showFaces ? "Yes" : "No"}${formData.showFaces ? `, Count: ${formData.characterCount}` : ""}` : ""}`) },
       { title: "Video Idea:", content: formData.hasVideoIdea ? formData.videoIdea : "No specific idea provided" },
-      { title: "Content Status:", content: formData.content === "Content will be shared later." ? "To be provided later" : "Ready" },
       { title: "Content:", content: formData.content },
       { title: "Style:", content: toTitleCase(formData.style || "Not Selected") },
       { title: "Animation Styles:", content: toTitleCase(formData.animationStyles.join(", ") || "Not Selected") },
@@ -274,10 +273,6 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
               </div>
             )}
           </div>
-        )}
-        
-        {renderSection("Content Status",
-          formData.content === "Content will be shared later." ? "To be provided later" : "Ready"
         )}
         
         {renderSection("Selected Style", 

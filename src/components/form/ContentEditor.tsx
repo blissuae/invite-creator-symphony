@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 
 interface ContentEditorProps {
@@ -15,7 +14,7 @@ export const ContentEditor = ({ content, onChange }: ContentEditorProps) => {
   const [videoIdea, setVideoIdea] = useState("");
   const [additionalRequests, setAdditionalRequests] = useState("");
 
-  // Initialize the states from content when component mounts
+  // Initialize the states from content when component mounts or when content changes
   useEffect(() => {
     // Extract video idea state from content if it exists
     if (content.includes("Video Idea:")) {
@@ -37,7 +36,7 @@ export const ContentEditor = ({ content, onChange }: ContentEditorProps) => {
     if (mainContent && mainContent !== "Content will be shared later.") {
       setIsContentReady(true);
     }
-  }, []); // Empty dependency array as we only want to run this once on mount
+  }, [content]); // Add content as a dependency to update state when content changes
 
   const handleAdditionalRequestsChange = (value: string) => {
     setAdditionalRequests(value);

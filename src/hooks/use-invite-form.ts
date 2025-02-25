@@ -98,7 +98,7 @@ export const useInviteForm = () => {
       }
     }
 
-    if (currentStep === 3) {  // Updated validation for Content page
+    if (currentStep === 3) {  // Content page validation
       if (formData.hasVideoIdea === undefined) {
         toast({
           title: "Selection Required",
@@ -117,13 +117,46 @@ export const useInviteForm = () => {
       }
     }
 
+    if (currentStep === 4) {  // Color Palette validation
+      if (!formData.colorPalette) {
+        toast({
+          title: "Selection Required",
+          description: "Please select a color palette to continue.",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
     if (currentStep === 5 && formData.animationStyles.length === 0) {
       toast({
-        title: "Please select at least one style",
+        title: "Selection Required",
         description: "Choose up to 3 animation styles to continue",
         variant: "destructive",
       });
       return;
+    }
+
+    if (currentStep === 6) {  // Design Style validation
+      if (!formData.style) {
+        toast({
+          title: "Selection Required",
+          description: "Please select a design style to continue.",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
+    if (currentStep === 7) {  // Deadline validation
+      if (!formData.deadline) {
+        toast({
+          title: "Selection Required",
+          description: "Please select a deadline to continue.",
+          variant: "destructive",
+        });
+        return;
+      }
     }
 
     if (currentStep < FORM_STEPS.length - 1) {
