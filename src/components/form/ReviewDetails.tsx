@@ -22,6 +22,8 @@ interface ReviewDetailsProps {
       logo: boolean;
     };
     isUrgent: boolean;
+    hasVideoIdea: boolean;
+    videoIdea: string;
   };
 }
 
@@ -147,12 +149,14 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
       { title: "Instagram ID:", content: toTitleCase(formData.instagramId || "Not Provided") },
       { title: "Occasion:", content: toTitleCase(formData.occasion === "Other" ? formData.customOccasion : formData.occasion) },
       { title: "Delivery Formats:", content: `Video: ${formData.deliveryFormats.videoInvite ? "Yes" : "No"}, Still: ${formData.deliveryFormats.stillInvite ? "Yes" : "No"}, Logo: ${formData.deliveryFormats.logo ? "Yes" : "No"}` },
-      { title: "Character Details:", content: toTitleCase(`Characters: ${formData.hasCharacters ? "Yes" : "No"}${formData.hasCharacters ? `, Faces: ${formData.showFaces ? "Yes" : "No"}, Count: ${formData.characterCount}` : ""}`) },
+      { title: "Character Details:", content: toTitleCase(`Characters: ${formData.hasCharacters ? "Yes" : "No"}${formData.hasCharacters ? `, Faces: ${formData.showFaces ? "Yes" : "No"}${formData.showFaces ? `, Count: ${formData.characterCount}` : ""}` : ""}`) },
+      { title: "Video Idea:", content: formData.hasVideoIdea ? formData.videoIdea : "No specific idea provided" },
+      { title: "Content Status:", content: formData.content === "Content will be shared later." ? "To be provided later" : "Ready" },
+      { title: "Content:", content: formData.content },
       { title: "Style:", content: toTitleCase(formData.style || "Not Selected") },
       { title: "Animation Styles:", content: toTitleCase(formData.animationStyles.join(", ") || "Not Selected") },
       { title: "Color Palette:", content: toTitleCase(formData.colorPalette || "Not Selected") },
       { title: "Event Deadline:", content: formatDeadline(formData.deadline, formData.isUrgent || false) },
-      { title: "Content:", content: toTitleCase(formData.content || "No Content Added") }
     ];
 
     sections.forEach((section) => {
@@ -253,10 +257,27 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
             {formData.hasCharacters && (
               <>
                 <p>Show Faces: {formData.showFaces ? "Yes" : "No"}</p>
-                <p>Number of Characters: {formData.characterCount}</p>
+                {formData.showFaces && (
+                  <p>Number of Characters: {formData.characterCount}</p>
+                )}
               </>
             )}
           </div>
+        )}
+        
+        {renderSection("Video Idea",
+          <div className="space-y-2">
+            <p>Has Video Idea: {formData.hasVideoIdea ? "Yes" : "No"}</p>
+            {formData.hasVideoIdea && formData.videoIdea && (
+              <div className="whitespace-pre-wrap bg-white p-4 rounded-md border border-elegant-secondary/20">
+                {formData.videoIdea}
+              </div>
+            )}
+          </div>
+        )}
+        
+        {renderSection("Content Status",
+          formData.content === "Content will be shared later." ? "To be provided later" : "Ready"
         )}
         
         {renderSection("Selected Style", 

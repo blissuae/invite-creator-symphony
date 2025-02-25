@@ -31,7 +31,7 @@ export const FORM_STEPS = [
   "Basic Details",
   "Delivery Formats",
   "Character Options",
-  "Content",  // Moved to position 4
+  "Idea & Content",
   "Color Palette",
   "Animation Style",
   "Design Style",

@@ -76,7 +76,10 @@ export const CharacterOptions = ({ formData, onChange }: CharacterOptionsProps) 
                 Yes
               </button>
               <button
-                onClick={() => onChange("showFaces", false)}
+                onClick={() => {
+                  onChange("showFaces", false);
+                  onChange("characterCount", "");
+                }}
                 className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-all ${
                   formData.showFaces === false
                     ? "bg-elegant-primary text-white"
@@ -90,8 +93,8 @@ export const CharacterOptions = ({ formData, onChange }: CharacterOptionsProps) 
           </div>
         )}
 
-        {/* Character Count Selection - Conditional */}
-        {formData.hasCharacters && (
+        {/* Character Count Selection - Only show when faces are enabled */}
+        {formData.hasCharacters && formData.showFaces && (
           <div className="space-y-4">
             <h3 className="text-lg font-serif text-elegant-brown text-center">
               Total number of characters
