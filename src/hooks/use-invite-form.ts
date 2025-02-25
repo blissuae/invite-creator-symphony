@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -13,7 +12,6 @@ export interface InviteFormData {
   colorPalette: string;
   style: string;
   animationStyles: string[];
-  animationStyle: string[];  // Add this line to match ReviewDetails props
   deadline: Date | null;
   content: string;
   guestCount: string;
@@ -52,7 +50,6 @@ export const useInviteForm = () => {
     colorPalette: "",
     style: "",
     animationStyles: [],
-    animationStyle: [],  // Add initial state for the new property
     deadline: null,
     content: "",
     guestCount: "",
