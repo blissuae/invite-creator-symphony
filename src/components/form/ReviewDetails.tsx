@@ -13,6 +13,7 @@ interface ReviewDetailsProps {
     characterCount: string;
     colorPalette: string;
     style: string;
+    animationStyle: string[];
     deadline: Date | null;
     content: string;
     specialRequirements: string;
@@ -89,11 +90,14 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
 
     // Set initial position after logo
     let yPos = 50;
-    const lineHeight = 10;
+    const lineHeight = 8; // Reduced line height
     const leftMargin = 20;
-    const contentStartX = 70;
-    const pageWidth = 210; // A4 width in mm
-    const contentWidth = pageWidth - leftMargin - contentStartX;
+    const middleX = 105; // Middle of A4 page
+    const contentStartX = 60;
+    const secondColumnX = middleX + 10;
+    const secondColumnContentX = secondColumnX + 40;
+    const pageWidth = 210;
+    const contentWidth = 80; // Reduced width for two columns
 
     // Set colors to match form
     const primaryColor = '#7E69AB';
@@ -102,74 +106,98 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
     // Set title
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(primaryColor);
-    doc.setFontSize(20);
+    doc.setFontSize(16); // Reduced title size
     doc.text("Digital Invitation Details", leftMargin, yPos);
     yPos += lineHeight * 2;
 
     // Reset font size for content
-    doc.setFontSize(12);
+    doc.setFontSize(10); // Reduced content size
 
-    // Add content sections with table-like format
-    const addSection = (title: string, content: string) => {
+    // Add content sections with two-column layout
+    const addSection = (title: string, content: string, isLeftColumn: boolean = true) => {
+      const startX = isLeftColumn ? leftMargin : secondColumnX;
+      const contentX = isLeftColumn ? contentStartX : secondColumnContentX;
+      
       // Draw section background
-      doc.setFillColor(245, 240, 230); // elegant-beige color
-      doc.rect(leftMargin, yPos - 5, pageWidth - 40, lineHeight + 8, 'F');
+      doc.setFillColor(245, 240, 230);
+      doc.rect(startX, yPos - 4, contentWidth, lineHeight + 6, 'F');
       
       // Add title
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(secondaryColor);
-      doc.text(title, leftMargin, yPos);
+      doc.text(title, startX, yPos);
       
       // Add content
       doc.setFont('helvetica', 'normal');
       doc.setTextColor('#000000');
-      const lines = doc.splitTextToSize(content, contentWidth);
-      doc.text(lines, contentStartX, yPos);
-      yPos += lineHeight * (lines.length + 1);
+      const lines = doc.splitTextToSize(content, contentWidth - 20);
+      doc.text(lines, contentX, yPos);
+      
+      if (!isLeftColumn) {
+        yPos += lineHeight * (lines.length + 1);
+      }
+      return lines.length;
     };
 
-    // Add horizontal line separator
-    const addSeparator = () => {
-      doc.setDrawColor(primaryColor);
-      doc.setLineWidth(0.1);
-      doc.line(leftMargin, yPos - 2, pageWidth - 20, yPos - 2);
-      yPos += lineHeight / 2;
-    };
-
-    // Add all sections with separators
-    const sections = [
+    // Split sections into two columns
+    const leftColumnSections = [
       { title: "Full Name:", content: formData.fullName },
       { title: "Instagram ID:", content: formData.instagramId || "Not provided" },
       { title: "Occasion:", content: formData.occasion === "Other" ? formData.customOccasion : formData.occasion },
-      { title: "Delivery Formats:", content: `Video Invite: ${formData.deliveryFormats.videoInvite ? "Yes" : "No"}\nStill Invite: ${formData.deliveryFormats.stillInvite ? "Yes" : "No"}\nLogo: ${formData.deliveryFormats.logo ? "Yes" : "No"}` },
-      { title: "Character Details:", content: `Include Characters: ${formData.hasCharacters ? "Yes" : "No"}${formData.hasCharacters ? `\nShow Faces: ${formData.showFaces ? "Yes" : "No"}\nNumber of Characters: ${formData.characterCount}` : ""}` },
       { title: "Style:", content: formData.style || "Not selected" },
       { title: "Color Palette:", content: formData.colorPalette || "Not selected" },
+      { title: "Animation Style:", content: formData.animationStyle?.join(", ") || "Not selected" }
+    ];
+
+    const rightColumnSections = [
+      { title: "Delivery Formats:", content: `Video: ${formData.deliveryFormats.videoInvite ? "Yes" : "No"}\nStill: ${formData.deliveryFormats.stillInvite ? "Yes" : "No"}\nLogo: ${formData.deliveryFormats.logo ? "Yes" : "No"}` },
+      { title: "Character Details:", content: `Characters: ${formData.hasCharacters ? "Yes" : "No"}${formData.hasCharacters ? `\nFaces: ${formData.showFaces ? "Yes" : "No"}\nCount: ${formData.characterCount}` : ""}` },
       { title: "Event Deadline:", content: formData.deadline ? format(formData.deadline, "MMMM d, yyyy") : "Not selected" },
       { title: "Content:", content: formData.content || "No content added" }
     ];
 
-    sections.forEach((section, index) => {
-      addSection(section.title, section.content);
-      if (index < sections.length - 1) {
-        addSeparator();
-      }
+    // Draw vertical separator
+    doc.setDrawColor(primaryColor);
+    doc.setLineWidth(0.1);
+    doc.line(middleX, yPos - 10, middleX, yPos + 100);
+
+    // Add sections in two columns
+    let maxY = yPos;
+    leftColumnSections.forEach((section) => {
+      const lines = addSection(section.title, section.content, true);
+      yPos += lineHeight * (lines + 1);
     });
+
+    // Reset yPos for right column
+    let rightYPos = 50 + lineHeight * 2;
+    rightColumnSections.forEach((section) => {
+      const lines = addSection(section.title, section.content, false);
+      rightYPos += lineHeight * (lines + 1);
+    });
+
+    // Update maxY to the higher of the two columns
+    maxY = Math.max(yPos, rightYPos);
 
     // Add additional requests if present
     if (formData.specialRequirements) {
-      addSeparator();
-      addSection("Additional Requests:", formData.specialRequirements);
+      maxY += lineHeight;
+      doc.setDrawColor(primaryColor);
+      doc.setLineWidth(0.1);
+      doc.line(leftMargin, maxY, pageWidth - leftMargin, maxY);
+      maxY += lineHeight;
+      addSection("Additional Requests:", formData.specialRequirements, true);
     }
 
-    // Add price at the bottom
-    addSeparator();
-    yPos += lineHeight;
+    // Add price at the bottom with padding
+    maxY += lineHeight * 2;
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(primaryColor);
-    doc.setFontSize(14);
-    doc.text("Estimated Price:", leftMargin, yPos);
-    doc.text(calculatePriceRange(), contentStartX, yPos);
+    doc.setFontSize(12);
+    doc.text("Estimated Price:", leftMargin, maxY);
+    doc.text(calculatePriceRange(), contentStartX, maxY);
+
+    // Add bottom padding
+    maxY += lineHeight * 2;
 
     doc.save("digital-invitation-details.pdf");
   };
@@ -232,6 +260,12 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
         {renderSection("Selected Style", 
           <div className="flex items-center gap-2">
             <span className="capitalize">{formData.style || "Not selected"}</span>
+          </div>
+        )}
+        
+        {renderSection("Animation Style", 
+          <div className="flex items-center gap-2">
+            <span className="capitalize">{formData.animationStyle?.join(", ") || "Not selected"}</span>
           </div>
         )}
         
