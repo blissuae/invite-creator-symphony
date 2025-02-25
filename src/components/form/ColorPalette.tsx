@@ -1,29 +1,15 @@
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { HexColorPicker } from "react-colorful";
 import { Button } from "../ui/button";
-import { Wand2, Upload } from "lucide-react";
-import Vibrant from "node-vibrant/lib/browser";
+import { Wand2 } from "lucide-react";
 
 interface ColorPaletteProps {
   selected: string;
   onSelect: (value: string) => void;
 }
 
-const RANDOM_PALETTE_PREFIXES = ["Celestial", "Enchanted", "Mystic", "Dreamy", "Crystal", "Royal", "Ethereal"];
-const RANDOM_PALETTE_SUFFIXES = ["Dreams", "Whispers", "Harmony", "Symphony", "Vision", "Melody", "Wonder"];
-
-const generateRandomPalette = () => {
-  const name = `${RANDOM_PALETTE_PREFIXES[Math.floor(Math.random() * RANDOM_PALETTE_PREFIXES.length)]} ${
-    RANDOM_PALETTE_SUFFIXES[Math.floor(Math.random() * RANDOM_PALETTE_SUFFIXES.length)]
-  }`;
-  const colors = Array.from({ length: 3 }, () => 
-    `#${Math.floor(Math.random()*16777215).toString(16).padStart(6, '0')}`
-  );
-  return { id: `random-${colors.join("-")}`, name, colors };
-};
-
-const generateInitialPalettes = () => [
+const PALETTES = [
   {
     id: "sunset-glow",
     name: "Sunset Glow",
@@ -101,104 +87,40 @@ const generateInitialPalettes = () => [
   },
 ];
 
+const RANDOM_PALETTE_PREFIXES = ["Celestial", "Enchanted", "Mystic", "Dreamy", "Crystal", "Royal", "Ethereal"];
+const RANDOM_PALETTE_SUFFIXES = ["Dreams", "Whispers", "Harmony", "Symphony", "Vision", "Melody", "Wonder"];
+
 export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
-  const [showCustomPalette, setShowCustomPalette] = useState(false);
-  const [showPhotoUpload, setShowPhotoUpload] = useState(false);
   const [customColors, setCustomColors] = useState(["#000000", "#000000", "#000000"]);
   const [currentColorIndex, setCurrentColorIndex] = useState<number | null>(null);
   const [customPaletteName, setCustomPaletteName] = useState("Custom Palette");
-  const [palettes, setPalettes] = useState(generateInitialPalettes());
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const generateNewPalettes = () => {
-    const newPalettes = palettes.map(() => generateRandomPalette());
-    setPalettes(newPalettes);
+  const generateRandomPalette = () => {
+    const prefix = RANDOM_PALETTE_PREFIXES[Math.floor(Math.random() * RANDOM_PALETTE_PREFIXES.length)];
+    const suffix = RANDOM_PALETTE_SUFFIXES[Math.floor(Math.random() * RANDOM_PALETTE_SUFFIXES.length)];
+    setCustomPaletteName(`${prefix} ${suffix}`);
+    
+    const newColors = Array.from({ length: 3 }, () => 
+      `#${Math.floor(Math.random()*16777215).toString(16).padStart(6, '0')}`
+    );
+    setCustomColors(newColors);
   };
 
-  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    try {
-      const imageUrl = URL.createObjectURL(file);
-      const vibrantInstance = new Vibrant(imageUrl);
-      const swatches = await vibrantInstance.getPalette();
-      
-      const extractedColors = [
-        swatches.Vibrant?.hex || "#000000",
-        swatches.LightVibrant?.hex || "#FFFFFF",
-        swatches.DarkVibrant?.hex || "#444444",
-      ];
-
-      setCustomColors(extractedColors);
-      setCustomPaletteName(`Colors from ${file.name}`);
-      URL.revokeObjectURL(imageUrl);
-    } catch (error) {
-      console.error('Error extracting colors:', error);
+  const handleColorChange = (color: string) => {
+    if (currentColorIndex !== null) {
+      const newColors = [...customColors];
+      newColors[currentColorIndex] = color;
+      setCustomColors(newColors);
     }
   };
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center mb-8">
-        <h2 className="text-2xl font-light">Choose Your Color Palette</h2>
-        <Button
-          onClick={generateNewPalettes}
-          variant="outline"
-          className="flex items-center gap-2"
-        >
-          <Wand2 className="w-4 h-4" />
-          Generate Palettes
-        </Button>
-      </div>
-
+      <h2 className="text-2xl font-light text-center mb-8">
+        Choose Your Color Palette
+      </h2>
       <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-4">
-        {/* Choose Your Own Palette */}
-        <div
-          onClick={() => {
-            setShowCustomPalette(true);
-            setShowPhotoUpload(false);
-          }}
-          className="flex flex-col items-center space-y-4 cursor-pointer p-4 rounded-lg hover:bg-gray-50 transition-colors"
-        >
-          <div className="text-center">
-            <h3 className="font-medium mb-4">Choose Your Own Palette</h3>
-            <div className="flex justify-center gap-3">
-              {customColors.map((color, index) => (
-                <div
-                  key={index}
-                  style={{ backgroundColor: color }}
-                  className="w-8 h-8 rounded-full border border-gray-200"
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Upload Photo Option */}
-        <div
-          onClick={() => {
-            setShowPhotoUpload(true);
-            setShowCustomPalette(false);
-            fileInputRef.current?.click();
-          }}
-          className="flex flex-col items-center space-y-4 cursor-pointer p-4 rounded-lg hover:bg-gray-50 transition-colors"
-        >
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleImageUpload}
-            accept="image/*"
-            className="hidden"
-          />
-          <div className="text-center">
-            <h3 className="font-medium mb-4">Upload a Photo</h3>
-            <Upload className="w-8 h-8 mx-auto text-gray-400" />
-          </div>
-        </div>
-
-        {/* Preset Palettes */}
-        {palettes.map((palette) => (
+        {PALETTES.map((palette) => (
           <div
             key={palette.id}
             onClick={() => {
@@ -226,19 +148,18 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
             </div>
           </div>
         ))}
-      </div>
 
-      {/* Custom Palette Panel */}
-      {showCustomPalette && (
-        <div className="mt-8 p-6 border rounded-lg bg-gray-50">
-          <div className="max-w-md mx-auto space-y-6">
-            <h3 className="font-medium text-center">{customPaletteName}</h3>
-            <div className="flex justify-center gap-4">
+        {/* Custom Palette Section */}
+        <div className="flex flex-col items-center space-y-4 p-4 rounded-lg hover:bg-gray-50 transition-colors col-span-full">
+          <h3 className="font-medium mb-2">Choose Your Own Palette</h3>
+          <div className="text-center space-y-4 max-w-md mx-auto">
+            <p className="text-sm text-gray-600 mb-2">{customPaletteName}</p>
+            <div className="flex justify-center gap-3 mb-4">
               {customColors.map((color, index) => (
                 <div
                   key={index}
                   style={{ backgroundColor: color }}
-                  className={`w-10 h-10 rounded-full border-2 cursor-pointer ${
+                  className={`w-8 h-8 rounded-full border-2 cursor-pointer ${
                     currentColorIndex === index ? "border-elegant-primary" : "border-gray-200"
                   }`}
                   onClick={() => setCurrentColorIndex(index === currentColorIndex ? null : index)}
@@ -246,18 +167,21 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
               ))}
             </div>
             {currentColorIndex !== null && (
-              <div className="flex justify-center">
+              <div className="flex justify-center mb-4 transition-all">
                 <HexColorPicker
                   color={customColors[currentColorIndex]}
-                  onChange={(color) => {
-                    const newColors = [...customColors];
-                    newColors[currentColorIndex] = color;
-                    setCustomColors(newColors);
-                  }}
+                  onChange={handleColorChange}
                 />
               </div>
             )}
-            <div className="flex justify-center gap-4">
+            <div className="flex gap-4 justify-center">
+              <Button
+                onClick={generateRandomPalette}
+                variant="outline"
+              >
+                <Wand2 className="w-4 h-4 mr-2" />
+                Generate Random
+              </Button>
               <Button
                 onClick={() => {
                   onSelect(`custom-${customColors.join("-")}`);
@@ -275,7 +199,7 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
             </div>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 };
