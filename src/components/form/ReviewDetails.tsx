@@ -16,6 +16,11 @@ interface ReviewDetailsProps {
     content: string;
     guestCount: string;
     specialRequirements: string;
+    deliveryFormats: {
+      videoInvite: boolean;
+      stillInvite: boolean;
+      logo: boolean;
+    };
   };
 }
 
@@ -68,6 +73,14 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
         
         {renderSection("Occasion", 
           formData.occasion === "Other" ? formData.customOccasion : formData.occasion
+        )}
+
+        {renderSection("Delivery Formats",
+          <div className="space-y-1">
+            <p>Video Invite (.mp4): {formData.deliveryFormats.videoInvite ? "Yes" : "No"}</p>
+            <p>Still Invite (PDF): {formData.deliveryFormats.stillInvite ? "Yes" : "No"}</p>
+            <p>Logo (PDF): {formData.deliveryFormats.logo ? "Yes" : "No"}</p>
+          </div>
         )}
         
         {renderSection("Character Details", 

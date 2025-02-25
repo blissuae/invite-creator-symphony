@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -16,10 +17,16 @@ export interface InviteFormData {
   content: string;
   guestCount: string;
   specialRequirements: string;
+  deliveryFormats: {
+    videoInvite: boolean;
+    stillInvite: boolean;
+    logo: boolean;
+  };
 }
 
 export const FORM_STEPS = [
   "Basic Details",
+  "Delivery Formats",
   "Character Options",
   "Color Palette",
   "Animation Style",
@@ -48,6 +55,11 @@ export const useInviteForm = () => {
     content: "",
     guestCount: "",
     specialRequirements: "",
+    deliveryFormats: {
+      videoInvite: true,
+      stillInvite: true,
+      logo: true,
+    },
   });
 
   const updateFormData = (field: keyof InviteFormData, value: any) => {

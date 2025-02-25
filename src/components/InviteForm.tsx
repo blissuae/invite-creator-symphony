@@ -10,6 +10,7 @@ import { ReviewDetails } from "./form/ReviewDetails";
 import { SuccessScreen } from "./form/SuccessScreen";
 import { AnimationStyleSelector } from "./form/AnimationStyleSelector";
 import { FormNavigation } from "./form/FormNavigation";
+import { DeliveryFormats } from "./form/DeliveryFormats";
 import { FORM_STEPS, useInviteForm } from "@/hooks/use-invite-form";
 
 export const InviteForm = () => {
@@ -38,47 +39,54 @@ export const InviteForm = () => {
         );
       case 1:
         return (
-          <CharacterOptions
+          <DeliveryFormats
             formData={formData}
             onChange={updateFormData}
           />
         );
       case 2:
         return (
+          <CharacterOptions
+            formData={formData}
+            onChange={updateFormData}
+          />
+        );
+      case 3:
+        return (
           <ColorPalette
             selected={formData.colorPalette}
             onSelect={(value) => updateFormData("colorPalette", value)}
           />
         );
-      case 3:
+      case 4:
         return (
           <AnimationStyleSelector
             selected={formData.animationStyles}
             onSelect={(value) => updateFormData("animationStyles", value)}
           />
         );
-      case 4:
+      case 5:
         return (
           <StyleSelector
             selected={formData.style}
             onSelect={(value) => updateFormData("style", value)}
           />
         );
-      case 5:
+      case 6:
         return (
           <DeadlinePicker
             selected={formData.deadline}
             onSelect={(value) => updateFormData("deadline", value)}
           />
         );
-      case 6:
+      case 7:
         return (
           <ContentEditor
             content={formData.content}
             onChange={(value) => updateFormData("content", value)}
           />
         );
-      case 7:
+      case 8:
         return (
           <ReviewDetails
             formData={formData}
