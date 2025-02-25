@@ -14,14 +14,25 @@ const generateSoftColor = () => {
   const earthyPalette = [
     // Beiges
     `hsl(${30 + Math.random() * 10}, ${20 + Math.random() * 10}%, ${85 + Math.random() * 10}%)`,
+    `hsl(${35 + Math.random() * 15}, ${15 + Math.random() * 15}%, ${80 + Math.random() * 15}%)`,
     // Greys
     `hsl(${0}, ${0}%, ${70 + Math.random() * 20}%)`,
+    `hsl(${0}, ${0}%, ${60 + Math.random() * 30}%)`,
     // Off-whites
     `hsl(${40 + Math.random() * 20}, ${10 + Math.random() * 5}%, ${90 + Math.random() * 8}%)`,
+    `hsl(${45 + Math.random() * 15}, ${5 + Math.random() * 10}%, ${92 + Math.random() * 6}%)`,
     // Olive greens
     `hsl(${80 + Math.random() * 20}, ${20 + Math.random() * 15}%, ${60 + Math.random() * 15}%)`,
+    `hsl(${90 + Math.random() * 30}, ${15 + Math.random() * 20}%, ${65 + Math.random() * 20}%)`,
     // Cool greys
-    `hsl(${210}, ${5 + Math.random() * 10}%, ${75 + Math.random() * 15}%)`
+    `hsl(${210}, ${5 + Math.random() * 10}%, ${75 + Math.random() * 15}%)`,
+    `hsl(${200}, ${10 + Math.random() * 15}%, ${70 + Math.random() * 20}%)`,
+    // Warm greys
+    `hsl(${30}, ${5 + Math.random() * 10}%, ${80 + Math.random() * 15}%)`,
+    // Soft blues
+    `hsl(${210 + Math.random() * 20}, ${20 + Math.random() * 15}%, ${80 + Math.random() * 10}%)`,
+    // Sage greens
+    `hsl(${100 + Math.random() * 30}, ${15 + Math.random() * 20}%, ${75 + Math.random() * 15}%)`
   ];
   
   return earthyPalette[Math.floor(Math.random() * earthyPalette.length)];
@@ -31,18 +42,27 @@ const generateContrastingPalette = () => {
   return [generateSoftColor(), generateSoftColor(), generateSoftColor()];
 };
 
+const RANDOM_PALETTE_PREFIXES = [
+  "Celestial", "Enchanted", "Mystic", "Dreamy", "Crystal", "Royal", "Ethereal",
+  "Gentle", "Tranquil", "Serene", "Peaceful", "Elegant", "Timeless", "Natural",
+  "Earthy", "Modern", "Classic", "Subtle", "Rustic", "Coastal", "Organic"
+];
+
+const RANDOM_PALETTE_SUFFIXES = [
+  "Dreams", "Whispers", "Harmony", "Symphony", "Vision", "Melody", "Wonder",
+  "Essence", "Breeze", "Dawn", "Dusk", "Mist", "Charm", "Grace", "Cloud",
+  "Forest", "Garden", "Haven", "Meadow", "Oasis", "Retreat", "Sanctuary"
+];
+
 const generateRandomPalette = () => {
   const prefix = RANDOM_PALETTE_PREFIXES[Math.floor(Math.random() * RANDOM_PALETTE_PREFIXES.length)];
   const suffix = RANDOM_PALETTE_SUFFIXES[Math.floor(Math.random() * RANDOM_PALETTE_SUFFIXES.length)];
   return {
-    id: `random-${Date.now()}`,
+    id: `random-${Date.now()}-${Math.random()}`,
     name: `${prefix}\n${suffix}`,
     colors: generateContrastingPalette()
   };
 };
-
-const RANDOM_PALETTE_PREFIXES = ["Celestial", "Enchanted", "Mystic", "Dreamy", "Crystal", "Royal", "Ethereal"];
-const RANDOM_PALETTE_SUFFIXES = ["Dreams", "Whispers", "Harmony", "Symphony", "Vision", "Melody", "Wonder"];
 
 export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
   const [customColors, setCustomColors] = useState(["#E5E5E5", "#D4D4D4", "#FAFAFA"]);
@@ -52,7 +72,8 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
   const [showCustomPicker, setShowCustomPicker] = useState(false);
 
   const regeneratePalettes = () => {
-    setPalettes(Array(8).fill(null).map(generateRandomPalette));
+    const newPalettes = Array(8).fill(null).map(generateRandomPalette);
+    setPalettes(newPalettes);
   };
 
   return (
