@@ -97,6 +97,35 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
     return priceRange;
   };
 
+  const renderColorCircle = (color: string) => (
+    <div
+      style={{ backgroundColor: color }}
+      className="inline-block w-6 h-6 rounded-full border border-gray-200 mr-2"
+    />
+  );
+
+  const renderColorPalette = (paletteId: string) => {
+    if (paletteId.startsWith('custom-')) {
+      const colors = paletteId.split('-').slice(1);
+      return (
+        <div className="flex items-center gap-2">
+          {colors.map((color, index) => renderColorCircle(color))}
+          <span className="text-gray-600">(Custom Palette)</span>
+        </div>
+      );
+    }
+
+    const palette = PALETTES.find(p => p.id === paletteId);
+    if (!palette) return "Not selected";
+
+    return (
+      <div className="flex items-center gap-2">
+        {palette.colors.map((color, index) => renderColorCircle(color))}
+        <span className="text-gray-600">({palette.name})</span>
+      </div>
+    );
+  };
+
   const renderSection = (title: string, content: React.ReactNode) => (
     <div className="space-y-2">
       <h3 className="text-elegant-brown font-serif text-lg">{title}</h3>
@@ -154,7 +183,9 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
       { title: "Content:", content: formData.content.split("\n\nVideo Idea:")[0].split("\n\nAdditional Requests:")[0] },
       { title: "Style:", content: toTitleCase(formData.style || "Not Selected") },
       { title: "Animation Styles:", content: toTitleCase(formData.animationStyles.join(", ") || "Not Selected") },
-      { title: "Color Palette:", content: toTitleCase(formData.colorPalette || "Not Selected") },
+      { title: "Color Palette:", content: <div className="flex items-center gap-2">
+        {formData.colorPalette ? renderColorPalette(formData.colorPalette) : "Not selected"}
+      </div> },
       { title: "Event Deadline:", content: formatDeadline(formData.deadline, formData.isUrgent || false) },
       { title: "Additional Requests:", content: formData.content.match(/Additional Requests:\n([\s\S]*?)$/)?.[1] || "None" }
     ];
@@ -290,7 +321,7 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
         
         {renderSection("Color Palette", 
           <div className="flex items-center gap-2">
-            <span className="capitalize">{formData.colorPalette || "Not selected"}</span>
+            {formData.colorPalette ? renderColorPalette(formData.colorPalette) : "Not selected"}
           </div>
         )}
         
