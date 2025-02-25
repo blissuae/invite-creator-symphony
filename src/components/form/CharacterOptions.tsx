@@ -13,10 +13,6 @@ interface CharacterOptionsProps {
 export const CharacterOptions = ({ formData, onChange }: CharacterOptionsProps) => {
   const handleCharacterCountChange = (value: string) => {
     onChange("characterCount", value);
-    setTimeout(() => {
-      const continueButton = document.querySelector('button[data-continue]') as HTMLButtonElement;
-      continueButton?.click();
-    }, 300);
   };
 
   return (
@@ -48,10 +44,6 @@ export const CharacterOptions = ({ formData, onChange }: CharacterOptionsProps) 
                 onChange("hasCharacters", false);
                 onChange("showFaces", false);
                 onChange("characterCount", "");
-                setTimeout(() => {
-                  const continueButton = document.querySelector('button[data-continue]') as HTMLButtonElement;
-                  continueButton?.click();
-                }, 300);
               }}
               className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-all ${
                 formData.hasCharacters === false
