@@ -14,7 +14,6 @@ interface ReviewDetailsProps {
     style: string;
     deadline: Date | null;
     content: string;
-    guestCount: string;
     specialRequirements: string;
     deliveryFormats: {
       videoInvite: boolean;
@@ -26,22 +25,50 @@ interface ReviewDetailsProps {
 
 export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
   const calculatePriceRange = () => {
-    if (!formData.hasCharacters) {
-      return "1500-1800 AED";
+    // If video invite is selected, use original pricing
+    if (formData.deliveryFormats.videoInvite) {
+      if (!formData.hasCharacters) {
+        return "1500-1800 AED";
+      }
+      if (!formData.showFaces) {
+        return "1800-2000 AED";
+      }
+      // Calculate based on character count for video with faces
+      const characterCount = parseInt(formData.characterCount) || 0;
+      const basePrice = 2000;
+      const priceIncrement = 200;
+      const minPrice = basePrice + (characterCount - 1) * priceIncrement;
+      const maxPrice = minPrice + 200;
+      return `${minPrice}-${maxPrice} AED`;
     }
 
-    if (!formData.showFaces) {
-      return "1800-2000 AED";
+    // If video is not selected but still invite is selected
+    if (formData.deliveryFormats.stillInvite) {
+      if (!formData.hasCharacters || !formData.showFaces) {
+        return "800 AED";
+      }
+      // Calculate price based on character count for still invite with faces
+      const characterCount = parseInt(formData.characterCount) || 0;
+      let price;
+      switch (characterCount) {
+        case 1:
+          price = 1000;
+          break;
+        case 2:
+          price = 1200;
+          break;
+        case 3:
+          price = 1300;
+          break;
+        default: // 4 or 5 characters
+          price = 1400;
+          break;
+      }
+      return `${price} AED`;
     }
 
-    // If both characters and faces are selected, calculate based on character count
-    const characterCount = parseInt(formData.characterCount) || 0;
-    const basePrice = 2000;
-    const priceIncrement = 200;
-    const minPrice = basePrice + (characterCount - 1) * priceIncrement;
-    const maxPrice = minPrice + 200;
-    
-    return `${minPrice}-${maxPrice} AED`;
+    // If neither video nor still invite is selected
+    return "Contact us for pricing";
   };
 
   const renderSection = (title: string, content: React.ReactNode) => (
@@ -117,10 +144,6 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
           <div className="whitespace-pre-wrap bg-white p-4 rounded-md border border-elegant-secondary/20">
             {formData.content || "No content added"}
           </div>
-        )}
-        
-        {renderSection("Expected Guest Count", 
-          formData.guestCount || "Not specified"
         )}
         
         {formData.specialRequirements && renderSection("Special Requirements",
