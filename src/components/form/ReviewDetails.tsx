@@ -116,8 +116,8 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
     const pageWidth = 210;
     const contentWidth = pageWidth - leftMargin - 40;
 
-    const primaryColor = '#7E69AB';
-    const secondaryColor = '#8B7355';
+    const primaryColor = '#8b7256';
+    const secondaryColor = '#8b7256';
 
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(primaryColor);
@@ -182,27 +182,35 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
     doc.setTextColor('#666666');
     doc.text("Thanks for filling the form. If you have any questions, please reach out to us at hello@bliss-go.com", leftMargin, yPos);
 
-    doc.save("digital-invitation-details.pdf");
+    const fileName = `Bliss-${formData.fullName.replace(/\s+/g, '')}.pdf`;
+    doc.save(fileName);
   };
 
   return (
     <div className="space-y-8 animate-fadeIn">
-      <div className="flex justify-between items-center mb-8">
-        <h2 className="text-2xl font-serif text-center text-elegant-brown">
-          Review Your Details
-        </h2>
-        <button
-          onClick={downloadPDF}
-          className="px-4 py-2 bg-elegant-primary text-white rounded-lg hover:bg-elegant-primary/90 transition-colors flex items-center gap-2"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3M3 17v3a2 2 0 002 2h14a2 2 0 002-2v-3" />
-          </svg>
-          Download PDF
-        </button>
+      <div className="flex flex-col items-center gap-6 mb-8">
+        <img 
+          src="/lovable-uploads/f566f022-debc-49f9-85e0-e54a4d70cfbd.png" 
+          alt="Bliss Logo" 
+          className="h-8 object-contain"
+        />
+        <div className="flex justify-between items-center w-full">
+          <h2 className="text-2xl font-serif text-center text-[#8b7256]">
+            Review Your Details
+          </h2>
+          <button
+            onClick={downloadPDF}
+            className="px-4 py-2 bg-[#8b7256] text-white rounded-lg hover:bg-[#8b7256]/90 transition-colors flex items-center gap-2"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3M3 17v3a2 2 0 002 2h14a2 2 0 002-2v-3" />
+            </svg>
+            Download PDF
+          </button>
+        </div>
       </div>
 
-      <div className="bg-elegant-beige/40 p-6 rounded-lg border-2 border-elegant-primary/20 mb-6">
+      <div className="bg-[#8b7256]/10 p-6 rounded-lg border-2 border-[#8b7256]/20 mb-6">
         <div className="text-center">
           <h3 className="text-elegant-brown font-serif text-lg mb-2">Estimated Price Range</h3>
           <div className="text-2xl sm:text-3xl font-medium text-elegant-primary">
@@ -216,7 +224,7 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
         </div>
       </div>
 
-      <div className="grid gap-6 p-6 bg-elegant-beige/20 rounded-lg border border-elegant-secondary/20">
+      <div className="grid gap-6 p-6 bg-[#8b7256]/5 rounded-lg border border-[#8b7256]/20">
         {renderSection("Full Name", formData.fullName)}
         
         {renderSection("Instagram ID", formData.instagramId || "Not provided")}

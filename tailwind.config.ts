@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -59,10 +58,10 @@ export default {
           300: "#FEF7CD",
         },
         elegant: {
-          primary: "#7E69AB",
-          secondary: "#D6BCFA",
+          primary: "#8b7256",
+          secondary: "#8b7256",
           beige: "#F5F0E6",
-          brown: "#8B7355",
+          brown: "#8b7256",
         },
       },
       fontFamily: {

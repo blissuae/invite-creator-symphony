@@ -7,51 +7,61 @@ interface FormProgressProps {
 }
 
 export const FormProgress = ({ steps, currentStep }: FormProgressProps) => {
-  const completionPercentage = ((currentStep + 1) / steps.length) * 100;
-
   return (
-    <div className="bg-elegant-beige/50 px-4 sm:px-8 py-4 sm:py-6">
-      <div className="relative mb-4 sm:mb-8">
-        <Progress value={completionPercentage} className="h-1.5 sm:h-2 bg-elegant-secondary/20 transition-all duration-500 ease-in-out" />
-        <div className="absolute -top-1 left-0 right-0">
-          <div className="flex items-center justify-between">
-            {steps.map((step, index) => (
+    <div className="w-full bg-white border-b border-elegant-secondary/20">
+      <div className="max-w-screen-xl mx-auto px-4 py-4">
+        <div className="flex justify-between items-center">
+          {steps.map((step, index) => {
+            const isCompleted = index < currentStep;
+            const isCurrent = index === currentStep;
+
+            return (
               <div
                 key={step}
-                className="relative"
+                className={`flex flex-col items-center ${
+                  index < steps.length - 1 ? "relative" : ""
+                }`}
               >
                 <div
-                  className={`w-7 h-7 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-xs sm:text-sm font-serif transform transition-all duration-500 ease-in-out ${
-                    index <= currentStep
-                      ? "bg-elegant-primary text-white ring-2 sm:ring-4 ring-elegant-beige scale-105 sm:scale-110"
-                      : "bg-white text-elegant-brown border border-elegant-secondary/30 scale-100"
-                  } hover:scale-105`}
-                >
-                  {index + 1}
-                </div>
-                <div 
-                  className={`absolute top-12 left-1/2 -translate-x-1/2 whitespace-nowrap text-sm font-serif transform transition-all duration-300 hidden md:block ${
-                    index === currentStep 
-                      ? "text-elegant-primary font-medium translate-y-0 opacity-100" 
-                      : "text-elegant-brown/70 translate-y-1 opacity-70"
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                    isCompleted || isCurrent
+                      ? "bg-[#8b7256] text-white"
+                      : "bg-gray-100 text-gray-400"
                   }`}
                 >
-                  {step}
+                  {isCompleted ? (
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                  ) : (
+                    index + 1
+                  )}
                 </div>
+                {index < steps.length - 1 && (
+                  <div
+                    className={`absolute left-[50%] w-full h-[2px] top-4 -z-10 ${
+                      isCompleted
+                        ? "bg-[#8b7256]"
+                        : "bg-gray-100"
+                    }`}
+                  />
+                )}
+                <span className="hidden md:block text-xs mt-2 font-medium text-center min-w-[80px] px-2">
+                  {step}
+                </span>
               </div>
-            ))}
-          </div>
-        </div>
-      </div>
-      <div className="flex justify-between items-center mt-6 sm:mt-12 pt-2">
-        <div className="text-xs sm:text-sm text-elegant-brown/70 font-serif animate-fadeIn">
-          Step {currentStep + 1} of {steps.length}
-        </div>
-        <div 
-          className="text-xs sm:text-sm font-medium text-elegant-primary font-serif transition-all duration-500"
-          style={{ opacity: completionPercentage === 0 ? 0 : 1 }}
-        >
-          {Math.round(completionPercentage)}% Complete
+            );
+          })}
         </div>
       </div>
     </div>
