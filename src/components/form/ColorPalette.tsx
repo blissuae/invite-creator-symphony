@@ -35,13 +35,7 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
         {PALETTES.map((palette) => (
           <div
             key={palette.id}
-            onClick={() => {
-              onSelect(palette.id);
-              setTimeout(() => {
-                const continueButton = document.querySelector('button[data-continue]') as HTMLButtonElement;
-                continueButton?.click();
-              }, 300);
-            }}
+            onClick={() => onSelect(palette.id)}
             className="flex flex-col items-center space-y-4 cursor-pointer"
           >
             <div
