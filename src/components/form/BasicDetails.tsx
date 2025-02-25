@@ -59,6 +59,16 @@ const OCCASIONS: OccasionOption[] = [
 ];
 
 export const BasicDetails = ({ formData, onChange }: BasicDetailsProps) => {
+  const isFormValid = () => {
+    const hasValidInstagram = formData.instagramId.trim().startsWith('@');
+    return (
+      formData.fullName.trim() !== '' &&
+      hasValidInstagram &&
+      formData.occasion !== '' &&
+      (formData.occasion !== 'Other' || formData.customOccasion.trim() !== '')
+    );
+  };
+
   return (
     <div className="space-y-6 sm:space-y-8 animate-fadeIn">
       <h2 className="text-xl sm:text-2xl font-serif text-center mb-6 sm:mb-8 text-elegant-brown">
@@ -67,29 +77,40 @@ export const BasicDetails = ({ formData, onChange }: BasicDetailsProps) => {
       
       <div className="space-y-4">
         <label className="block">
-          <span className="text-elegant-brown font-serif block mb-1.5 sm:mb-2 text-sm sm:text-base">Your Full Name</span>
+          <span className="text-elegant-brown font-serif block mb-1.5 sm:mb-2 text-sm sm:text-base">
+            Your Full Name <span className="text-red-500">*</span>
+          </span>
           <Input
             type="text"
             value={formData.fullName}
             onChange={(e) => onChange("fullName", e.target.value)}
             placeholder="Enter your full name"
             className="w-full border-elegant-secondary/30 focus:border-elegant-primary h-9 sm:h-10 text-sm sm:text-base"
+            required
           />
         </label>
 
         <label className="block">
-          <span className="text-elegant-brown font-serif block mb-1.5 sm:mb-2 text-sm sm:text-base">Instagram ID</span>
+          <span className="text-elegant-brown font-serif block mb-1.5 sm:mb-2 text-sm sm:text-base">
+            Instagram ID <span className="text-red-500">*</span>
+          </span>
           <Input
             type="text"
             value={formData.instagramId}
             onChange={(e) => onChange("instagramId", e.target.value)}
             placeholder="@yourusername"
             className="w-full border-elegant-secondary/30 focus:border-elegant-primary h-9 sm:h-10 text-sm sm:text-base"
+            required
           />
+          {formData.instagramId && !formData.instagramId.startsWith('@') && (
+            <p className="text-red-500 text-sm mt-1">Instagram ID must start with @</p>
+          )}
         </label>
 
         <label className="block">
-          <span className="text-elegant-brown font-serif block mb-1.5 sm:mb-2 text-sm sm:text-base">Occasion</span>
+          <span className="text-elegant-brown font-serif block mb-1.5 sm:mb-2 text-sm sm:text-base">
+            Occasion <span className="text-red-500">*</span>
+          </span>
           <Select
             value={formData.occasion}
             onValueChange={(value) => onChange("occasion", value)}
@@ -114,13 +135,16 @@ export const BasicDetails = ({ formData, onChange }: BasicDetailsProps) => {
 
         {formData.occasion === "Other" && (
           <label className="block">
-            <span className="text-elegant-brown font-serif block mb-1.5 sm:mb-2 text-sm sm:text-base">Custom Occasion</span>
+            <span className="text-elegant-brown font-serif block mb-1.5 sm:mb-2 text-sm sm:text-base">
+              Custom Occasion <span className="text-red-500">*</span>
+            </span>
             <Input
               type="text"
               value={formData.customOccasion}
               onChange={(e) => onChange("customOccasion", e.target.value)}
               placeholder="Enter your occasion"
               className="w-full border-elegant-secondary/30 focus:border-elegant-primary h-9 sm:h-10 text-sm sm:text-base"
+              required
             />
           </label>
         )}

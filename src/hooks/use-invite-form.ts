@@ -21,6 +21,7 @@ export interface InviteFormData {
     stillInvite: boolean;
     logo: boolean;
   };
+  isUrgent?: boolean;
 }
 
 export const FORM_STEPS = [
@@ -59,6 +60,7 @@ export const useInviteForm = () => {
       stillInvite: true,
       logo: true,
     },
+    isUrgent: false,
   });
 
   const updateFormData = (field: keyof InviteFormData, value: any) => {
@@ -66,6 +68,39 @@ export const useInviteForm = () => {
   };
 
   const nextStep = () => {
+    if (currentStep === 0) {
+      if (!formData.fullName.trim() || !formData.instagramId.trim() || !formData.occasion ||
+          (formData.occasion === 'Other' && !formData.customOccasion.trim())) {
+        toast({
+          title: "Required Fields Missing",
+          description: "Please fill in all required fields to continue.",
+          variant: "destructive",
+        });
+        return;
+      }
+      if (!formData.instagramId.startsWith('@')) {
+        toast({
+          title: "Invalid Instagram ID",
+          description: "Instagram ID must start with @",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
+    if (currentStep === 1) {
+      if (!formData.deliveryFormats.videoInvite && 
+          !formData.deliveryFormats.stillInvite && 
+          !formData.deliveryFormats.logo) {
+        toast({
+          title: "Selection Required",
+          description: "Please select at least one delivery format to continue.",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
     if (currentStep === 4 && formData.animationStyles.length === 0) {
       toast({
         title: "Please select at least one style",
@@ -74,9 +109,23 @@ export const useInviteForm = () => {
       });
       return;
     }
+
+    if (currentStep === 7 && isContentReadyNotSelected(formData.content)) {
+      toast({
+        title: "Selection Required",
+        description: "Please indicate whether you have the writing ready.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (currentStep < FORM_STEPS.length - 1) {
       setCurrentStep(currentStep + 1);
     }
+  };
+
+  const isContentReadyNotSelected = (content: string) => {
+    return !content.includes("Content will be shared later.") && content.trim() === "";
   };
 
   const prevStep = () => {

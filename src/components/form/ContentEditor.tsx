@@ -12,7 +12,6 @@ export const ContentEditor = ({ content, onChange }: ContentEditorProps) => {
 
   const handleAdditionalRequestsChange = (value: string) => {
     setAdditionalRequests(value);
-    // Update the main content to include both the message and additional requests
     if (isContentReady) {
       onChange(`${content.split("\n\nAdditional Requests:")[0]}\n\nAdditional Requests:\n${value}`);
     } else {
@@ -32,7 +31,9 @@ export const ContentEditor = ({ content, onChange }: ContentEditorProps) => {
 
       <div className="space-y-6">
         <div className="space-y-4">
-          <h3 className="text-lg font-medium">Do you have the writing ready?</h3>
+          <h3 className="text-lg font-medium">
+            Do you have the writing ready? <span className="text-red-500">*</span>
+          </h3>
           <div className="flex gap-4">
             <button
               onClick={() => setIsContentReady(true)}
