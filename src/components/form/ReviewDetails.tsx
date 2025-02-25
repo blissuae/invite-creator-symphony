@@ -156,11 +156,24 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
     ];
 
     sections.forEach((section) => {
+      if (yPos > 250) {
+        doc.addPage();
+        yPos = 20;
+      }
       addSection(section.title, section.content);
     });
 
     if (formData.specialRequirements) {
+      if (yPos > 250) {
+        doc.addPage();
+        yPos = 20;
+      }
       addSection("Additional Requests:", formData.specialRequirements);
+    }
+
+    if (yPos > 250) {
+      doc.addPage();
+      yPos = 20;
     }
 
     yPos += lineHeight;
