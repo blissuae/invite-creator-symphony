@@ -3,7 +3,7 @@ import { useState, useRef } from "react";
 import { HexColorPicker } from "react-colorful";
 import { Button } from "../ui/button";
 import { Wand2, Upload } from "lucide-react";
-import * as Vibrant from "node-vibrant";
+import Vibrant from "node-vibrant/lib/browser";
 
 interface ColorPaletteProps {
   selected: string;
