@@ -81,46 +81,95 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
 
   const downloadPDF = () => {
     const doc = new jsPDF();
-    let yPos = 20;
+    
+    // Add Bliss logo
+    const logoWidth = 40;
+    const logoHeight = 15;
+    doc.addImage("/lovable-uploads/f566f022-debc-49f9-85e0-e54a4d70cfbd.png", "PNG", 20, 20, logoWidth, logoHeight);
+
+    // Set initial position after logo
+    let yPos = 50;
     const lineHeight = 10;
+    const leftMargin = 20;
+    const contentStartX = 70;
+    const pageWidth = 210; // A4 width in mm
+    const contentWidth = pageWidth - leftMargin - contentStartX;
+
+    // Set colors to match form
+    const primaryColor = '#7E69AB';
+    const secondaryColor = '#8B7355';
 
     // Set title
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(primaryColor);
     doc.setFontSize(20);
-    doc.text("Digital Invitation Details", 20, yPos);
+    doc.text("Digital Invitation Details", leftMargin, yPos);
     yPos += lineHeight * 2;
 
     // Reset font size for content
     doc.setFontSize(12);
 
-    // Add content sections
+    // Add content sections with table-like format
     const addSection = (title: string, content: string) => {
-      doc.setFont(undefined, 'bold');
-      doc.text(title, 20, yPos);
-      doc.setFont(undefined, 'normal');
-      yPos += lineHeight;
-      const lines = doc.splitTextToSize(content, 170);
-      doc.text(lines, 20, yPos);
-      yPos += lineHeight * lines.length;
+      // Draw section background
+      doc.setFillColor(245, 240, 230); // elegant-beige color
+      doc.rect(leftMargin, yPos - 5, pageWidth - 40, lineHeight + 8, 'F');
+      
+      // Add title
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(secondaryColor);
+      doc.text(title, leftMargin, yPos);
+      
+      // Add content
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor('#000000');
+      const lines = doc.splitTextToSize(content, contentWidth);
+      doc.text(lines, contentStartX, yPos);
+      yPos += lineHeight * (lines.length + 1);
+    };
+
+    // Add horizontal line separator
+    const addSeparator = () => {
+      doc.setDrawColor(primaryColor);
+      doc.setLineWidth(0.1);
+      doc.line(leftMargin, yPos - 2, pageWidth - 20, yPos - 2);
       yPos += lineHeight / 2;
     };
 
-    addSection("Full Name:", formData.fullName);
-    addSection("Instagram ID:", formData.instagramId || "Not provided");
-    addSection("Occasion:", formData.occasion === "Other" ? formData.customOccasion : formData.occasion);
-    addSection("Delivery Formats:", `Video Invite: ${formData.deliveryFormats.videoInvite ? "Yes" : "No"}
-Still Invite: ${formData.deliveryFormats.stillInvite ? "Yes" : "No"}
-Logo: ${formData.deliveryFormats.logo ? "Yes" : "No"}`);
-    addSection("Character Details:", `Include Characters: ${formData.hasCharacters ? "Yes" : "No"}
-${formData.hasCharacters ? `Show Faces: ${formData.showFaces ? "Yes" : "No"}
-Number of Characters: ${formData.characterCount}` : ""}`);
-    addSection("Style:", formData.style || "Not selected");
-    addSection("Color Palette:", formData.colorPalette || "Not selected");
-    addSection("Event Deadline:", formData.deadline ? format(formData.deadline, "MMMM d, yyyy") : "Not selected");
-    addSection("Content:", formData.content || "No content added");
+    // Add all sections with separators
+    const sections = [
+      { title: "Full Name:", content: formData.fullName },
+      { title: "Instagram ID:", content: formData.instagramId || "Not provided" },
+      { title: "Occasion:", content: formData.occasion === "Other" ? formData.customOccasion : formData.occasion },
+      { title: "Delivery Formats:", content: `Video Invite: ${formData.deliveryFormats.videoInvite ? "Yes" : "No"}\nStill Invite: ${formData.deliveryFormats.stillInvite ? "Yes" : "No"}\nLogo: ${formData.deliveryFormats.logo ? "Yes" : "No"}` },
+      { title: "Character Details:", content: `Include Characters: ${formData.hasCharacters ? "Yes" : "No"}${formData.hasCharacters ? `\nShow Faces: ${formData.showFaces ? "Yes" : "No"}\nNumber of Characters: ${formData.characterCount}` : ""}` },
+      { title: "Style:", content: formData.style || "Not selected" },
+      { title: "Color Palette:", content: formData.colorPalette || "Not selected" },
+      { title: "Event Deadline:", content: formData.deadline ? format(formData.deadline, "MMMM d, yyyy") : "Not selected" },
+      { title: "Content:", content: formData.content || "No content added" }
+    ];
+
+    sections.forEach((section, index) => {
+      addSection(section.title, section.content);
+      if (index < sections.length - 1) {
+        addSeparator();
+      }
+    });
+
+    // Add additional requests if present
     if (formData.specialRequirements) {
+      addSeparator();
       addSection("Additional Requests:", formData.specialRequirements);
     }
-    addSection("Estimated Price:", calculatePriceRange());
+
+    // Add price at the bottom
+    addSeparator();
+    yPos += lineHeight;
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(primaryColor);
+    doc.setFontSize(14);
+    doc.text("Estimated Price:", leftMargin, yPos);
+    doc.text(calculatePriceRange(), contentStartX, yPos);
 
     doc.save("digital-invitation-details.pdf");
   };
