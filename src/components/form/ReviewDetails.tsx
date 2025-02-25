@@ -27,84 +27,6 @@ interface ReviewDetailsProps {
   };
 }
 
-const PALETTES = [
-  {
-    id: "sunset-glow",
-    name: "Sunset Glow",
-    colors: ["#FF6B6B", "#FFA07A", "#FFD700"],
-  },
-  {
-    id: "desert-elegance",
-    name: "Desert Elegance",
-    colors: ["#D4A373", "#C8B6A6", "#A4907C"],
-  },
-  {
-    id: "serene-sky",
-    name: "Serene Sky",
-    colors: ["#94A3B8", "#818CF8", "#6366F1"],
-  },
-  {
-    id: "mystic-night",
-    name: "Mystic Night",
-    colors: ["#7E22CE", "#1E40AF", "#DB2777"],
-  },
-  {
-    id: "blossom-garden",
-    name: "Blossom Garden",
-    colors: ["#FB7185", "#FB923C", "#38BDF8"],
-  },
-  {
-    id: "minimalistic",
-    name: "Minimalistic",
-    colors: ["#E5E5E5", "#D4D4D4", "#FAFAFA"],
-  },
-  {
-    id: "ocean-breeze",
-    name: "Ocean Breeze",
-    colors: ["#0EA5E9", "#38BDF8", "#7DD3FC"],
-  },
-  {
-    id: "forest-dream",
-    name: "Forest Dream",
-    colors: ["#166534", "#15803D", "#22C55E"],
-  },
-  {
-    id: "lavender-mist",
-    name: "Lavender Mist",
-    colors: ["#C084FC", "#E879F9", "#F0ABFC"],
-  },
-  {
-    id: "golden-hour",
-    name: "Golden Hour",
-    colors: ["#F59E0B", "#FBBF24", "#FCD34D"],
-  },
-  {
-    id: "rose-garden",
-    name: "Rose Garden",
-    colors: ["#BE123C", "#E11D48", "#FB7185"],
-  },
-  {
-    id: "midnight-jazz",
-    name: "Midnight Jazz",
-    colors: ["#312E81", "#4338CA", "#6366F1"],
-  },
-  {
-    id: "autumn-leaves",
-    name: "Autumn Leaves",
-    colors: ["#B45309", "#D97706", "#F59E0B"],
-  },
-  {
-    id: "spring-bloom",
-    name: "Spring Bloom",
-    colors: ["#059669", "#10B981", "#34D399"],
-  },
-  {
-    id: "coral-reef",
-    name: "Coral Reef",
-    colors: ["#DB2777", "#EC4899", "#F472B6"],
-  },
-];
-
 export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
   const toTitleCase = (str: string) => {
     return str.replace(/\w\S*/g, (txt) => {
@@ -116,36 +38,6 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
     if (!date) return "Not selected";
     const formattedDate = format(date, "MMMM d, yyyy");
     return isUrgent ? `${formattedDate} (Urgent Delivery)` : formattedDate;
-  };
-
-  const renderColorCircle = (color: string) => (
-    <div
-      key={color}
-      style={{ backgroundColor: color }}
-      className="inline-block w-6 h-6 rounded-full border border-gray-200 mr-2"
-    />
-  );
-
-  const renderColorPalette = (paletteId: string) => {
-    if (paletteId.startsWith('custom-')) {
-      const colors = paletteId.split('-').slice(1);
-      return (
-        <div className="flex items-center gap-2">
-          {colors.map(renderColorCircle)}
-          <span className="text-gray-600">(Custom Palette)</span>
-        </div>
-      );
-    }
-
-    const palette = PALETTES.find(p => p.id === paletteId);
-    if (!palette) return "Not selected";
-
-    return (
-      <div className="flex items-center gap-2">
-        {palette.colors.map(renderColorCircle)}
-        <span className="text-gray-600">({palette.name})</span>
-      </div>
-    );
   };
 
   const calculatePriceRange = () => {
@@ -237,7 +129,7 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
 
     doc.setFontSize(10);
 
-    const addSection = (title: string, content: React.ReactNode) => {
+    const addSection = (title: string, content: string) => {
       doc.setFillColor(245, 240, 230);
       doc.rect(leftMargin, yPos - 4, contentWidth, lineHeight + 6, 'F');
       
@@ -247,13 +139,7 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
       
       doc.setFont('helvetica', 'normal');
       doc.setTextColor('#000000');
-      
-      const contentString = typeof content === 'string' ? content : 
-        content && typeof content === 'object' && 'props' in content ? 
-          `Selected palette with ${content.props.children.length} colors` : 
-          'Not selected';
-          
-      const lines = doc.splitTextToSize(contentString, contentWidth - 60);
+      const lines = doc.splitTextToSize(content, contentWidth - 60);
       doc.text(lines, contentStartX, yPos);
       yPos += lineHeight * (lines.length + 1);
     };
@@ -268,9 +154,7 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
       { title: "Content:", content: formData.content.split("\n\nVideo Idea:")[0].split("\n\nAdditional Requests:")[0] },
       { title: "Style:", content: toTitleCase(formData.style || "Not Selected") },
       { title: "Animation Styles:", content: toTitleCase(formData.animationStyles.join(", ") || "Not Selected") },
-      { title: "Color Palette:", content: <div className="flex items-center gap-2">
-        {formData.colorPalette ? renderColorPalette(formData.colorPalette) : "Not selected"}
-      </div> },
+      { title: "Color Palette:", content: toTitleCase(formData.colorPalette || "Not Selected") },
       { title: "Event Deadline:", content: formatDeadline(formData.deadline, formData.isUrgent || false) },
       { title: "Additional Requests:", content: formData.content.match(/Additional Requests:\n([\s\S]*?)$/)?.[1] || "None" }
     ];
@@ -406,7 +290,7 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
         
         {renderSection("Color Palette", 
           <div className="flex items-center gap-2">
-            {formData.colorPalette ? renderColorPalette(formData.colorPalette) : "Not selected"}
+            <span className="capitalize">{formData.colorPalette || "Not selected"}</span>
           </div>
         )}
         
