@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -21,7 +22,7 @@ export interface InviteFormData {
     stillInvite: boolean;
     logo: boolean;
   };
-  isUrgent?: boolean;
+  isUrgent: boolean;  // Changed from optional to required
 }
 
 export const FORM_STEPS = [
@@ -60,7 +61,7 @@ export const useInviteForm = () => {
       stillInvite: true,
       logo: true,
     },
-    isUrgent: false,
+    isUrgent: false,  // Added default value
   });
 
   const updateFormData = (field: keyof InviteFormData, value: any) => {
