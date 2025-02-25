@@ -2,32 +2,33 @@
 import { useState } from "react";
 import { HexColorPicker } from "react-colorful";
 import { Button } from "../ui/button";
-import { Wand2 } from "lucide-react";
+import { Wand2, Palette } from "lucide-react";
 
 interface ColorPaletteProps {
   selected: string;
   onSelect: (value: string) => void;
 }
 
-// Function to generate a soft/pastel color
+// Function to generate a soft/earthy color
 const generateSoftColor = () => {
-  // Generate higher luminance (pastel) colors with good contrast
-  const hue = Math.floor(Math.random() * 360);
-  const saturation = 25 + Math.random() * 35; // Lower saturation for softness (25-60%)
-  const lightness = 65 + Math.random() * 20; // Higher lightness for pastel effect (65-85%)
-  return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+  const earthyPalette = [
+    // Beiges
+    `hsl(${30 + Math.random() * 10}, ${20 + Math.random() * 10}%, ${85 + Math.random() * 10}%)`,
+    // Greys
+    `hsl(${0}, ${0}%, ${70 + Math.random() * 20}%)`,
+    // Off-whites
+    `hsl(${40 + Math.random() * 20}, ${10 + Math.random() * 5}%, ${90 + Math.random() * 8}%)`,
+    // Olive greens
+    `hsl(${80 + Math.random() * 20}, ${20 + Math.random() * 15}%, ${60 + Math.random() * 15}%)`,
+    // Cool greys
+    `hsl(${210}, ${5 + Math.random() * 10}%, ${75 + Math.random() * 15}%)`
+  ];
+  
+  return earthyPalette[Math.floor(Math.random() * earthyPalette.length)];
 };
 
-// Function to generate contrasting colors in a palette
 const generateContrastingPalette = () => {
-  // Start with a random hue
-  const baseHue = Math.floor(Math.random() * 360);
-  // Generate three colors with good contrast by spacing hues ~120 degrees apart
-  return [
-    generateSoftColor(),
-    `hsl(${(baseHue + 120) % 360}, ${30 + Math.random() * 30}%, ${70 + Math.random() * 15}%)`,
-    `hsl(${(baseHue + 240) % 360}, ${30 + Math.random() * 30}%, ${70 + Math.random() * 15}%)`
-  ];
+  return [generateSoftColor(), generateSoftColor(), generateSoftColor()];
 };
 
 const generateRandomPalette = () => {
@@ -35,7 +36,7 @@ const generateRandomPalette = () => {
   const suffix = RANDOM_PALETTE_SUFFIXES[Math.floor(Math.random() * RANDOM_PALETTE_SUFFIXES.length)];
   return {
     id: `random-${Date.now()}`,
-    name: `${prefix} ${suffix}`,
+    name: `${prefix}\n${suffix}`,
     colors: generateContrastingPalette()
   };
 };
@@ -73,12 +74,13 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
       <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-4">
         {/* Custom Palette Option (Always First) */}
         <div
-          className="flex flex-col items-center space-y-4 cursor-pointer p-4 rounded-lg hover:bg-gray-50 transition-colors"
+          className="flex flex-col items-center space-y-4 cursor-pointer p-4 rounded-lg hover:bg-gray-50 transition-colors border-2 border-dashed border-gray-300 hover:border-gray-400"
           onClick={() => setShowCustomPicker(true)}
         >
           <div className="text-center">
-            <h3 className="font-medium mb-4">Choose Your Own Palette</h3>
-            <div className="flex justify-center gap-3">
+            <h3 className="font-medium mb-2">Choose Your</h3>
+            <h3 className="font-medium mb-4">Own Palette</h3>
+            <div className="flex justify-center gap-3 mb-2">
               {customColors.map((color, index) => (
                 <div
                   key={index}
@@ -87,6 +89,7 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
                 />
               ))}
             </div>
+            <Palette className="w-5 h-5 mx-auto text-gray-400" />
           </div>
         </div>
 
@@ -105,8 +108,12 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
             }}
             className="flex flex-col items-center space-y-4 cursor-pointer p-4 rounded-lg hover:bg-gray-50 transition-colors"
           >
-            <div className="text-center">
-              <h3 className="font-medium mb-4">{palette.name}</h3>
+            <div className="text-center h-full">
+              <div className="mb-4 h-14 flex flex-col justify-center">
+                {palette.name.split('\n').map((line, i) => (
+                  <h3 key={i} className="font-medium leading-tight">{line}</h3>
+                ))}
+              </div>
               <div className="flex justify-center gap-3">
                 {palette.colors.map((color, index) => (
                   <div
