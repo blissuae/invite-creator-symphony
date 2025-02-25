@@ -23,7 +23,8 @@ export const DeliveryFormats = ({
   return <div className="space-y-8 animate-fadeIn">
       <div className="text-center">
         <h2 className="text-2xl font-serif mb-2 text-elegant-brown">Delivery Formats</h2>
-        <p className="text-gray-600 font-serif">Please select the formats you need</p>
+        <p className="text-gray-600 font-serif text-base font-light">Please select all the deliverables you need
+(A minimum of 1 needs to be selected)</p>
       </div>
 
       <div className="space-y-6 max-w-md mx-auto">
