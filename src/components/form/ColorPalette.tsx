@@ -1,8 +1,9 @@
+
 import { useState, useRef } from "react";
 import { HexColorPicker } from "react-colorful";
 import { Button } from "../ui/button";
 import { Wand2, Upload } from "lucide-react";
-import { Vibrant } from "@vibrant/color";
+import * as Vibrant from "@vibrant/color";
 
 interface ColorPaletteProps {
   selected: string;
@@ -111,13 +112,12 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
         img.onload = resolve;
       });
       
-      const vibrant = new Vibrant(img);
-      const swatches = await vibrant.getPalette();
+      const palette = await Vibrant.from(img).getPalette();
       
       const extractedColors = [
-        swatches.Vibrant?.hex || "#000000",
-        swatches.LightVibrant?.hex || "#FFFFFF",
-        swatches.DarkVibrant?.hex || "#444444",
+        palette.Vibrant?.hex || "#000000",
+        palette.LightVibrant?.hex || "#FFFFFF",
+        palette.DarkVibrant?.hex || "#444444",
       ];
 
       setCustomColors(extractedColors);
