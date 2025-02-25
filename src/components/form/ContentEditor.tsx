@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 
 interface ContentEditorProps {
@@ -23,7 +22,6 @@ export const ContentEditor = ({
   const [mainContent, setMainContent] = useState("");
   const [additionalRequests, setAdditionalRequests] = useState("");
 
-  // Initialize states from content when component mounts or when content changes
   useEffect(() => {
     const mainContentPart = content.split("\n\nVideo Idea:")[0].split("\n\nAdditional Requests:")[0];
     setMainContent(mainContentPart === "Content will be shared later." ? "" : mainContentPart);
@@ -45,7 +43,6 @@ export const ContentEditor = ({
     }
   }, [content]);
 
-  // Sync hasVideoIdea with parent component
   useEffect(() => {
     if (initialHasVideoIdea !== undefined && initialHasVideoIdea !== hasVideoIdea) {
       setHasVideoIdea(initialHasVideoIdea);
