@@ -121,13 +121,13 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
 
     try {
       const imageUrl = URL.createObjectURL(file);
-      const vibrant = new Vibrant.default(imageUrl);
-      const palette = await vibrant.getPalette();
+      const vibrantInstance = new Vibrant(imageUrl);
+      const swatches = await vibrantInstance.getPalette();
       
       const extractedColors = [
-        palette.Vibrant?.hex || "#000000",
-        palette.LightVibrant?.hex || "#FFFFFF",
-        palette.DarkVibrant?.hex || "#444444",
+        swatches.Vibrant?.hex || "#000000",
+        swatches.LightVibrant?.hex || "#FFFFFF",
+        swatches.DarkVibrant?.hex || "#444444",
       ];
 
       setCustomColors(extractedColors);
