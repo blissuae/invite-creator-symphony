@@ -41,9 +41,8 @@ export const CharacterOptions = ({
 
         {/* Show Faces Selection - Conditional */}
         {formData.hasCharacters && <div className="space-y-4">
-            <h3 className="text-lg font-serif text-elegant-brown text-center">
-              Do you want to show their faces?
-            </h3>
+            <h3 className="text-lg font-serif text-elegant-brown text-center">Do you want us to draw the faces?
+Note: If selected yes, we'd need photos as reference to draw human faces.</h3>
             <div className="flex justify-center gap-4">
               <button onClick={() => onChange("showFaces", true)} className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-all ${formData.showFaces ? "bg-elegant-primary text-white" : "border border-elegant-secondary hover:border-elegant-primary"}`}>
                 <Check className="w-5 h-5" />
