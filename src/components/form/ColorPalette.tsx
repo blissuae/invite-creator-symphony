@@ -1,8 +1,8 @@
-
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { HexColorPicker } from "react-colorful";
 import { Button } from "../ui/button";
-import { Wand2 } from "lucide-react";
+import { Wand2, Upload } from "lucide-react";
+import { Vibrant } from "@vibrant/color";
 
 interface ColorPaletteProps {
   selected: string;
@@ -91,9 +91,42 @@ const RANDOM_PALETTE_PREFIXES = ["Celestial", "Enchanted", "Mystic", "Dreamy", "
 const RANDOM_PALETTE_SUFFIXES = ["Dreams", "Whispers", "Harmony", "Symphony", "Vision", "Melody", "Wonder"];
 
 export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
+  const [showCustomPalette, setShowCustomPalette] = useState(false);
+  const [showPhotoUpload, setShowPhotoUpload] = useState(false);
   const [customColors, setCustomColors] = useState(["#000000", "#000000", "#000000"]);
   const [currentColorIndex, setCurrentColorIndex] = useState<number | null>(null);
   const [customPaletteName, setCustomPaletteName] = useState("Custom Palette");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const imageUrl = URL.createObjectURL(file);
+      const img = new Image();
+      img.src = imageUrl;
+      
+      await new Promise((resolve) => {
+        img.onload = resolve;
+      });
+      
+      const vibrant = new Vibrant(img);
+      const swatches = await vibrant.getPalette();
+      
+      const extractedColors = [
+        swatches.Vibrant?.hex || "#000000",
+        swatches.LightVibrant?.hex || "#FFFFFF",
+        swatches.DarkVibrant?.hex || "#444444",
+      ];
+
+      setCustomColors(extractedColors);
+      setCustomPaletteName(`Colors from ${file.name}`);
+      URL.revokeObjectURL(imageUrl);
+    } catch (error) {
+      console.error('Error extracting colors:', error);
+    }
+  };
 
   const generateRandomPalette = () => {
     const prefix = RANDOM_PALETTE_PREFIXES[Math.floor(Math.random() * RANDOM_PALETTE_PREFIXES.length)];
