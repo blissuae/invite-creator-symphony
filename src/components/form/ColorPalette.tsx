@@ -8,30 +8,29 @@ interface ColorPaletteProps {
   onSelect: (value: string) => void;
 }
 
-// Function to generate a soft/earthy color
+// Function to convert HSL to Hex
+const hslToHex = (h: number, s: number, l: number): string => {
+  l /= 100;
+  const a = s * Math.min(l, 1 - l) / 100;
+  const f = (n: number) => {
+    const k = (n + h / 30) % 12;
+    const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+    return Math.round(255 * color).toString(16).padStart(2, '0');
+  };
+  return `#${f(0)}${f(8)}${f(4)}`;
+};
+
+// Function to generate a soft/earthy color in hex format
 const generateSoftColor = () => {
   const earthyPalette = [
-    // Beiges
-    `hsl(${30 + Math.random() * 10}, ${20 + Math.random() * 10}%, ${85 + Math.random() * 10}%)`,
-    `hsl(${35 + Math.random() * 15}, ${15 + Math.random() * 15}%, ${80 + Math.random() * 15}%)`,
-    // Greys
-    `hsl(${0}, ${0}%, ${70 + Math.random() * 20}%)`,
-    `hsl(${0}, ${0}%, ${60 + Math.random() * 30}%)`,
-    // Off-whites
-    `hsl(${40 + Math.random() * 20}, ${10 + Math.random() * 5}%, ${90 + Math.random() * 8}%)`,
-    `hsl(${45 + Math.random() * 15}, ${5 + Math.random() * 10}%, ${92 + Math.random() * 6}%)`,
-    // Olive greens
-    `hsl(${80 + Math.random() * 20}, ${20 + Math.random() * 15}%, ${60 + Math.random() * 15}%)`,
-    `hsl(${90 + Math.random() * 30}, ${15 + Math.random() * 20}%, ${65 + Math.random() * 20}%)`,
-    // Cool greys
-    `hsl(${210}, ${5 + Math.random() * 10}%, ${75 + Math.random() * 15}%)`,
-    `hsl(${200}, ${10 + Math.random() * 15}%, ${70 + Math.random() * 20}%)`,
-    // Warm greys
-    `hsl(${30}, ${5 + Math.random() * 10}%, ${80 + Math.random() * 15}%)`,
-    // Soft blues
-    `hsl(${210 + Math.random() * 20}, ${20 + Math.random() * 15}%, ${80 + Math.random() * 10}%)`,
-    // Sage greens
-    `hsl(${100 + Math.random() * 30}, ${15 + Math.random() * 20}%, ${75 + Math.random() * 15}%)`
+    "#E5D7C9", // Beige
+    "#D4C8BE", // Warm Gray
+    "#CFCFCF", // Cool Gray
+    "#E8E6E1", // Off-white
+    "#B8B4A9", // Sage
+    "#D5D5D5", // Light Gray
+    "#C7C3BB", // Warm Taupe
+    "#E2DFD7"  // Light Beige
   ];
   
   return earthyPalette[Math.floor(Math.random() * earthyPalette.length)];
@@ -41,17 +40,7 @@ const generateContrastingPalette = () => {
   return [generateSoftColor(), generateSoftColor(), generateSoftColor()];
 };
 
-const RANDOM_PALETTE_PREFIXES = [
-  "Celestial", "Enchanted", "Mystic", "Dreamy", "Crystal", "Royal", "Ethereal",
-  "Gentle", "Tranquil", "Serene", "Peaceful", "Elegant", "Timeless", "Natural",
-  "Earthy", "Modern", "Classic", "Subtle", "Rustic", "Coastal", "Organic"
-];
-
-const RANDOM_PALETTE_SUFFIXES = [
-  "Dreams", "Whispers", "Harmony", "Symphony", "Vision", "Melody", "Wonder",
-  "Essence", "Breeze", "Dawn", "Dusk", "Mist", "Charm", "Grace", "Cloud",
-  "Forest", "Garden", "Haven", "Meadow", "Oasis", "Retreat", "Sanctuary"
-];
+// ... keep existing code (RANDOM_PALETTE_PREFIXES and RANDOM_PALETTE_SUFFIXES)
 
 const generateRandomPalette = () => {
   const prefix = RANDOM_PALETTE_PREFIXES[Math.floor(Math.random() * RANDOM_PALETTE_PREFIXES.length)];
@@ -63,64 +52,7 @@ const generateRandomPalette = () => {
   };
 };
 
-const getInitialCustomColors = (selected: string) => {
-  if (selected && selected.includes("###")) {
-    const [_, colorsStr] = selected.split("###");
-    if (colorsStr) {
-      const colors = colorsStr.split(",");
-      // Ensure exactly 3 colors
-      while (colors.length < 3) {
-        colors.push("#FAFAFA");
-      }
-      return colors.slice(0, 3);
-    }
-  }
-  return ["#E5E5E5", "#D4D4D4", "#FAFAFA"];
-};
-
-// Function to extract dominant colors from an image
-const extractColorsFromImage = (imageElement: HTMLImageElement): Promise<string[]> => {
-  return new Promise((resolve) => {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    
-    if (!ctx) {
-      resolve(["#E5E5E5", "#D4D4D4", "#FAFAFA"]);
-      return;
-    }
-
-    canvas.width = imageElement.width;
-    canvas.height = imageElement.height;
-    ctx.drawImage(imageElement, 0, 0);
-
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-    const colorMap = new Map<string, number>();
-
-    // Sample every 5th pixel for performance
-    for (let i = 0; i < imageData.length; i += 20) {
-      const r = imageData[i];
-      const g = imageData[i + 1];
-      const b = imageData[i + 2];
-      
-      // Convert to hex
-      const hex = `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
-      colorMap.set(hex, (colorMap.get(hex) || 0) + 1);
-    }
-
-    // Sort colors by frequency
-    const sortedColors = Array.from(colorMap.entries())
-      .sort((a, b) => b[1] - a[1])
-      .map(([color]) => color)
-      .slice(0, 3);
-
-    // Ensure we have exactly 3 colors
-    while (sortedColors.length < 3) {
-      sortedColors.push("#FAFAFA");
-    }
-
-    resolve(sortedColors);
-  });
-};
+// ... keep existing code (getInitialCustomColors and extractColorsFromImage functions)
 
 export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
   const [customColors, setCustomColors] = useState(() => getInitialCustomColors(selected));
@@ -129,20 +61,28 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
   const [palettes, setPalettes] = useState(() => 
     Array(8).fill(null).map(generateRandomPalette)
   );
+  const [selectedPaletteId, setSelectedPaletteId] = useState<string | null>(null);
   const [selectedTab, setSelectedTab] = useState<'custom' | 'presets' | 'upload'>('custom');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [uploadedImageName, setUploadedImageName] = useState<string>("");
   const [extractedColors, setExtractedColors] = useState<string[]>([]);
   const [showImageConfirmation, setShowImageConfirmation] = useState(false);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
 
-  // Effect to update customColors when selected value changes
+  // Effect to preserve selected palette when regenerating
   useEffect(() => {
-    const colors = getInitialCustomColors(selected);
-    setCustomColors(colors);
-  }, [selected]);
+    if (selected && selected.includes("###")) {
+      const [_, colorsStr, name] = selected.split("###");
+      const selectedPalette = palettes.find(p => p.name === name);
+      if (selectedPalette) {
+        setSelectedPaletteId(selectedPalette.id);
+      }
+    }
+  }, [selected, palettes]);
 
-  // Handle image upload and color extraction
+  // Handle image upload
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -158,19 +98,47 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
     }
   };
 
-  const handleConfirmImageColors = () => {
-    const paletteValue = `custom###${extractedColors.join(",")}###Uploaded: ${uploadedImageName}`;
-    onSelect(paletteValue);
-    setShowImageConfirmation(false);
-    // Automatically continue to next page
-    document.querySelector('[data-continue]')?.dispatchEvent(
-      new MouseEvent('click', { bubbles: true })
-    );
+  const handleImageClick = (event: React.MouseEvent<HTMLImageElement>) => {
+    const img = imageRef.current;
+    const canvas = canvasRef.current;
+    if (!img || !canvas || currentColorIndex === null) return;
+
+    const rect = img.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Scale coordinates to actual image dimensions
+    const scaleX = img.naturalWidth / rect.width;
+    const scaleY = img.naturalHeight / rect.height;
+    const actualX = x * scaleX;
+    const actualY = y * scaleY;
+
+    // Get color data
+    ctx.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight);
+    const pixel = ctx.getImageData(actualX, actualY, 1, 1).data;
+    const color = `#${pixel[0].toString(16).padStart(2, '0')}${pixel[1].toString(16).padStart(2, '0')}${pixel[2].toString(16).padStart(2, '0')}`;
+
+    // Update color
+    const newColors = [...extractedColors];
+    newColors[currentColorIndex] = color;
+    setExtractedColors(newColors);
   };
 
   // Function to handle clicking on a preset palette
-  const handlePresetClick = (colors: string[], name: string) => {
-    const paletteValue = `custom###${colors.join(",")}###${name}`;
+  const handlePresetClick = (palette: { id: string, colors: string[], name: string }) => {
+    const hexColors = palette.colors.map(color => {
+      if (color.startsWith('hsl')) {
+        const [h, s, l] = color.match(/\d+(\.\d+)?/g)?.map(Number) || [0, 0, 0];
+        return hslToHex(h, s, l);
+      }
+      return color;
+    });
+    
+    setSelectedPaletteId(palette.id);
+    const paletteValue = `custom###${hexColors.join(",")}###${palette.name}`;
     onSelect(paletteValue);
     // Automatically continue to next page
     document.querySelector('[data-continue]')?.dispatchEvent(
@@ -178,14 +146,19 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
     );
   };
 
-  // Highlight selected palette
-  const isSelected = (paletteValue: string) => {
-    return selected === paletteValue;
-  };
-
-  // Function to regenerate palettes
+  // Function to regenerate palettes while preserving selected
   const regeneratePalettes = () => {
-    setPalettes(Array(8).fill(null).map(generateRandomPalette));
+    const selectedPalette = palettes.find(p => p.id === selectedPaletteId);
+    const newPalettes = Array(8).fill(null).map(generateRandomPalette);
+    
+    if (selectedPalette && selectedPaletteId) {
+      const selectedIndex = palettes.findIndex(p => p.id === selectedPaletteId);
+      if (selectedIndex !== -1) {
+        newPalettes[selectedIndex] = selectedPalette;
+      }
+    }
+    
+    setPalettes(newPalettes);
   };
 
   return (
@@ -287,18 +260,21 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
             
             <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-4">
               {palettes.map((palette) => {
-                const adjustedColors = palette.colors.slice(0, 3);
-                while (adjustedColors.length < 3) {
-                  adjustedColors.push("#FAFAFA");
-                }
-                const paletteValue = `custom###${adjustedColors.join(",")}###${palette.name}`;
+                const hexColors = palette.colors.map(color => {
+                  if (color.startsWith('hsl')) {
+                    const [h, s, l] = color.match(/\d+(\.\d+)?/g)?.map(Number) || [0, 0, 0];
+                    return hslToHex(h, s, l);
+                  }
+                  return color;
+                });
+                
                 return (
                   <div
                     key={palette.id}
-                    onClick={() => handlePresetClick(adjustedColors, palette.name)}
+                    onClick={() => handlePresetClick(palette)}
                     className={`flex flex-col items-center space-y-4 cursor-pointer p-4 rounded-lg hover:bg-gray-50 transition-colors border-2 ${
-                      isSelected(paletteValue)
-                        ? "border-elegant-primary"
+                      palette.id === selectedPaletteId
+                        ? "border-elegant-primary border-2"
                         : "border-transparent hover:border-gray-200"
                     }`}
                   >
@@ -309,7 +285,7 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
                         ))}
                       </div>
                       <div className="flex justify-center gap-3">
-                        {adjustedColors.map((color, index) => (
+                        {hexColors.map((color, index) => (
                           <div
                             key={index}
                             style={{ backgroundColor: color }}
@@ -417,11 +393,22 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
                   <h4 className="font-medium">Uploaded Image</h4>
                   <div className="relative aspect-square w-full rounded-lg overflow-hidden border border-gray-200">
                     <img 
+                      ref={imageRef}
                       src={uploadedImage} 
                       alt="Uploaded image"
-                      className="object-cover w-full h-full"
+                      className="object-cover w-full h-full cursor-crosshair"
+                      onClick={handleImageClick}
+                    />
+                    <canvas 
+                      ref={canvasRef} 
+                      className="hidden"
+                      width={imageRef.current?.naturalWidth || 0}
+                      height={imageRef.current?.naturalHeight || 0}
                     />
                   </div>
+                  <p className="text-sm text-gray-500 text-center">
+                    Select a color slot on the right, then click anywhere on the image to pick that color
+                  </p>
                 </div>
 
                 {/* Color Picker */}
@@ -476,7 +463,15 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
                 >
                   Cancel
                 </Button>
-                <Button onClick={handleConfirmImageColors}>
+                <Button onClick={() => {
+                  const paletteValue = `custom###${extractedColors.join(",")}###Uploaded: ${uploadedImageName}`;
+                  onSelect(paletteValue);
+                  setShowImageConfirmation(false);
+                  // Automatically continue to next page
+                  document.querySelector('[data-continue]')?.dispatchEvent(
+                    new MouseEvent('click', { bubbles: true })
+                  );
+                }}>
                   Use These Colors
                 </Button>
               </div>
