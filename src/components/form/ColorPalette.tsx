@@ -223,7 +223,7 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
     setExtractedColors(newColors);
   };
 
-  // Function to handle clicking on a preset palette
+  // Function to handle preset palette selection
   const handlePresetClick = (palette: { id: string, colors: string[], name: string }) => {
     const hexColors = palette.colors.map(color => {
       if (color.startsWith('hsl')) {
@@ -234,6 +234,8 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
     });
     
     setSelectedPaletteId(palette.id);
+    setSelectedTab('custom');
+    setCustomColors(hexColors);
     const paletteValue = `custom###${hexColors.join(",")}###${palette.name}`;
     onSelect(paletteValue);
   };
@@ -251,6 +253,15 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
     }
     
     setPalettes(newPalettes);
+  };
+
+  // Update the image confirmation dialog button handler
+  const handleImageColorsConfirm = () => {
+    setSelectedTab('custom');
+    setCustomColors(extractedColors);
+    const paletteValue = `custom###${extractedColors.join(",")}###Uploaded: ${uploadedImageName}`;
+    onSelect(paletteValue);
+    setShowImageConfirmation(false);
   };
 
   return (
@@ -573,11 +584,7 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
                 >
                   Cancel
                 </Button>
-                <Button onClick={() => {
-                  const paletteValue = `custom###${extractedColors.join(",")}###Uploaded: ${uploadedImageName}`;
-                  onSelect(paletteValue);
-                  setShowImageConfirmation(false);
-                }}>
+                <Button onClick={handleImageColorsConfirm}>
                   Use These Colors
                 </Button>
               </div>
