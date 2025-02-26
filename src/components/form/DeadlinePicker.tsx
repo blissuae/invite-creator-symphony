@@ -87,26 +87,28 @@ export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
               }
             }}
             modifiersStyles={{
-              regular: (date) => ({
+              regular: {
                 backgroundColor: '#fff7ed',
                 color: '#9a3412',
-                fontWeight: '500',
-                ...getSelectedStyle(date)
-              }),
-              discount300: (date) => ({
+                fontWeight: '500'
+              },
+              discount300: {
                 backgroundColor: '#e6f3ff',
                 color: '#1e40af',
-                fontWeight: '500',
-                ...getSelectedStyle(date)
-              }),
-              discount500: (date) => ({
+                fontWeight: '500'
+              },
+              discount500: {
                 backgroundColor: '#e6ffed',
                 color: '#15803d',
-                fontWeight: '500',
-                ...getSelectedStyle(date)
-              })
+                fontWeight: '500'
+              }
             }}
             classNames={{
+              day_selected: (date) => {
+                const discount = getDateDiscount(date);
+                if (!discount) return '';
+                return `!bg-[${discount.selectedBg}] !text-white hover:!bg-[${discount.selectedBg}] hover:!text-white`;
+              },
               day: "h-12 w-12 text-base font-medium transition-all duration-200 hover:opacity-90",
               cell: "h-12 w-12 p-0",
               head_cell: "text-muted-foreground rounded-md w-12 font-normal text-[0.9rem]",
