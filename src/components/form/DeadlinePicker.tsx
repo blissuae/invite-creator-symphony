@@ -1,6 +1,6 @@
 
 import { Calendar } from "@/components/ui/calendar";
-import { addDays } from "date-fns";
+import { addDays, startOfDay } from "date-fns";
 import { Wand2 } from "lucide-react";
 import {
   Tooltip,
@@ -15,18 +15,19 @@ interface DeadlinePickerProps {
 }
 
 export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
-  const minDate = addDays(new Date(), 15);
-  const discountDate25 = addDays(new Date(), 25);
-  const discountDate50 = addDays(new Date(), 50);
+  const today = startOfDay(new Date());
+  const minDate = addDays(today, 15);
+  const discountDate25 = addDays(today, 25);
+  const discountDate50 = addDays(today, 50);
 
   const getDateDiscount = (date: Date) => {
-    const daysFromNow = Math.floor((date.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+    const compareDate = startOfDay(date);
     
-    if (daysFromNow >= 50) {
+    if (compareDate >= discountDate50) {
       return { amount: 500, label: "500 AED OFF!", color: "green" };
-    } else if (daysFromNow >= 25) {
+    } else if (compareDate >= discountDate25) {
       return { amount: 300, label: "300 AED OFF!", color: "blue" };
-    } else if (daysFromNow >= 15) {
+    } else if (compareDate >= minDate) {
       return { amount: 0, label: "Regular price", color: "orange" };
     }
     return null;
@@ -71,7 +72,7 @@ export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
               },
               discount500: { 
                 from: discountDate50,
-                to: addDays(new Date(), 365) // Extend green dates for a year
+                to: addDays(today, 365) // Extend green dates for a year
               }
             }}
             modifiersStyles={{
@@ -92,8 +93,8 @@ export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
               }
             }}
             classNames={{
-              day_selected: "bg-[#8b7256] text-white hover:bg-[#8b7256] hover:text-white focus:bg-[#8b7256] focus:text-white",
-              day: "h-12 w-12 text-base font-medium",
+              day_selected: "bg-[#8b7256] text-white hover:bg-[#8b7256] hover:text-white focus:bg-[#8b7256] focus:text-white ring-2 ring-[#8b7256] ring-offset-2",
+              day: "h-12 w-12 text-base font-medium transition-all duration-200",
               cell: "h-12 w-12 p-0",
               head_cell: "text-muted-foreground rounded-md w-12 font-normal text-[0.9rem]",
               nav_button: "h-9 w-9",
