@@ -236,10 +236,6 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
     setSelectedPaletteId(palette.id);
     const paletteValue = `custom###${hexColors.join(",")}###${palette.name}`;
     onSelect(paletteValue);
-    // Automatically continue to next page
-    document.querySelector('[data-continue]')?.dispatchEvent(
-      new MouseEvent('click', { bubbles: true })
-    );
   };
 
   // Function to regenerate palettes while preserving selected
@@ -487,10 +483,6 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
                     const paletteValue = `custom###${adjustedColors.slice(0, 3).join(",")}###Custom Palette`;
                     onSelect(paletteValue);
                     setShowCustomPicker(false);
-                    // Automatically continue to next page
-                    document.querySelector('[data-continue]')?.dispatchEvent(
-                      new MouseEvent('click', { bubbles: true })
-                    );
                   }}
                 >
                   Use This Palette
@@ -585,10 +577,6 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
                   const paletteValue = `custom###${extractedColors.join(",")}###Uploaded: ${uploadedImageName}`;
                   onSelect(paletteValue);
                   setShowImageConfirmation(false);
-                  // Automatically continue to next page
-                  document.querySelector('[data-continue]')?.dispatchEvent(
-                    new MouseEvent('click', { bubbles: true })
-                  );
                 }}>
                   Use These Colors
                 </Button>

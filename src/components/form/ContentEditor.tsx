@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { Star, BookOpen, Heart, Sparkles, MessageCircle } from "lucide-react";
@@ -41,8 +40,14 @@ export const ContentEditor = ({
   onChange
 }: ContentEditorProps) => {
   const [hasVideoText, setHasVideoText] = useState(false);
-  const randomFact = CONTENT_FACTS[Math.floor(Math.random() * CONTENT_FACTS.length)];
-  const FactIcon = randomFact.icon;
+  
+  const { randomFact, FactIcon } = useMemo(() => {
+    const fact = CONTENT_FACTS[Math.floor(Math.random() * CONTENT_FACTS.length)];
+    return {
+      randomFact: fact,
+      FactIcon: fact.icon
+    };
+  }, []); // Empty dependency array means this only runs once when component mounts
 
   return (
     <div className="space-y-8 animate-fadeIn">

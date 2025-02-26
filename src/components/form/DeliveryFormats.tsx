@@ -1,6 +1,7 @@
-
 import { Checkbox } from "../ui/checkbox";
 import { Label } from "../ui/label";
+import { Star, Film, Layout, Package, Award } from "react-icons/fa";
+import { useMemo } from "react";
 
 interface DeliveryFormatsProps {
   formData: {
@@ -25,12 +26,33 @@ export const DeliveryFormats = ({
   };
 
   const DELIVERY_FACTS = [
-    "90% of our clients choose all 3 formats for maximum impact!",
-    "Videos generate 4X more engagement compared to still photos.",
-    "Having all formats ensures your content looks perfect across all platforms.",
-    "A complete package helps maintain consistent branding across different media.",
-    "Professional logos add credibility to your brand presence."
+    {
+      text: "90% of our clients choose all 3 formats for maximum impact!",
+      icon: Star
+    },
+    {
+      text: "Videos generate 4X more engagement compared to still photos.",
+      icon: Film
+    },
+    {
+      text: "Having all formats ensures your content looks perfect across all platforms.",
+      icon: Layout
+    },
+    {
+      text: "A complete package helps maintain consistent branding across different media.",
+      icon: Package
+    },
+    {
+      text: "Professional logos add credibility to your brand presence.",
+      icon: Award
+    }
   ];
+
+  const randomFact = useMemo(() => {
+    return DELIVERY_FACTS[Math.floor(Math.random() * DELIVERY_FACTS.length)];
+  }, []);
+
+  const FactIcon = randomFact.icon;
 
   return <div className="space-y-8 animate-fadeIn">
       <div className="text-center">
@@ -40,10 +62,16 @@ export const DeliveryFormats = ({
       </div>
 
       {/* Random Fact Display */}
-      <div className="bg-elegant-beige/20 p-4 rounded-lg mb-8">
-        <p className="text-sm text-gray-600 italic">
-          {DELIVERY_FACTS[Math.floor(Math.random() * DELIVERY_FACTS.length)]}
-        </p>
+      <div className="bg-[#b8860b] p-6 rounded-lg border border-[#b8860b]/20 shadow-sm">
+        <div className="flex items-start gap-4">
+          <div className="p-2 bg-[#b8860b]/20 rounded-full">
+            <FactIcon className="w-5 h-5 text-white" />
+          </div>
+          <p className="text-sm text-white flex-1">
+            <span className="font-semibold">DID YOU KNOW: </span>
+            {randomFact.text}
+          </p>
+        </div>
       </div>
 
       <div className="space-y-6 max-w-md mx-auto">
