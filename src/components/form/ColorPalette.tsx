@@ -39,6 +39,26 @@ const RANDOM_PALETTE_SUFFIXES = [
   "Vision",
 ];
 
+// Color palettes with more diverse colors
+const SOFT_COLORS = {
+  greens: ["#F2FCE2", "#E2F0D2", "#D4E7C5"],
+  blues: ["#D3E4FD", "#E5EFF9", "#C7DDF2"],
+  yellows: ["#FEF7CD", "#FCF3D9", "#F9ECC7"],
+  oranges: ["#FEC6A1", "#FFDCC7", "#FFE8D9"],
+  purples: ["#F4E6FF", "#EBD6F7", "#E2C6EF"],
+  pinks: ["#FFE6E6", "#FFD6D6", "#FFC7C7"],
+  naturals: ["#E5D7C9", "#D4C8BE", "#CFCFCF"],
+  whites: ["#FDFBF7", "#F7F3EE", "#F2EDE7"]
+};
+
+// Popular and trending tags for palettes
+const FEATURED_PALETTES = {
+  "Ocean\nBreeze": "Popular",
+  "Spring\nMorning": "Trending",
+  "Summer\nGlow": "Popular",
+  "Autumn\nWhisper": "Trending"
+};
+
 // Function to get initial custom colors from the selected value
 const getInitialCustomColors = (selected: string): string[] => {
   if (selected && selected.includes("###")) {
@@ -106,22 +126,15 @@ const extractColorsFromImage = (imageElement: HTMLImageElement): Promise<string[
 
 // Function to generate a soft/earthy color in hex format
 const generateSoftColor = () => {
-  const earthyPalette = [
-    "#E5D7C9", // Beige
-    "#D4C8BE", // Warm Gray
-    "#CFCFCF", // Cool Gray
-    "#E8E6E1", // Off-white
-    "#B8B4A9", // Sage
-    "#D5D5D5", // Light Gray
-    "#C7C3BB", // Warm Taupe
-    "#E2DFD7"  // Light Beige
-  ];
-  
-  return earthyPalette[Math.floor(Math.random() * earthyPalette.length)];
+  const allColors = Object.values(SOFT_COLORS).flat();
+  return allColors[Math.floor(Math.random() * allColors.length)];
 };
 
 const generateContrastingPalette = () => {
-  return [generateSoftColor(), generateSoftColor(), generateSoftColor()];
+  // Pick a random color family
+  const families = Object.keys(SOFT_COLORS);
+  const family = families[Math.floor(Math.random() * families.length)];
+  return SOFT_COLORS[family as keyof typeof SOFT_COLORS];
 };
 
 const generateRandomPalette = () => {
@@ -246,9 +259,20 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-light mb-8">
-        Choose Your Color Palette
-      </h2>
+      <h2 className="text-2xl font-light mb-8">Choose Your Color Palette</h2>
+      
+      {/* Random fact about colors */}
+      <div className="bg-elegant-beige/20 p-4 rounded-lg mb-8">
+        <p className="text-sm text-gray-600 italic">
+          {[
+            "80% of users love choosing subtle tones such as beige, white and off-white for an elegant look.",
+            "Pastel colors work beautifully for newborn baby-related videos.",
+            "Wedding videos often use colors that match the event's theme and decorations.",
+            "Subtle earth tones create a timeless and sophisticated look.",
+            "Color psychology shows that soft, muted colors create a sense of calm and elegance."
+          ][Math.floor(Math.random() * 5)]}
+        </p>
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         {/* Option 1: Custom Palette */}
@@ -351,16 +375,27 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
                   return color;
                 });
                 
+                const badge = FEATURED_PALETTES[palette.name];
+                
                 return (
                   <div
                     key={palette.id}
                     onClick={() => handlePresetClick(palette)}
-                    className={`flex flex-col items-center space-y-4 cursor-pointer p-4 rounded-lg hover:bg-gray-50 transition-colors border-2 ${
+                    className={`relative flex flex-col items-center space-y-4 cursor-pointer p-4 rounded-lg hover:bg-gray-50 transition-colors border-2 ${
                       palette.id === selectedPaletteId
                         ? "border-elegant-primary border-2"
                         : "border-transparent hover:border-gray-200"
                     }`}
                   >
+                    {badge && (
+                      <div className={`absolute -top-2 -right-2 px-2 py-1 rounded-full text-xs font-medium ${
+                        badge === "Popular" 
+                          ? "bg-blue-100 text-blue-700" 
+                          : "bg-orange-100 text-orange-700"
+                      }`}>
+                        {badge}
+                      </div>
+                    )}
                     <div className="text-center h-full">
                       <div className="mb-4 h-14 flex flex-col justify-center">
                         {palette.name.split('\n').map((line, i) => (
