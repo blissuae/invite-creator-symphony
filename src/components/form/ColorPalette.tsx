@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { HexColorPicker } from "react-colorful";
 import { Button } from "../ui/button";
-import { Wand2, Palette } from "lucide-react";
+import { Wand2, Palette, Upload, PaintBucket, Grid } from "lucide-react";
 
 interface ColorPaletteProps {
   selected: string;
@@ -86,6 +86,7 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
   const [palettes, setPalettes] = useState(() => 
     Array(8).fill(null).map(generateRandomPalette)
   );
+  const [selectedTab, setSelectedTab] = useState<'custom' | 'presets' | 'upload'>('custom');
 
   // Effect to update customColors when selected value changes
   useEffect(() => {
@@ -118,80 +119,149 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center mb-8">
-        <h2 className="text-2xl font-light">
-          Choose Your Color Palette
-        </h2>
-        <Button
-          onClick={regeneratePalettes}
-          variant="outline"
-          className="flex items-center gap-2"
-        >
-          <Wand2 className="w-4 h-4" />
-          Generate Palettes
-        </Button>
-      </div>
+      <h2 className="text-2xl font-light mb-8">
+        Choose Your Color Palette
+      </h2>
 
-      <div className="grid gap-6">
-        {/* Custom Palette Option - Full Width */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        {/* Option 1: Custom Palette */}
         <div
-          className={`w-full flex flex-col items-center space-y-4 cursor-pointer p-6 rounded-lg hover:bg-gray-50 transition-colors border-2 ${
-            isSelected(`custom###${customColors.join(",")}###Custom Palette`)
-              ? "border-elegant-primary"
-              : "border-dashed border-gray-300 hover:border-gray-400"
+          onClick={() => setSelectedTab('custom')}
+          className={`p-6 rounded-lg cursor-pointer transition-all ${
+            selectedTab === 'custom' 
+              ? 'bg-elegant-primary/10 border-2 border-elegant-primary' 
+              : 'bg-gray-50 hover:bg-gray-100 border-2 border-transparent'
           }`}
-          onClick={() => setShowCustomPicker(true)}
         >
-          <div className="text-center">
-            <h3 className="text-xl font-medium mb-2">Choose Your Own Palette</h3>
-            <p className="text-gray-500 mb-4">Click on any preset below to start with those colors, or create your own</p>
-            <div className="flex justify-center gap-6 mb-2">
-              {customColors.map((color, index) => (
-                <div
-                  key={index}
-                  style={{ backgroundColor: color }}
-                  className="w-12 h-12 rounded-full border border-gray-200"
-                />
-              ))}
-            </div>
-            <Palette className="w-6 h-6 mx-auto text-gray-400 mt-4" />
+          <div className="flex flex-col items-center text-center gap-3">
+            <PaintBucket className={`w-8 h-8 ${selectedTab === 'custom' ? 'text-elegant-primary' : 'text-gray-500'}`} />
+            <h3 className="font-medium">Choose Your Own</h3>
+            <p className="text-sm text-gray-500">Pick colors manually using the color picker</p>
           </div>
         </div>
 
-        {/* Grid of Generated Palettes */}
-        <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-4">
-          {palettes.map((palette) => {
-            const adjustedColors = palette.colors.slice(0, 3);
-            while (adjustedColors.length < 3) {
-              adjustedColors.push("#FAFAFA");
-            }
-            const paletteValue = `custom###${adjustedColors.join(",")}###${palette.name}`;
-            return (
-              <div
-                key={palette.id}
-                onClick={() => handlePresetClick(adjustedColors)}
-                className="flex flex-col items-center space-y-4 cursor-pointer p-4 rounded-lg hover:bg-gray-50 transition-colors border-2 border-transparent hover:border-gray-200"
-              >
-                <div className="text-center h-full">
-                  <div className="mb-4 h-14 flex flex-col justify-center">
-                    {palette.name.split('\n').map((line, i) => (
-                      <h3 key={i} className="font-medium leading-tight">{line}</h3>
-                    ))}
-                  </div>
-                  <div className="flex justify-center gap-3">
-                    {adjustedColors.map((color, index) => (
-                      <div
-                        key={index}
-                        style={{ backgroundColor: color }}
-                        className="w-8 h-8 rounded-full border border-gray-200"
-                      />
-                    ))}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+        {/* Option 2: Preset Palettes */}
+        <div
+          onClick={() => setSelectedTab('presets')}
+          className={`p-6 rounded-lg cursor-pointer transition-all ${
+            selectedTab === 'presets' 
+              ? 'bg-elegant-primary/10 border-2 border-elegant-primary' 
+              : 'bg-gray-50 hover:bg-gray-100 border-2 border-transparent'
+          }`}
+        >
+          <div className="flex flex-col items-center text-center gap-3">
+            <Grid className={`w-8 h-8 ${selectedTab === 'presets' ? 'text-elegant-primary' : 'text-gray-500'}`} />
+            <h3 className="font-medium">Choose from Presets</h3>
+            <p className="text-sm text-gray-500">Select from our curated color palettes</p>
+          </div>
         </div>
+
+        {/* Option 3: Upload Photo */}
+        <div
+          onClick={() => setSelectedTab('upload')}
+          className={`p-6 rounded-lg cursor-pointer transition-all ${
+            selectedTab === 'upload' 
+              ? 'bg-elegant-primary/10 border-2 border-elegant-primary' 
+              : 'bg-gray-50 hover:bg-gray-100 border-2 border-transparent'
+          }`}
+        >
+          <div className="flex flex-col items-center text-center gap-3">
+            <Upload className={`w-8 h-8 ${selectedTab === 'upload' ? 'text-elegant-primary' : 'text-gray-500'}`} />
+            <h3 className="font-medium">Extract from Photo</h3>
+            <p className="text-sm text-gray-500">Generate palette from an image</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid gap-6">
+        {selectedTab === 'custom' && (
+          /* Custom Palette Option */
+          <div
+            className={`w-full flex flex-col items-center space-y-4 cursor-pointer p-6 rounded-lg hover:bg-gray-50 transition-colors border-2 ${
+              isSelected(`custom###${customColors.join(",")}###Custom Palette`)
+                ? "border-elegant-primary"
+                : "border-dashed border-gray-300 hover:border-gray-400"
+            }`}
+            onClick={() => setShowCustomPicker(true)}
+          >
+            <div className="text-center">
+              <h3 className="text-xl font-medium mb-2">Choose Your Own Palette</h3>
+              <p className="text-gray-500 mb-4">Click the circles below to pick your colors</p>
+              <div className="flex justify-center gap-6 mb-2">
+                {customColors.map((color, index) => (
+                  <div
+                    key={index}
+                    style={{ backgroundColor: color }}
+                    className="w-12 h-12 rounded-full border border-gray-200"
+                  />
+                ))}
+              </div>
+              <Palette className="w-6 h-6 mx-auto text-gray-400 mt-4" />
+            </div>
+          </div>
+        )}
+
+        {selectedTab === 'presets' && (
+          <div className="space-y-6">
+            <div className="flex justify-end">
+              <Button
+                onClick={regeneratePalettes}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <Wand2 className="w-4 h-4" />
+                Generate New Palettes
+              </Button>
+            </div>
+            
+            <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-4">
+              {palettes.map((palette) => {
+                const adjustedColors = palette.colors.slice(0, 3);
+                while (adjustedColors.length < 3) {
+                  adjustedColors.push("#FAFAFA");
+                }
+                const paletteValue = `custom###${adjustedColors.join(",")}###${palette.name}`;
+                return (
+                  <div
+                    key={palette.id}
+                    onClick={() => handlePresetClick(adjustedColors)}
+                    className="flex flex-col items-center space-y-4 cursor-pointer p-4 rounded-lg hover:bg-gray-50 transition-colors border-2 border-transparent hover:border-gray-200"
+                  >
+                    <div className="text-center h-full">
+                      <div className="mb-4 h-14 flex flex-col justify-center">
+                        {palette.name.split('\n').map((line, i) => (
+                          <h3 key={i} className="font-medium leading-tight">{line}</h3>
+                        ))}
+                      </div>
+                      <div className="flex justify-center gap-3">
+                        {adjustedColors.map((color, index) => (
+                          <div
+                            key={index}
+                            style={{ backgroundColor: color }}
+                            className="w-8 h-8 rounded-full border border-gray-200"
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {selectedTab === 'upload' && (
+          <div className="flex flex-col items-center justify-center p-12 border-2 border-dashed border-gray-300 rounded-lg">
+            <Upload className="w-12 h-12 text-gray-400 mb-4" />
+            <h3 className="text-xl font-medium mb-2">Upload an Image</h3>
+            <p className="text-gray-500 mb-4 text-center">
+              Upload a photo and we'll extract a beautiful color palette from it
+            </p>
+            <Button variant="outline">
+              Choose Image
+            </Button>
+          </div>
+        )}
 
         {/* Custom Palette Picker Dialog */}
         {showCustomPicker && (
