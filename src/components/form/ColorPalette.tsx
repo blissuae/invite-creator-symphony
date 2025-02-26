@@ -270,7 +270,7 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
     <div className="space-y-6">
       <h2 className="text-2xl font-light mb-8">Choose Your Color Palette</h2>
       
-      {/* Random fact about colors - Updated styling to match other pages */}
+      {/* Random fact about colors - Keep the consistent styling */}
       <div className="bg-[#b8860b] p-6 rounded-lg border border-[#b8860b]/20 shadow-sm">
         <div className="flex items-start gap-4">
           <div className="p-2 bg-[#b8860b]/20 rounded-full">
@@ -378,73 +378,6 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
                 ))}
               </div>
               <Palette className="w-6 h-6 mx-auto text-gray-400 mt-4" />
-            </div>
-          </div>
-        )}
-
-        {selectedTab === 'presets' && (
-          <div className="space-y-6">
-            <div className="flex justify-end">
-              <Button
-                onClick={regeneratePalettes}
-                variant="outline"
-                className="flex items-center gap-2"
-              >
-                <Wand2 className="w-4 h-4" />
-                Generate New Palettes
-              </Button>
-            </div>
-            
-            <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-4">
-              {palettes.map((palette) => {
-                const hexColors = palette.colors.map(color => {
-                  if (color.startsWith('hsl')) {
-                    const [h, s, l] = color.match(/\d+(\.\d+)?/g)?.map(Number) || [0, 0, 0];
-                    return hslToHex(h, s, l);
-                  }
-                  return color;
-                });
-                
-                const badge = FEATURED_PALETTES[palette.name];
-                
-                return (
-                  <div
-                    key={palette.id}
-                    onClick={() => handlePresetClick(palette)}
-                    className={`relative flex flex-col items-center space-y-4 cursor-pointer p-4 rounded-lg hover:bg-gray-50 transition-colors border-2 ${
-                      palette.id === selectedPaletteId
-                        ? "border-elegant-primary border-2"
-                        : "border-transparent hover:border-gray-200"
-                    }`}
-                  >
-                    {badge && (
-                      <div className={`absolute -top-2 -right-2 px-2 py-1 rounded-full text-xs font-medium ${
-                        badge === "Popular" 
-                          ? "bg-blue-100 text-blue-700" 
-                          : "bg-orange-100 text-orange-700"
-                      }`}>
-                        {badge}
-                      </div>
-                    )}
-                    <div className="text-center h-full">
-                      <div className="mb-4 h-14 flex flex-col justify-center">
-                        {palette.name.split('\n').map((line, i) => (
-                          <h3 key={i} className="font-medium leading-tight">{line}</h3>
-                        ))}
-                      </div>
-                      <div className="flex justify-center gap-3">
-                        {hexColors.map((color, index) => (
-                          <div
-                            key={index}
-                            style={{ backgroundColor: color }}
-                            className="w-8 h-8 rounded-full border border-gray-200"
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
             </div>
           </div>
         )}
