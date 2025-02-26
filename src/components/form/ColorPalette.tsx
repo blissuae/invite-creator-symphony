@@ -168,11 +168,11 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [uploadedImageName, setUploadedImageName] = useState<string>("");
   const [extractedColors, setExtractedColors] = useState<string[]>([]);
-  const [showImageConfirmation, setShowImageConfirmation] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
   const [showMobileColorPicker, setShowMobileColorPicker] = useState(false);
   const [activeMobileColor, setActiveMobileColor] = useState<number | null>(null);
+  const [showImageConfirmation, setShowImageConfirmation] = useState(false);
 
   // Function to check if a palette is selected
   const isSelected = (value: string) => value === selected;
@@ -198,39 +198,9 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
         setExtractedColors(extractedColors);
         setUploadedImage(img.src);
         setUploadedImageName(file.name);
-        setShowImageConfirmation(true);
       };
       img.src = URL.createObjectURL(file);
     }
-  };
-
-  const handleImageClick = (event: React.MouseEvent<HTMLImageElement>) => {
-    const img = imageRef.current;
-    const canvas = canvasRef.current;
-    if (!img || !canvas || currentColorIndex === null) return;
-
-    const rect = img.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    // Scale coordinates to actual image dimensions
-    const scaleX = img.naturalWidth / rect.width;
-    const scaleY = img.naturalHeight / rect.height;
-    const actualX = x * scaleX;
-    const actualY = y * scaleY;
-
-    // Get color data
-    ctx.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight);
-    const pixel = ctx.getImageData(actualX, actualY, 1, 1).data;
-    const color = `#${pixel[0].toString(16).padStart(2, '0')}${pixel[1].toString(16).padStart(2, '0')}${pixel[2].toString(16).padStart(2, '0')}`;
-
-    // Update color
-    const newColors = [...extractedColors];
-    newColors[currentColorIndex] = color;
-    setExtractedColors(newColors);
   };
 
   // Function to handle preset palette selection
@@ -272,6 +242,31 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
     const paletteValue = `custom###${extractedColors.join(",")}###Uploaded: ${uploadedImageName}`;
     onSelect(paletteValue);
     setShowImageConfirmation(false);
+  };
+
+  // Handle image click for color picking
+  const handleImageClick = (event: React.MouseEvent<HTMLImageElement>) => {
+    if (!imageRef.current || !canvasRef.current || currentColorIndex === null) return;
+
+    const rect = imageRef.current.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+
+    const ctx = canvasRef.current.getContext('2d');
+    if (!ctx) return;
+
+    const scaleX = imageRef.current.naturalWidth / rect.width;
+    const scaleY = imageRef.current.naturalHeight / rect.height;
+    const actualX = x * scaleX;
+    const actualY = y * scaleY;
+
+    ctx.drawImage(imageRef.current, 0, 0, imageRef.current.naturalWidth, imageRef.current.naturalHeight);
+    const pixel = ctx.getImageData(actualX, actualY, 1, 1).data;
+    const color = `#${pixel[0].toString(16).padStart(2, '0')}${pixel[1].toString(16).padStart(2, '0')}${pixel[2].toString(16).padStart(2, '0')}`;
+
+    const newColors = [...extractedColors];
+    newColors[currentColorIndex] = color;
+    setExtractedColors(newColors);
   };
 
   return (
@@ -349,29 +344,55 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
 
       <div className="grid gap-6">
         {selectedTab === 'custom' && (
-          <div
-            className={`w-full flex flex-col items-center space-y-4 cursor-pointer p-6 rounded-lg hover:bg-gray-50 transition-colors border-2 ${
-              isSelected(`custom###${customColors.join(",")}###Custom Palette`)
-                ? "border-elegant-primary"
-                : "border-dashed border-gray-300 hover:border-gray-400"
-            }`}
-            onClick={() => setShowCustomPicker(true)}
-          >
-            <div className="text-center">
-              <h3 className="text-xl font-medium mb-2">Choose Your Own Palette</h3>
-              <p className="text-gray-500 mb-4">Click the circles below to pick your colors</p>
-              <div className="flex justify-center gap-6 mb-2">
-                {customColors.map((color, index) => (
-                  <div
-                    key={index}
-                    style={{ backgroundColor: color }}
-                    className="w-12 h-12 rounded-full border border-gray-200"
-                  />
-                ))}
+          <>
+            <div
+              className={`w-full flex flex-col items-center space-y-4 cursor-pointer p-6 rounded-lg hover:bg-gray-50 transition-colors border-2 ${
+                isSelected(`custom###${customColors.join(",")}###Custom Palette`)
+                  ? "border-elegant-primary"
+                  : "border-dashed border-gray-300 hover:border-gray-400"
+              }`}
+            >
+              <div className="text-center">
+                <h3 className="text-xl font-medium mb-2">Choose Your Own Palette</h3>
+                <p className="text-gray-500 mb-4">Click the circles below to pick your colors</p>
+                <div className="flex justify-center gap-6 mb-2">
+                  {customColors.map((color, index) => (
+                    <div
+                      key={index}
+                      onClick={() => {
+                        setCurrentColorIndex(index);
+                        setShowCustomPicker(true);
+                      }}
+                      style={{ backgroundColor: color }}
+                      className="w-12 h-12 rounded-full border border-gray-200 cursor-pointer hover:scale-105 transition-transform"
+                    />
+                  ))}
+                </div>
+                <Palette className="w-6 h-6 mx-auto text-gray-400 mt-4" />
               </div>
-              <Palette className="w-6 h-6 mx-auto text-gray-400 mt-4" />
             </div>
-          </div>
+
+            <Dialog open={showCustomPicker} onOpenChange={setShowCustomPicker}>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Choose Color {currentColorIndex !== null ? currentColorIndex + 1 : ''}</DialogTitle>
+                </DialogHeader>
+                <div className="p-4">
+                  {currentColorIndex !== null && (
+                    <HexColorPicker
+                      color={customColors[currentColorIndex]}
+                      onChange={(color) => {
+                        const newColors = [...customColors];
+                        newColors[currentColorIndex] = color;
+                        setCustomColors(newColors);
+                        onSelect(`custom###${newColors.join(",")}###Custom Palette`);
+                      }}
+                    />
+                  )}
+                </div>
+              </DialogContent>
+            </Dialog>
+          </>
         )}
 
         {selectedTab === 'presets' && (
@@ -477,27 +498,11 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
               </div>
             ) : (
               <div className="space-y-4">
-                <div className="relative aspect-video w-full rounded-lg overflow-hidden border border-gray-200">
-                  <img 
-                    ref={imageRef}
-                    src={uploadedImage} 
-                    alt="Uploaded image"
-                    className="object-cover w-full h-full"
-                    onClick={handleImageClick}
-                  />
-                  <canvas 
-                    ref={canvasRef} 
-                    className="hidden"
-                    width={imageRef.current?.naturalWidth || 0}
-                    height={imageRef.current?.naturalHeight || 0}
-                  />
-                </div>
-
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-3 gap-3 mb-4">
                   {extractedColors.map((color, index) => (
                     <button
                       key={index}
-                      className={`p-3 rounded-lg border-2 transition-all ${
+                      className={`p-2 rounded-lg border-2 transition-all ${
                         currentColorIndex === index ? 'border-elegant-primary' : 'border-transparent'
                       }`}
                       onClick={() => setCurrentColorIndex(index)}
@@ -513,7 +518,29 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
                   ))}
                 </div>
 
-                <div className="flex justify-end gap-2">
+                <p className="text-sm text-gray-500 text-center">
+                  {currentColorIndex !== null 
+                    ? "Now tap anywhere in the image below to pick that color" 
+                    : "Select a color slot above first"}
+                </p>
+
+                <div className="relative aspect-video w-full rounded-lg overflow-hidden border border-gray-200">
+                  <img 
+                    ref={imageRef}
+                    src={uploadedImage} 
+                    alt="Uploaded image"
+                    className="object-cover w-full h-full cursor-crosshair"
+                    onClick={handleImageClick}
+                  />
+                  <canvas 
+                    ref={canvasRef} 
+                    className="hidden"
+                    width={imageRef.current?.naturalWidth || 0}
+                    height={imageRef.current?.naturalHeight || 0}
+                  />
+                </div>
+
+                <div className="flex justify-end gap-2 sticky bottom-0 bg-white p-4 border-t">
                   <Button
                     variant="outline"
                     onClick={() => {
@@ -538,116 +565,6 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
                 </div>
               </div>
             )}
-          </div>
-        )}
-
-        {/* Mobile Color Picker Dialog */}
-        <Dialog open={showMobileColorPicker} onOpenChange={setShowMobileColorPicker}>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle>Choose Color {activeMobileColor !== null ? activeMobileColor + 1 : ''}</DialogTitle>
-            </DialogHeader>
-            <div className="p-4">
-              {activeMobileColor !== null && (
-                <HexColorPicker
-                  color={extractedColors[activeMobileColor]}
-                  onChange={(color) => {
-                    const newColors = [...extractedColors];
-                    newColors[activeMobileColor] = color;
-                    setExtractedColors(newColors);
-                  }}
-                />
-              )}
-            </div>
-          </DialogContent>
-        </Dialog>
-
-        {/* Image Upload Confirmation Dialog */}
-        {showImageConfirmation && uploadedImage && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg max-w-4xl w-full mx-4">
-              <h3 className="font-medium text-center mb-6 text-xl">Confirm Color Palette</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Image Preview */}
-                <div className="space-y-4">
-                  <h4 className="font-medium">Uploaded Image</h4>
-                  <div className="relative aspect-square w-full rounded-lg overflow-hidden border border-gray-200">
-                    <img 
-                      ref={imageRef}
-                      src={uploadedImage} 
-                      alt="Uploaded image"
-                      className="object-cover w-full h-full cursor-crosshair"
-                      onClick={handleImageClick}
-                    />
-                    <canvas 
-                      ref={canvasRef} 
-                      className="hidden"
-                      width={imageRef.current?.naturalWidth || 0}
-                      height={imageRef.current?.naturalHeight || 0}
-                    />
-                  </div>
-                  <p className="text-sm text-gray-500 text-center">
-                    Select a color slot on the right, then click anywhere on the image to pick that color
-                  </p>
-                </div>
-
-                {/* Color Picker */}
-                <div className="space-y-6">
-                  <h4 className="font-medium">Extracted Colors</h4>
-                  <p className="text-sm text-gray-500">Click on any color to adjust it</p>
-                  <div className="flex flex-col gap-6">
-                    {extractedColors.map((color, index) => (
-                      <div key={index} className="flex items-center gap-4">
-                        <div
-                          className={`w-16 h-16 rounded-lg cursor-pointer border-2 ${
-                            currentColorIndex === index ? 'border-elegant-primary' : 'border-gray-200'
-                          }`}
-                          style={{ backgroundColor: color }}
-                          onClick={() => setCurrentColorIndex(index === currentColorIndex ? null : index)}
-                        />
-                        <div className="text-sm">
-                          <div className="font-medium">Color {index + 1}</div>
-                          <div className="text-gray-500 uppercase">{color}</div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {currentColorIndex !== null && (
-                    <div className="mt-6">
-                      <h4 className="font-medium mb-4">Adjust Color</h4>
-                      <HexColorPicker
-                        color={extractedColors[currentColorIndex]}
-                        onChange={(color) => {
-                          const newColors = [...extractedColors];
-                          newColors[currentColorIndex] = color;
-                          setExtractedColors(newColors);
-                        }}
-                      />
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex justify-end gap-4 mt-8">
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setShowImageConfirmation(false);
-                    setUploadedImage(null);
-                    setExtractedColors([]);
-                    if (fileInputRef.current) {
-                      fileInputRef.current.value = '';
-                    }
-                  }}
-                >
-                  Cancel
-                </Button>
-                <Button onClick={handleImageColorsConfirm}>
-                  Use These Colors
-                </Button>
-              </div>
-            </div>
           </div>
         )}
       </div>
