@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { HexColorPicker } from "react-colorful";
 import { Button } from "../ui/button";
 import { Wand2, Palette } from "lucide-react";
@@ -64,15 +65,31 @@ const generateRandomPalette = () => {
 };
 
 export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
-  const [customColors, setCustomColors] = useState(["#E5E5E5", "#D4D4D4", "#FAFAFA"]);
+  // Parse the selected value to get initial custom colors
+  const getInitialCustomColors = () => {
+    if (selected && selected.startsWith("custom###")) {
+      const [_, colorsStr] = selected.split("###");
+      if (colorsStr) {
+        return colorsStr.split(",");
+      }
+    }
+    return ["#E5E5E5", "#D4D4D4", "#FAFAFA"];
+  };
+
+  const [customColors, setCustomColors] = useState(getInitialCustomColors());
   const [currentColorIndex, setCurrentColorIndex] = useState<number | null>(null);
   const [customPaletteName, setCustomPaletteName] = useState("Custom Palette");
-  const [palettes, setPalettes] = useState(Array(8).fill(null).map(generateRandomPalette));
+  const [palettes, setPalettes] = useState(() => Array(8).fill(null).map(generateRandomPalette));
   const [showCustomPicker, setShowCustomPicker] = useState(false);
 
   const regeneratePalettes = () => {
     const newPalettes = Array(8).fill(null).map(generateRandomPalette);
     setPalettes(newPalettes);
+  };
+
+  // Highlight selected palette
+  const isSelected = (paletteValue: string) => {
+    return selected === paletteValue;
   };
 
   return (
@@ -92,9 +109,13 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
       </div>
 
       <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-4">
-        {/* Custom Palette Option (Always First) */}
+        {/* Custom Palette Option */}
         <div
-          className="flex flex-col items-center space-y-4 cursor-pointer p-4 rounded-lg hover:bg-gray-50 transition-colors border-2 border-dashed border-gray-300 hover:border-gray-400"
+          className={`flex flex-col items-center space-y-4 cursor-pointer p-4 rounded-lg hover:bg-gray-50 transition-colors border-2 ${
+            isSelected(`custom###${customColors.join(",")}###Custom Palette`)
+              ? "border-elegant-primary"
+              : "border-dashed border-gray-300 hover:border-gray-400"
+          }`}
           onClick={() => setShowCustomPicker(true)}
         >
           <div className="text-center">
@@ -114,39 +135,45 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
         </div>
 
         {/* Generated Palettes */}
-        {palettes.map((palette) => (
-          <div
-            key={palette.id}
-            onClick={() => {
-              const paletteValue = `${palette.id}###${palette.colors.join(",")}###${palette.name}`;
-              onSelect(paletteValue);
-              setTimeout(() => {
-                const continueButton = document.querySelector(
-                  'button[data-continue]'
-                ) as HTMLButtonElement;
-                continueButton?.click();
-              }, 300);
-            }}
-            className="flex flex-col items-center space-y-4 cursor-pointer p-4 rounded-lg hover:bg-gray-50 transition-colors"
-          >
-            <div className="text-center h-full">
-              <div className="mb-4 h-14 flex flex-col justify-center">
-                {palette.name.split('\n').map((line, i) => (
-                  <h3 key={i} className="font-medium leading-tight">{line}</h3>
-                ))}
-              </div>
-              <div className="flex justify-center gap-3">
-                {palette.colors.map((color, index) => (
-                  <div
-                    key={index}
-                    style={{ backgroundColor: color }}
-                    className="w-8 h-8 rounded-full border border-gray-200"
-                  />
-                ))}
+        {palettes.map((palette) => {
+          const paletteValue = `${palette.id}###${palette.colors.join(",")}###${palette.name}`;
+          return (
+            <div
+              key={palette.id}
+              onClick={() => {
+                onSelect(paletteValue);
+                setTimeout(() => {
+                  const continueButton = document.querySelector(
+                    'button[data-continue]'
+                  ) as HTMLButtonElement;
+                  continueButton?.click();
+                }, 300);
+              }}
+              className={`flex flex-col items-center space-y-4 cursor-pointer p-4 rounded-lg hover:bg-gray-50 transition-colors border-2 ${
+                isSelected(paletteValue)
+                  ? "border-elegant-primary"
+                  : "border-transparent"
+              }`}
+            >
+              <div className="text-center h-full">
+                <div className="mb-4 h-14 flex flex-col justify-center">
+                  {palette.name.split('\n').map((line, i) => (
+                    <h3 key={i} className="font-medium leading-tight">{line}</h3>
+                  ))}
+                </div>
+                <div className="flex justify-center gap-3">
+                  {palette.colors.map((color, index) => (
+                    <div
+                      key={index}
+                      style={{ backgroundColor: color }}
+                      className="w-8 h-8 rounded-full border border-gray-200"
+                    />
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
 
         {/* Custom Palette Picker Dialog */}
         {showCustomPicker && (

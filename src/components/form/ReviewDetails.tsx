@@ -352,32 +352,18 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
         )}
         
         {renderSection("Selected Palette", 
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col space-y-2">
             {(() => {
               const palette = formatColorPalette(formData.colorPalette);
               return (
-                <div className="flex flex-col space-y-4">
-                  {palette.colors.length > 0 ? (
-                    <>
-                      <div className="flex items-center gap-4">
-                        {palette.colors.map((color, index) => (
-                          <div key={index} className="flex items-center gap-2">
-                            <div
-                              style={{ backgroundColor: color }}
-                              className="w-6 h-6 rounded-full border border-gray-200"
-                            />
-                            <span className="text-sm text-gray-600">{color}</span>
-                          </div>
-                        ))}
-                      </div>
-                      <div className="text-elegant-brown font-medium">
-                        {palette.name}
-                      </div>
-                    </>
-                  ) : (
-                    <div className="text-gray-500">No palette selected</div>
-                  )}
-                </div>
+                <>
+                  <div className="text-elegant-brown font-medium">
+                    {palette.name}
+                  </div>
+                  <div className="text-gray-600">
+                    {palette.colors.join(", ")}
+                  </div>
+                </>
               );
             })()}
           </div>
