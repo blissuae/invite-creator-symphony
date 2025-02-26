@@ -1,3 +1,4 @@
+
 import { Calendar } from "@/components/ui/calendar";
 import { addDays, startOfDay } from "date-fns";
 import { Wand2 } from "lucide-react";
@@ -76,25 +77,19 @@ export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
             }}
             modifiersStyles={{
               regular: {
-                '&:not([aria-selected="true"])': {
-                  backgroundColor: '#fff7ed',
-                  color: '#9a3412',
-                  fontWeight: '500'
-                }
+                backgroundColor: selected ? undefined : '#fff7ed',
+                color: selected ? undefined : '#9a3412',
+                fontWeight: '500'
               },
               discount300: {
-                '&:not([aria-selected="true"])': {
-                  backgroundColor: '#e6f3ff',
-                  color: '#1e40af',
-                  fontWeight: '500'
-                }
+                backgroundColor: selected ? undefined : '#e6f3ff',
+                color: selected ? undefined : '#1e40af',
+                fontWeight: '500'
               },
               discount500: {
-                '&:not([aria-selected="true"])': {
-                  backgroundColor: '#e6ffed',
-                  color: '#15803d',
-                  fontWeight: '500'
-                }
+                backgroundColor: selected ? undefined : '#e6ffed',
+                color: selected ? undefined : '#15803d',
+                fontWeight: '500'
               }
             }}
             classNames={{
