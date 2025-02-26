@@ -269,6 +269,15 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
     setExtractedColors(newColors);
   };
 
+  // Function to handle using extracted colors
+  const handleUseExtractedColors = () => {
+    const paletteValue = `custom###${extractedColors.join(",")}###Uploaded: ${uploadedImageName}`;
+    onSelect(paletteValue);
+    setCustomColors(extractedColors); // Update the custom palette
+    setSelectedTab('custom');
+    window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top where custom palette is
+  };
+
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-light mb-8">Choose Your Color Palette</h2>
@@ -498,70 +507,78 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
               </div>
             ) : (
               <div className="space-y-4">
-                <div className="grid grid-cols-3 gap-3 mb-4">
-                  {extractedColors.map((color, index) => (
-                    <button
-                      key={index}
-                      className={`p-2 rounded-lg border-2 transition-all ${
-                        currentColorIndex === index ? 'border-elegant-primary' : 'border-transparent'
-                      }`}
-                      onClick={() => setCurrentColorIndex(index)}
-                    >
-                      <div
-                        className="w-full aspect-square rounded-md"
-                        style={{ backgroundColor: color }}
+                <div className="grid md:grid-cols-2 gap-6">
+                  {/* Left side - Color slots */}
+                  <div className="space-y-4 order-2 md:order-1">
+                    <div className="grid grid-cols-3 md:grid-cols-1 gap-3">
+                      {extractedColors.map((color, index) => (
+                        <button
+                          key={index}
+                          className={`p-2 rounded-lg border-2 transition-all ${
+                            currentColorIndex === index ? 'border-elegant-primary' : 'border-transparent'
+                          }`}
+                          onClick={() => setCurrentColorIndex(index)}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div
+                              className="w-12 h-12 rounded-md"
+                              style={{ backgroundColor: color }}
+                            />
+                            <p className="hidden md:block text-sm font-mono uppercase">
+                              {color}
+                            </p>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+
+                    <p className="text-sm text-gray-500 text-center md:text-left">
+                      {currentColorIndex !== null 
+                        ? "Now tap anywhere in the image to pick that color" 
+                        : "Select a color slot first"}
+                    </p>
+
+                    <div className="flex flex-col md:flex-row gap-2 mt-4">
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setUploadedImage(null);
+                          setExtractedColors([]);
+                          if (fileInputRef.current) {
+                            fileInputRef.current.value = '';
+                          }
+                        }}
+                        className="w-full md:w-auto"
+                      >
+                        Try Another Photo
+                      </Button>
+                      <Button
+                        onClick={handleUseExtractedColors}
+                        className="w-full md:w-auto"
+                      >
+                        Use These Colors
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Right side - Image */}
+                  <div className="order-1 md:order-2">
+                    <div className="relative aspect-video md:aspect-square w-full rounded-lg overflow-hidden border border-gray-200">
+                      <img 
+                        ref={imageRef}
+                        src={uploadedImage} 
+                        alt="Uploaded image"
+                        className="object-cover w-full h-full cursor-crosshair"
+                        onClick={handleImageClick}
                       />
-                      <p className="text-xs text-center mt-1 font-mono uppercase">
-                        {color}
-                      </p>
-                    </button>
-                  ))}
-                </div>
-
-                <p className="text-sm text-gray-500 text-center">
-                  {currentColorIndex !== null 
-                    ? "Now tap anywhere in the image below to pick that color" 
-                    : "Select a color slot above first"}
-                </p>
-
-                <div className="relative aspect-video w-full rounded-lg overflow-hidden border border-gray-200">
-                  <img 
-                    ref={imageRef}
-                    src={uploadedImage} 
-                    alt="Uploaded image"
-                    className="object-cover w-full h-full cursor-crosshair"
-                    onClick={handleImageClick}
-                  />
-                  <canvas 
-                    ref={canvasRef} 
-                    className="hidden"
-                    width={imageRef.current?.naturalWidth || 0}
-                    height={imageRef.current?.naturalHeight || 0}
-                  />
-                </div>
-
-                <div className="flex justify-end gap-2 sticky bottom-0 bg-white p-4 border-t">
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setUploadedImage(null);
-                      setExtractedColors([]);
-                      if (fileInputRef.current) {
-                        fileInputRef.current.value = '';
-                      }
-                    }}
-                  >
-                    Try Another Photo
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      const paletteValue = `custom###${extractedColors.join(",")}###Uploaded: ${uploadedImageName}`;
-                      onSelect(paletteValue);
-                      setSelectedTab('custom');
-                    }}
-                  >
-                    Use These Colors
-                  </Button>
+                      <canvas 
+                        ref={canvasRef} 
+                        className="hidden"
+                        width={imageRef.current?.naturalWidth || 0}
+                        height={imageRef.current?.naturalHeight || 0}
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
