@@ -16,6 +16,7 @@ import { FORM_STEPS, useInviteForm } from "@/hooks/use-invite-form";
 export const InviteForm = () => {
   const {
     currentStep,
+    maxStep,
     isSubmitted,
     formData,
     updateFormData,
@@ -26,7 +27,7 @@ export const InviteForm = () => {
   } = useInviteForm();
 
   const handleStepClick = (step: number) => {
-    if (step <= currentStep) {
+    if (step <= maxStep) {
       setCurrentStep(step);
     }
   };
@@ -123,7 +124,8 @@ export const InviteForm = () => {
     <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-elegant-secondary/20 overflow-hidden animate-fadeIn flex flex-col h-[calc(100vh-12rem)]">
       <FormProgress 
         steps={FORM_STEPS} 
-        currentStep={currentStep} 
+        currentStep={currentStep}
+        maxStep={maxStep}
         onStepClick={handleStepClick}
       />
       <div className="flex flex-col flex-1 overflow-hidden">

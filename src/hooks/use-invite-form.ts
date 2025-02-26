@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -41,6 +40,7 @@ export const FORM_STEPS = [
 
 export const useInviteForm = () => {
   const [currentStep, setCurrentStep] = useState(0);
+  const [maxStep, setMaxStep] = useState(0);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { toast } = useToast();
   const [formData, setFormData] = useState<InviteFormData>({
@@ -161,6 +161,7 @@ export const useInviteForm = () => {
 
     if (currentStep < FORM_STEPS.length - 1) {
       setCurrentStep(currentStep + 1);
+      setMaxStep(Math.max(maxStep, currentStep + 1));
     }
   };
 
@@ -219,6 +220,7 @@ Special Requirements: ${formData.specialRequirements}
 
   return {
     currentStep,
+    maxStep,
     isSubmitted,
     formData,
     updateFormData,

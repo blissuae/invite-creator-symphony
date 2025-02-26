@@ -41,6 +41,8 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
   };
 
   const formatColorPalette = (paletteId: string) => {
+    if (!paletteId) return { name: "No Palette Selected", colors: [] };
+
     if (paletteId.startsWith('custom-')) {
       const colors = paletteId.split('-').slice(1);
       return {
@@ -52,7 +54,8 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
     const parts = paletteId.split('-');
     if (parts.length >= 4) {
       const name = parts.slice(3).join('-').replace(/_/g, ' ');
-      const colors = parts[2]?.split('_') || ['#E5E5E5', '#D4D4D4', '#FAFAFA'];
+      const colorStr = parts[2] || '';
+      const colors = colorStr.split('_');
       return {
         name,
         colors
@@ -61,7 +64,7 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
     
     return {
       name: "Selected Palette",
-      colors: ['#E5E5E5', '#D4D4D4', '#FAFAFA']
+      colors: []
     };
   };
 
@@ -191,7 +194,7 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
       { title: "Instagram ID:", content: toTitleCase(formData.instagramId || "Not Provided") },
       { title: "Occasion:", content: toTitleCase(formData.occasion === "Other" ? formData.customOccasion : formData.occasion) },
       { title: "Delivery Formats:", content: `Video: ${formData.deliveryFormats.videoInvite ? "Yes" : "No"}, Still: ${formData.deliveryFormats.stillInvite ? "Yes" : "No"}, Logo: ${formData.deliveryFormats.logo ? "Yes" : "No"}` },
-      { title: "Character Details:", content: toTitleCase(`Characters: ${formData.hasCharacters ? "Yes" : "No"}${formData.hasCharacters ? `, Faces: ${formData.showFaces ? "Yes" : "No"}${formData.showFaces ? `, Count: ${formData.characterCount}` : ""}` : ""}`) },
+      { title: "Character Details:", content: toTitleCase(`Characters: ${formData.hasCharacters ? "Yes" : "No"}${formData.hasCharacters ? `, Faces: ${formData.showFaces ? "Yes" : "No"}` : ""}`) },
       { title: "Video Idea:", content: formData.hasVideoIdea ? formData.videoIdea : "No specific idea provided" },
       { title: "Content:", content: formData.content.split("\n\nVideo Idea:")[0].split("\n\nAdditional Requests:")[0] },
       { title: "Style:", content: toTitleCase(formData.style || "Not Selected") },
@@ -354,20 +357,26 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
               const palette = formatColorPalette(formData.colorPalette);
               return (
                 <div className="flex flex-col space-y-4">
-                  <div className="flex items-center gap-4">
-                    {palette.colors.map((color, index) => (
-                      <div key={index} className="flex items-center gap-2">
-                        <div
-                          style={{ backgroundColor: color }}
-                          className="w-6 h-6 rounded-full border border-gray-200"
-                        />
-                        <span className="text-sm text-gray-600">{color}</span>
+                  {palette.colors.length > 0 ? (
+                    <>
+                      <div className="flex items-center gap-4">
+                        {palette.colors.map((color, index) => (
+                          <div key={index} className="flex items-center gap-2">
+                            <div
+                              style={{ backgroundColor: color }}
+                              className="w-6 h-6 rounded-full border border-gray-200"
+                            />
+                            <span className="text-sm text-gray-600">{color}</span>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                  <div className="text-elegant-brown font-medium">
-                    {palette.name}
-                  </div>
+                      <div className="text-elegant-brown font-medium">
+                        {palette.name}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="text-gray-500">No palette selected</div>
+                  )}
                 </div>
               );
             })()}
