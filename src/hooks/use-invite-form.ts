@@ -23,7 +23,6 @@ export interface InviteFormData {
     stillInvite: boolean;
     logo: boolean;
   };
-  isUrgent: boolean;
 }
 
 export const FORM_STEPS = [
@@ -64,8 +63,7 @@ export const useInviteForm = () => {
       videoInvite: true,
       stillInvite: true,
       logo: true,
-    },
-    isUrgent: false,
+    }
   });
 
   const updateFormData = (field: keyof InviteFormData, value: any) => {

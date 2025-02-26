@@ -21,7 +21,6 @@ interface ReviewDetailsProps {
       stillInvite: boolean;
       logo: boolean;
     };
-    isUrgent: boolean;
     hasVideoIdea: boolean;
     videoIdea: string;
   };
@@ -34,10 +33,10 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
     });
   };
 
-  const formatDeadline = (date: Date | null, isUrgent: boolean) => {
+  const formatDeadline = (date: Date | null) => {
     if (!date) return "Not selected";
     const formattedDate = format(date, "MMMM d, yyyy");
-    return isUrgent ? `${formattedDate} (Urgent Delivery)` : formattedDate;
+    return formattedDate;
   };
 
   const formatColorPalette = (paletteId: string) => {
@@ -64,60 +63,75 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
   };
 
   const calculatePriceRange = () => {
-    let priceRange = "";
+    let baseRange = "";
     
     if (formData.deliveryFormats.videoInvite) {
       if (!formData.hasCharacters) {
-        priceRange = "1500-1800 AED";
+        baseRange = "1800-2100 AED"; // Increased by 300
       } else if (!formData.showFaces) {
-        priceRange = "1800-2000 AED";
+        baseRange = "2100-2300 AED"; // Increased by 300
       } else {
         const characterCount = parseInt(formData.characterCount) || 0;
-        const basePrice = 2000;
+        const basePrice = 2300; // Increased by 300
         const priceIncrement = 200;
         const minPrice = basePrice + (characterCount - 1) * priceIncrement;
         const maxPrice = minPrice + 200;
-        priceRange = `${minPrice}-${maxPrice} AED`;
+        baseRange = `${minPrice}-${maxPrice} AED`;
       }
     } else if (formData.deliveryFormats.stillInvite) {
       if (!formData.hasCharacters || !formData.showFaces) {
-        priceRange = "800 AED";
+        baseRange = "1100 AED"; // Increased by 300
       } else {
         const characterCount = parseInt(formData.characterCount) || 0;
         let price;
         switch (characterCount) {
           case 1:
-            price = 1000;
+            price = 1300; // Increased by 300
             break;
           case 2:
-            price = 1200;
+            price = 1500; // Increased by 300
             break;
           case 3:
-            price = 1300;
+            price = 1600; // Increased by 300
             break;
           default:
-            price = 1400;
+            price = 1700; // Increased by 300
             break;
         }
-        priceRange = `${price} AED`;
+        baseRange = `${price} AED`;
       }
     } else {
       return "Contact us for pricing";
     }
 
-    if (formData.isUrgent) {
-      if (priceRange.includes("-")) {
-        const [min, max] = priceRange.split("-");
-        const minPrice = parseInt(min);
-        const maxPrice = parseInt(max.replace(" AED", ""));
-        priceRange = `${minPrice + 300}-${maxPrice + 300} AED`;
-      } else {
-        const price = parseInt(priceRange.replace(" AED", ""));
-        priceRange = `${price + 300} AED`;
+    // Apply date-based discounts
+    if (formData.deadline) {
+      const days = Math.floor((formData.deadline.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+      let discount = 0;
+      let discountText = "";
+
+      if (days >= 50) {
+        discount = 500;
+        discountText = " (500 AED OFF!)";
+      } else if (days >= 25) {
+        discount = 300;
+        discountText = " (300 AED OFF!)";
+      }
+
+      if (discount > 0) {
+        if (baseRange.includes("-")) {
+          const [min, max] = baseRange.split("-");
+          const minPrice = parseInt(min);
+          const maxPrice = parseInt(max.replace(" AED", ""));
+          baseRange = `${minPrice - discount}-${maxPrice - discount} AED${discountText}`;
+        } else {
+          const price = parseInt(baseRange.replace(" AED", ""));
+          baseRange = `${price - discount} AED${discountText}`;
+        }
       }
     }
 
-    return priceRange;
+    return baseRange;
   };
 
   const renderSection = (title: string, content: React.ReactNode) => (
@@ -214,7 +228,7 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
     addColorPalette();
 
     const remainingSections = [
-      { title: "Event Deadline:", content: formatDeadline(formData.deadline, formData.isUrgent || false) }
+      { title: "Event Deadline:", content: formatDeadline(formData.deadline) }
     ];
 
     remainingSections.forEach((section) => {
@@ -245,18 +259,6 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
     doc.text("Estimated Price:", leftMargin, yPos);
     doc.text(calculatePriceRange(), contentStartX, yPos);
 
-    if (formData.isUrgent) {
-      yPos += lineHeight;
-      doc.setFontSize(9);
-      doc.setTextColor('#666666');
-      doc.text("* 300 AED have been added to the total as urgent delivery charges", leftMargin, yPos);
-    }
-
-    yPos += lineHeight * 3;
-    doc.setFontSize(10);
-    doc.setTextColor('#666666');
-    doc.text("Thanks for filling the form. If you have any questions, please reach out to us at hello@bliss-go.com", leftMargin, yPos);
-
     const fileName = `Bliss-${formData.fullName.replace(/\s+/g, '')}.pdf`;
     doc.save(fileName);
   };
@@ -284,11 +286,6 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
           <div className="text-2xl sm:text-3xl font-medium text-elegant-primary">
             {calculatePriceRange()}
           </div>
-          {formData.isUrgent && (
-            <div className="text-sm text-gray-600 mt-2 italic">
-              300 AED have been added to the total as urgent delivery charges
-            </div>
-          )}
         </div>
       </div>
 
@@ -365,7 +362,7 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
         )}
         
         {renderSection("Event Deadline", 
-          formatDeadline(formData.deadline, formData.isUrgent || false)
+          formatDeadline(formData.deadline)
         )}
         
         {renderSection("Invitation Content", 

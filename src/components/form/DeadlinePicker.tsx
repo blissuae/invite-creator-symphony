@@ -1,18 +1,25 @@
 
 import { Calendar } from "@/components/ui/calendar";
 import { addDays } from "date-fns";
-import { Checkbox } from "../ui/checkbox";
-import { Label } from "../ui/label";
 
 interface DeadlinePickerProps {
   selected: Date | null;
   onSelect: (date: Date | null) => void;
-  isUrgent: boolean;
-  onUrgentChange: (checked: boolean) => void;
 }
 
-export const DeadlinePicker = ({ selected, onSelect, isUrgent, onUrgentChange }: DeadlinePickerProps) => {
-  const minDate = addDays(new Date(), isUrgent ? 14 : 25);
+export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
+  const minDate = addDays(new Date(), 15); // Minimum 15 days from today
+  const discountDate25 = addDays(new Date(), 25); // 300 AED discount starts
+  const discountDate50 = addDays(new Date(), 50); // 500 AED discount starts
+
+  const getDateDiscount = (date: Date) => {
+    if (date >= discountDate50) {
+      return { amount: 500, label: "500 AED OFF!" };
+    } else if (date >= discountDate25) {
+      return { amount: 300, label: "300 AED OFF!" };
+    }
+    return null;
+  };
 
   return (
     <div className="space-y-6">
@@ -27,24 +34,58 @@ export const DeadlinePicker = ({ selected, onSelect, isUrgent, onUrgentChange }:
           className="rounded-md border shadow-sm"
           disabled={{ before: minDate }}
           fromDate={minDate}
+          modifiers={{
+            discount300: { from: discountDate25, to: addDays(discountDate50, -1) },
+            discount500: { from: discountDate50 }
+          }}
+          modifiersStyles={{
+            discount300: {
+              textDecoration: 'underline',
+              textDecorationStyle: 'dotted',
+              textDecorationColor: '#22c55e'
+            },
+            discount500: {
+              textDecoration: 'underline',
+              textDecorationStyle: 'dotted',
+              textDecorationColor: '#3b82f6'
+            }
+          }}
+          components={{
+            DayContent: ({ date }) => {
+              const discount = getDateDiscount(date);
+              return (
+                <div className="relative w-full h-full flex items-center justify-center">
+                  <span>{date.getDate()}</span>
+                  {discount && (
+                    <div 
+                      className={`absolute -top-7 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs font-medium px-1.5 py-0.5 rounded ${
+                        discount.amount === 500 
+                          ? 'bg-blue-100 text-blue-700' 
+                          : 'bg-green-100 text-green-700'
+                      }`}
+                    >
+                      {discount.label}
+                    </div>
+                  )}
+                </div>
+              );
+            }
+          }}
         />
       </div>
-      <p className="text-sm text-gray-500 text-center">
-        {isUrgent 
-          ? "Express delivery requires minimum 14 days processing time"
-          : "We require a minimum of 25 days to create your perfect invitation"}
+      <p className="text-sm text-gray-500 text-center max-w-md mx-auto">
+        {selected ? (
+          getDateDiscount(selected) ? (
+            <span className="text-green-600 font-medium">
+              You'll get {getDateDiscount(selected)?.label} on this date! 🎉
+            </span>
+          ) : (
+            "Select a later date to get up to 500 AED discount!"
+          )
+        ) : (
+          "We require a minimum of 15 days to create your perfect invitation"
+        )}
       </p>
-
-      <div className="flex items-start space-x-3 p-4 bg-elegant-beige/20 rounded-lg border border-elegant-secondary/20">
-        <Checkbox 
-          id="urgent"
-          checked={isUrgent}
-          onCheckedChange={(checked) => onUrgentChange(checked as boolean)}
-        />
-        <Label htmlFor="urgent" className="text-sm leading-tight cursor-pointer">
-          Urgent delivery? We can deliver in 2 weeks time (depending on availability) with an additional charges.
-        </Label>
-      </div>
     </div>
   );
 };

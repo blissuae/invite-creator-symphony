@@ -95,8 +95,6 @@ export const InviteForm = () => {
           <DeadlinePicker
             selected={formData.deadline}
             onSelect={(value) => updateFormData("deadline", value)}
-            isUrgent={formData.isUrgent || false}
-            onUrgentChange={(value) => updateFormData("isUrgent", value)}
           />
         );
       case 8:
