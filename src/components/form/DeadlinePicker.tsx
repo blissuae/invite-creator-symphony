@@ -1,6 +1,13 @@
 
 import { Calendar } from "@/components/ui/calendar";
 import { addDays } from "date-fns";
+import { Wand2 } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface DeadlinePickerProps {
   selected: Date | null;
@@ -8,9 +15,9 @@ interface DeadlinePickerProps {
 }
 
 export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
-  const minDate = addDays(new Date(), 15); // Minimum 15 days from today
-  const discountDate25 = addDays(new Date(), 25); // 300 AED discount starts
-  const discountDate50 = addDays(new Date(), 50); // 500 AED discount starts
+  const minDate = addDays(new Date(), 15);
+  const discountDate25 = addDays(new Date(), 25);
+  const discountDate50 = addDays(new Date(), 50);
 
   const getDateDiscount = (date: Date) => {
     if (date >= discountDate50) {
@@ -26,53 +33,68 @@ export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
       <h2 className="text-2xl font-light text-center mb-8">
         Choose Your Deadline
       </h2>
-      <div className="flex justify-center">
-        <Calendar
-          mode="single"
-          selected={selected}
-          onSelect={onSelect}
-          className="rounded-md border shadow-sm"
-          disabled={{ before: minDate }}
-          fromDate={minDate}
-          modifiers={{
-            discount300: { from: discountDate25, to: addDays(discountDate50, -1) },
-            discount500: { from: discountDate50 }
-          }}
-          modifiersStyles={{
-            discount300: {
-              textDecoration: 'underline',
-              textDecorationStyle: 'dotted',
-              textDecorationColor: '#22c55e'
-            },
-            discount500: {
-              textDecoration: 'underline',
-              textDecorationStyle: 'dotted',
-              textDecorationColor: '#3b82f6'
-            }
-          }}
-          components={{
-            DayContent: ({ date }) => {
-              const discount = getDateDiscount(date);
-              return (
-                <div className="relative w-full h-full flex items-center justify-center">
-                  <span>{date.getDate()}</span>
-                  {discount && (
-                    <div 
-                      className={`absolute -top-7 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs font-medium px-1.5 py-0.5 rounded ${
-                        discount.amount === 500 
-                          ? 'bg-blue-100 text-blue-700' 
-                          : 'bg-green-100 text-green-700'
-                      }`}
-                    >
-                      {discount.label}
-                    </div>
-                  )}
-                </div>
-              );
-            }
-          }}
-        />
+
+      {/* Fact Box */}
+      <div className="bg-[#b8860b] p-6 rounded-lg border border-[#b8860b]/20 shadow-sm mb-8">
+        <div className="flex items-start gap-4">
+          <div className="p-2 bg-[#b8860b]/20 rounded-full">
+            <Wand2 className="w-5 h-5 text-white" />
+          </div>
+          <p className="text-sm text-white flex-1">
+            <span className="font-semibold">DID YOU KNOW: </span>
+            By booking in advance, you can save up to 500 AED! Dates marked in blue offer a 300 AED discount, while dates in green give you an amazing 500 AED discount. The earlier you book, the more you save!
+          </p>
+        </div>
       </div>
+
+      <TooltipProvider>
+        <div className="flex justify-center">
+          <Calendar
+            mode="single"
+            selected={selected}
+            onSelect={onSelect}
+            className="rounded-md border shadow-sm w-[400px]" // Increased width
+            disabled={{ before: minDate }}
+            fromDate={minDate}
+            modifiers={{
+              discount300: { from: discountDate25, to: addDays(discountDate50, -1) },
+              discount500: { from: discountDate50 }
+            }}
+            modifiersStyles={{
+              discount300: {
+                backgroundColor: '#e6f3ff',
+                color: '#1e40af',
+                fontWeight: '500'
+              },
+              discount500: {
+                backgroundColor: '#e6ffed',
+                color: '#15803d',
+                fontWeight: '500'
+              }
+            }}
+            components={{
+              DayContent: ({ date }) => {
+                const discount = getDateDiscount(date);
+                if (!discount) return <span>{date.getDate()}</span>;
+
+                return (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="w-full h-full flex items-center justify-center">
+                        <span>{date.getDate()}</span>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent className="font-medium">
+                      {discount.label}
+                    </TooltipContent>
+                  </Tooltip>
+                );
+              }
+            }}
+          />
+        </div>
+      </TooltipProvider>
+
       <p className="text-sm text-gray-500 text-center max-w-md mx-auto">
         {selected ? (
           getDateDiscount(selected) ? (

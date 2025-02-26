@@ -283,9 +283,32 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
       <div className="bg-[#8b7256]/10 p-6 rounded-lg border-2 border-[#8b7256]/20 mb-6">
         <div className="text-center">
           <h3 className="text-elegant-brown font-serif text-lg mb-2">Estimated Price Range</h3>
-          <div className="text-2xl sm:text-3xl font-medium text-elegant-primary">
-            {calculatePriceRange()}
-          </div>
+          {(() => {
+            const priceRange = calculatePriceRange();
+            const hasDiscount = priceRange.includes("OFF!");
+            
+            if (hasDiscount) {
+              const [price, discount] = priceRange.split(" (");
+              return (
+                <div className="space-y-2">
+                  <div className="text-2xl sm:text-3xl font-medium text-elegant-primary">
+                    {price}
+                  </div>
+                  <div className="inline-block animate-bounce">
+                    <span className="bg-green-100 text-green-800 text-lg font-semibold px-4 py-1 rounded-full">
+                      {discount.replace(")", "")} 🎉
+                    </span>
+                  </div>
+                </div>
+              );
+            }
+            
+            return (
+              <div className="text-2xl sm:text-3xl font-medium text-elegant-primary">
+                {priceRange}
+              </div>
+            );
+          })()}
         </div>
       </div>
 
