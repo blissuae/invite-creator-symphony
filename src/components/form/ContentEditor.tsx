@@ -1,227 +1,124 @@
-
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { Textarea } from "../ui/textarea";
+import { Button } from "../ui/button";
+import { Upload, Star, BookOpen, Heart, Sparkles, MessageCircle } from "lucide-react";
 
 interface ContentEditorProps {
-  content: string;
-  onChange: (value: string) => void;
-  hasVideoIdea?: boolean;
-  onVideoIdeaChange?: (hasIdea: boolean, idea: string) => void;
+  formData: {
+    content: string;
+    hasReferenceImage: boolean;
+    referenceImage?: File;
+  };
+  onChange: (field: string, value: any) => void;
 }
 
-export const ContentEditor = ({ 
-  content, 
-  onChange,
-  hasVideoIdea: initialHasVideoIdea,
-  onVideoIdeaChange 
+const CONTENT_FACTS = [
+  {
+    text: "Our top-rated videos feature beautiful storytelling that captures hearts and minds!",
+    icon: Star
+  },
+  {
+    text: "Including personal memories and special moments makes your video truly unique.",
+    icon: Heart
+  },
+  {
+    text: "Share your story ideas with us, and we'll bring them to life with creative flair!",
+    icon: Sparkles
+  },
+  {
+    text: "The most engaging videos tell authentic, heartfelt stories that resonate with viewers.",
+    icon: BookOpen
+  },
+  {
+    text: "Your unique story deserves to be told in a way that captivates and inspires.",
+    icon: MessageCircle
+  }
+];
+
+export const ContentEditor = ({
+  formData,
+  onChange
 }: ContentEditorProps) => {
-  const [isContentReady, setIsContentReady] = useState<boolean | null>(
-    content === "Content will be shared later." ? false : content ? true : null
-  );
-  
-  const [hasVideoIdea, setHasVideoIdea] = useState<boolean | null>(null);
-  const [videoIdea, setVideoIdea] = useState("");
-  const [mainContent, setMainContent] = useState("");
-  const [additionalRequests, setAdditionalRequests] = useState("");
+  const [dragActive, setDragActive] = useState(false);
+  const randomFact = CONTENT_FACTS[Math.floor(Math.random() * CONTENT_FACTS.length)];
+  const FactIcon = randomFact.icon;
 
-  useEffect(() => {
-    const mainContentPart = content.split("\n\nVideo Idea:")[0].split("\n\nAdditional Requests:")[0];
-    setMainContent(mainContentPart === "Content will be shared later." ? "" : mainContentPart);
-
-    const videoIdeaMatch = content.match(/Video Idea:\n([\s\S]*?)(?=\n\nAdditional Requests:|$)/);
-    if (videoIdeaMatch) {
-      setVideoIdea(videoIdeaMatch[1]);
+  const handleDrag = function(e: React.DragEvent<HTMLDivElement>) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
     }
-
-    const additionalRequestsMatch = content.match(/Additional Requests:\n([\s\S]*?)$/);
-    if (additionalRequestsMatch) {
-      setAdditionalRequests(additionalRequestsMatch[1]);
-    }
-
-    if (mainContentPart && mainContentPart !== "Content will be shared later.") {
-      setIsContentReady(true);
-    } else if (mainContentPart === "Content will be shared later.") {
-      setIsContentReady(false);
-    }
-  }, [content]);
-
-  useEffect(() => {
-    if (initialHasVideoIdea !== undefined) {
-      setHasVideoIdea(initialHasVideoIdea);
-    }
-  }, [initialHasVideoIdea]);
-
-  const handleVideoIdeaChange = (value: string) => {
-    setVideoIdea(value);
-    onVideoIdeaChange?.(true, value);
-    updateCompleteContent(
-      isContentReady ? mainContent : "Content will be shared later.",
-      value,
-      additionalRequests
-    );
   };
 
-  const handleMainContentChange = (value: string) => {
-    setMainContent(value);
-    updateCompleteContent(value, videoIdea, additionalRequests);
+  const handleDrop = function(e: React.DragEvent<HTMLDivElement>) {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      const file = e.dataTransfer.files[0];
+      onChange("referenceImage", file);
+      onChange("hasReferenceImage", true);
+    }
   };
 
-  const handleAdditionalRequestsChange = (value: string) => {
-    setAdditionalRequests(value);
-    updateCompleteContent(
-      isContentReady ? mainContent : "Content will be shared later.",
-      videoIdea,
-      value
-    );
-  };
-
-  const updateCompleteContent = (main: string, video: string, requests: string) => {
-    let finalContent = main;
-    
-    if (hasVideoIdea && video) {
-      finalContent += "\n\nVideo Idea:\n" + video;
+  const handleChange = function(e: React.ChangeEvent<HTMLInputElement>) {
+    e.preventDefault();
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      onChange("referenceImage", file);
+      onChange("hasReferenceImage", true);
     }
-    
-    if (requests) {
-      finalContent += "\n\nAdditional Requests:\n" + requests;
-    }
-    
-    onChange(finalContent);
   };
 
   return (
-    <div className="space-y-8">
-      <h2 className="text-2xl font-light text-center mb-8">
-        Write Your Message
-      </h2>
-
-      <div className="space-y-6">
-        {/* Video Idea Section */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-medium">
-            Do you have an idea for the video? <span className="text-red-500">*</span>
-          </h3>
-          <div className="flex gap-4">
-            <button
-              onClick={() => {
-                setHasVideoIdea(true);
-                onVideoIdeaChange?.(true, videoIdea);
-                updateCompleteContent(
-                  isContentReady ? mainContent : "Content will be shared later.",
-                  videoIdea,
-                  additionalRequests
-                );
-              }}
-              className={`px-6 py-3 rounded-lg border transition-all ${
-                hasVideoIdea === true
-                  ? "bg-elegant-primary text-white border-elegant-primary"
-                  : "border-elegant-secondary hover:border-elegant-primary"
-              }`}
-            >
-              Yes
-            </button>
-            <button
-              onClick={() => {
-                setHasVideoIdea(false);
-                setVideoIdea("");
-                onVideoIdeaChange?.(false, "");
-                updateCompleteContent(
-                  isContentReady ? mainContent : "Content will be shared later.",
-                  "",
-                  additionalRequests
-                );
-              }}
-              className={`px-6 py-3 rounded-lg border transition-all ${
-                hasVideoIdea === false
-                  ? "bg-elegant-primary text-white border-elegant-primary"
-                  : "border-elegant-secondary hover:border-elegant-primary"
-              }`}
-            >
-              No
-            </button>
+    <div className="space-y-8 animate-fadeIn">
+      {/* Random Fact Display */}
+      <div className="bg-elegant-beige/20 p-6 rounded-lg border border-elegant-secondary/20 shadow-sm">
+        <div className="flex items-start gap-4">
+          <div className="p-2 bg-white rounded-full">
+            <FactIcon className="w-5 h-5 text-elegant-primary" />
           </div>
-        </div>
-
-        {hasVideoIdea === true && (
-          <div className="space-y-4">
-            <textarea
-              value={videoIdea}
-              onChange={(e) => handleVideoIdeaChange(e.target.value)}
-              placeholder="Please describe your video idea..."
-              className="w-full h-32 p-4 rounded-lg border border-form-200 focus:border-black focus:ring-1 focus:ring-black transition-colors resize-none"
-            />
-          </div>
-        )}
-
-        {hasVideoIdea === false && (
-          <p className="text-gray-600 italic">
-            No worries! We'll think of a beautiful idea for you :)
+          <p className="text-sm text-gray-600 italic flex-1">
+            {randomFact.text}
           </p>
-        )}
-
-        <div className="space-y-4">
-          <h3 className="text-lg font-medium">
-            Do you have the writing ready? <span className="text-red-500">*</span>
-          </h3>
-          <div className="flex gap-4">
-            <button
-              onClick={() => {
-                setIsContentReady(true);
-                updateCompleteContent("", videoIdea, additionalRequests);
-              }}
-              className={`px-6 py-3 rounded-lg border transition-all ${
-                isContentReady === true
-                  ? "bg-elegant-primary text-white border-elegant-primary"
-                  : "border-elegant-secondary hover:border-elegant-primary"
-              }`}
-            >
-              Yes
-            </button>
-            <button
-              onClick={() => {
-                setIsContentReady(false);
-                updateCompleteContent("Content will be shared later.", videoIdea, additionalRequests);
-              }}
-              className={`px-6 py-3 rounded-lg border transition-all ${
-                isContentReady === false
-                  ? "bg-elegant-primary text-white border-elegant-primary"
-                  : "border-elegant-secondary hover:border-elegant-primary"
-              }`}
-            >
-              No
-            </button>
-          </div>
         </div>
+      </div>
 
-        {isContentReady === true && (
-          <div className="space-y-4">
-            <textarea
-              value={mainContent}
-              onChange={(e) => handleMainContentChange(e.target.value)}
-              placeholder="Enter the text for your digital invite..."
-              className="w-full h-48 p-4 rounded-lg border border-form-200 focus:border-black focus:ring-1 focus:ring-black transition-colors resize-none"
-            />
-            <p className="text-sm text-gray-500 text-right">
-              {mainContent.length} characters
-            </p>
-          </div>
-        )}
+      <div className="space-y-4">
+        <h3 className="text-lg font-serif text-elegant-brown">Share your story</h3>
+        <Textarea
+          value={formData.content}
+          onChange={e => onChange("content", e.target.value)}
+          placeholder="Tell us your story idea or the message you want to convey..."
+          className="min-h-[200px]"
+        />
+      </div>
 
-        {isContentReady === false && (
-          <p className="text-gray-600 italic">
-            You can share the content with us when it's ready
-          </p>
-        )}
-
-        <div className="space-y-4 pt-6 border-t">
-          <h3 className="text-lg font-medium">
-            Do you have any additional requests? Please add here.
-          </h3>
-          <textarea
-            value={additionalRequests}
-            onChange={(e) => handleAdditionalRequestsChange(e.target.value)}
-            placeholder="Enter any additional requests or special requirements..."
-            className="w-full h-32 p-4 rounded-lg border border-form-200 focus:border-black focus:ring-1 focus:ring-black transition-colors resize-none"
+      <div className="space-y-4">
+        <h3 className="text-lg font-serif text-elegant-brown">Reference Image (Optional)</h3>
+        <p className="text-sm text-gray-500">Upload an image to help us understand your vision better</p>
+        <div 
+          className={`relative flex flex-col items-center justify-center p-8 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${dragActive ? 'bg-gray-50 border-elegant-primary' : 'border-gray-300 hover:border-gray-400'}`}
+          onDragEnter={handleDrag}
+          onDragOver={handleDrag}
+          onDragLeave={handleDrag}
+          onDrop={handleDrop}
+        >
+          <input 
+            type="file" 
+            className="absolute inset-0 opacity-0 w-full h-full cursor-pointer" 
+            onChange={handleChange}
           />
+          <Upload className="w-6 h-6 text-gray-400 mb-2" />
+          <p className="text-sm text-gray-500">Drag and drop an image here, or click to select a file</p>
+          {formData.referenceImage && (
+            <div className="mt-4">
+              <p className="text-sm text-gray-500">Selected File: {formData.referenceImage.name}</p>
+            </div>
+          )}
         </div>
       </div>
     </div>
