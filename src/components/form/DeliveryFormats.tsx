@@ -1,6 +1,7 @@
+
 import { Checkbox } from "../ui/checkbox";
 import { Label } from "../ui/label";
-import { Star, Film, Layout, Package, Award } from "react-icons/fa";
+import { FaStar, FaFilm, FaLayerGroup, FaBox, FaAward } from "react-icons/fa";
 import { useMemo } from "react";
 
 interface DeliveryFormatsProps {
@@ -28,23 +29,23 @@ export const DeliveryFormats = ({
   const DELIVERY_FACTS = [
     {
       text: "90% of our clients choose all 3 formats for maximum impact!",
-      icon: Star
+      icon: FaStar
     },
     {
       text: "Videos generate 4X more engagement compared to still photos.",
-      icon: Film
+      icon: FaFilm
     },
     {
       text: "Having all formats ensures your content looks perfect across all platforms.",
-      icon: Layout
+      icon: FaLayerGroup
     },
     {
       text: "A complete package helps maintain consistent branding across different media.",
-      icon: Package
+      icon: FaBox
     },
     {
       text: "Professional logos add credibility to your brand presence.",
-      icon: Award
+      icon: FaAward
     }
   ];
 
