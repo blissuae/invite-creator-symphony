@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
-import { Upload, Star, BookOpen, Heart, Sparkles, MessageCircle } from "lucide-react";
+import { Star, BookOpen, Heart, Sparkles, MessageCircle } from "lucide-react";
 
 interface ContentEditorProps {
   formData: {
@@ -46,12 +46,13 @@ export const ContentEditor = ({
   return (
     <div className="space-y-8 animate-fadeIn">
       {/* Random Fact Display */}
-      <div className="bg-elegant-beige/20 p-6 rounded-lg border border-elegant-secondary/20 shadow-sm">
+      <div className="bg-[#b8860b] p-6 rounded-lg border border-[#b8860b]/20 shadow-sm">
         <div className="flex items-start gap-4">
-          <div className="p-2 bg-white rounded-full">
-            <FactIcon className="w-5 h-5 text-elegant-primary" />
+          <div className="p-2 bg-[#b8860b]/20 rounded-full">
+            <FactIcon className="w-5 h-5 text-white" />
           </div>
-          <p className="text-sm text-gray-600 italic flex-1">
+          <p className="text-sm text-white flex-1">
+            <span className="font-semibold">DID YOU KNOW: </span>
             {randomFact.text}
           </p>
         </div>
