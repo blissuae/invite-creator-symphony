@@ -33,17 +33,6 @@ export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
     return null;
   };
 
-  const getSelectedStyle = (date: Date) => {
-    if (!selected || !isSameDay(date, selected)) return {};
-    const discount = getDateDiscount(date);
-    if (!discount) return {};
-    
-    return {
-      backgroundColor: discount.selectedBg,
-      color: 'white'
-    };
-  };
-
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-light text-center mb-8">
@@ -104,11 +93,7 @@ export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
               }
             }}
             classNames={{
-              day_selected: (date) => {
-                const discount = getDateDiscount(date);
-                if (!discount) return '';
-                return `!bg-[${discount.selectedBg}] !text-white hover:!bg-[${discount.selectedBg}] hover:!text-white`;
-              },
+              day_selected: "!bg-current !text-white hover:!bg-current hover:!text-white",
               day: "h-12 w-12 text-base font-medium transition-all duration-200 hover:opacity-90",
               cell: "h-12 w-12 p-0",
               head_cell: "text-muted-foreground rounded-md w-12 font-normal text-[0.9rem]",
@@ -123,10 +108,16 @@ export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
                 const discount = getDateDiscount(date);
                 if (!discount) return <span>{date.getDate()}</span>;
 
+                const isSelectedDate = selected && isSameDay(date, selected);
+                const style = isSelectedDate ? { color: 'white', backgroundColor: discount.selectedBg } : {};
+
                 return (
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <div className="w-full h-full flex items-center justify-center">
+                      <div 
+                        className="w-full h-full flex items-center justify-center"
+                        style={style}
+                      >
                         <span>{date.getDate()}</span>
                       </div>
                     </TooltipTrigger>
