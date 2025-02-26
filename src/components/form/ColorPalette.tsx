@@ -87,6 +87,11 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
     Array(8).fill(null).map(generateRandomPalette)
   );
 
+  // Effect to update customColors when selected value changes
+  useEffect(() => {
+    setCustomColors(getInitialCustomColors(selected));
+  }, [selected]);
+
   // Function to handle copying colors from a preset palette
   const handlePresetClick = (colors: string[]) => {
     // Ensure exactly 3 colors when copying from preset
@@ -95,7 +100,9 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
       adjustedColors.push("#FAFAFA");
     }
     setCustomColors(adjustedColors);
-    setShowCustomPicker(true);
+    // Instead of opening the picker, directly select these colors
+    const paletteValue = `custom###${adjustedColors.join(",")}###Custom Palette`;
+    onSelect(paletteValue);
   };
 
   // Highlight selected palette
@@ -157,7 +164,7 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
             while (adjustedColors.length < 3) {
               adjustedColors.push("#FAFAFA");
             }
-            const paletteValue = `${palette.id}###${adjustedColors.join(",")}###${palette.name}`;
+            const paletteValue = `custom###${adjustedColors.join(",")}###${palette.name}`;
             return (
               <div
                 key={palette.id}
@@ -230,12 +237,6 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
                     const paletteValue = `custom###${adjustedColors.slice(0, 3).join(",")}###Custom Palette`;
                     onSelect(paletteValue);
                     setShowCustomPicker(false);
-                    setTimeout(() => {
-                      const continueButton = document.querySelector(
-                        'button[data-continue]'
-                      ) as HTMLButtonElement;
-                      continueButton?.click();
-                    }, 300);
                   }}
                 >
                   Use This Palette
