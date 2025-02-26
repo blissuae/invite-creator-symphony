@@ -56,7 +56,9 @@ const FEATURED_PALETTES = {
   "Ocean\nBreeze": "Popular",
   "Spring\nMorning": "Trending",
   "Summer\nGlow": "Popular",
-  "Autumn\nWhisper": "Trending"
+  "Autumn\nWhisper": "Featured",
+  "Forest\nDream": "Trending",
+  "Desert\nVision": "Popular"
 };
 
 // Function to get initial custom colors from the selected value
@@ -268,67 +270,88 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
     <div className="space-y-6">
       <h2 className="text-2xl font-light mb-8">Choose Your Color Palette</h2>
       
-      {/* Random fact about colors */}
-      <div className="bg-elegant-beige/20 p-4 rounded-lg mb-8">
-        <p className="text-sm text-gray-600 italic">
-          {[
-            "80% of users love choosing subtle tones such as beige, white and off-white for an elegant look.",
-            "Pastel colors work beautifully for newborn baby-related videos.",
-            "Wedding videos often use colors that match the event's theme and decorations.",
-            "Subtle earth tones create a timeless and sophisticated look.",
-            "Color psychology shows that soft, muted colors create a sense of calm and elegance."
-          ][Math.floor(Math.random() * 5)]}
-        </p>
+      {/* Random fact about colors - Updated styling to match other pages */}
+      <div className="bg-[#b8860b] p-6 rounded-lg border border-[#b8860b]/20 shadow-sm">
+        <div className="flex items-start gap-4">
+          <div className="p-2 bg-[#b8860b]/20 rounded-full">
+            <Wand2 className="w-5 h-5 text-white" />
+          </div>
+          <p className="text-sm text-white flex-1">
+            <span className="font-semibold">DID YOU KNOW: </span>
+            {[
+              "80% of users love choosing subtle tones such as beige, white and off-white for an elegant look.",
+              "Pastel colors work beautifully for newborn baby-related videos.",
+              "Wedding videos often use colors that match the event's theme and decorations.",
+              "Subtle earth tones create a timeless and sophisticated look.",
+              "Color psychology shows that soft, muted colors create a sense of calm and elegance."
+            ][Math.floor(Math.random() * 5)]}
+          </p>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        {/* Option 1: Custom Palette */}
-        <div
-          onClick={() => setSelectedTab('custom')}
-          className={`p-6 rounded-lg cursor-pointer transition-all ${
-            selectedTab === 'custom' 
-              ? 'bg-elegant-primary/10 border-2 border-elegant-primary' 
-              : 'bg-gray-50 hover:bg-gray-100 border-2 border-transparent'
-          }`}
-        >
-          <div className="flex flex-col items-center text-center gap-3">
-            <PaintBucket className={`w-8 h-8 ${selectedTab === 'custom' ? 'text-elegant-primary' : 'text-gray-500'}`} />
-            <h3 className="font-medium">Choose Your Own</h3>
-            <p className="text-sm text-gray-500">Pick colors manually using the color picker</p>
-          </div>
-        </div>
-
-        {/* Option 2: Preset Palettes */}
-        <div
-          onClick={() => setSelectedTab('presets')}
-          className={`p-6 rounded-lg cursor-pointer transition-all ${
-            selectedTab === 'presets' 
-              ? 'bg-elegant-primary/10 border-2 border-elegant-primary' 
-              : 'bg-gray-50 hover:bg-gray-100 border-2 border-transparent'
-          }`}
-        >
-          <div className="flex flex-col items-center text-center gap-3">
-            <Grid className={`w-8 h-8 ${selectedTab === 'presets' ? 'text-elegant-primary' : 'text-gray-500'}`} />
-            <h3 className="font-medium">Choose from Presets</h3>
-            <p className="text-sm text-gray-500">Select from our curated color palettes</p>
-          </div>
-        </div>
-
-        {/* Option 3: Upload Photo */}
-        <div
-          onClick={() => setSelectedTab('upload')}
-          className={`p-6 rounded-lg cursor-pointer transition-all ${
-            selectedTab === 'upload' 
-              ? 'bg-elegant-primary/10 border-2 border-elegant-primary' 
-              : 'bg-gray-50 hover:bg-gray-100 border-2 border-transparent'
-          }`}
-        >
-          <div className="flex flex-col items-center text-center gap-3">
-            <Upload className={`w-8 h-8 ${selectedTab === 'upload' ? 'text-elegant-primary' : 'text-gray-500'}`} />
-            <h3 className="font-medium">Extract from Photo</h3>
-            <p className="text-sm text-gray-500">Generate palette from an image</p>
-          </div>
-        </div>
+      <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-4">
+        {palettes.map((palette) => {
+          const hexColors = palette.colors.map(color => {
+            if (color.startsWith('hsl')) {
+              const [h, s, l] = color.match(/\d+(\.\d+)?/g)?.map(Number) || [0, 0, 0];
+              return hslToHex(h, s, l);
+            }
+            return color;
+          });
+          
+          const badge = FEATURED_PALETTES[palette.name];
+          
+          return (
+            <div
+              key={palette.id}
+              onClick={() => handlePresetClick(palette)}
+              className={`relative flex flex-col items-center space-y-4 cursor-pointer p-4 rounded-lg transition-all ${
+                palette.id === selectedPaletteId
+                  ? "border-elegant-primary border-2 bg-elegant-beige/10"
+                  : badge 
+                    ? "border-2 border-gray-200 hover:border-elegant-primary/50 hover:bg-elegant-beige/5 shadow-sm" 
+                    : "border-transparent hover:border-gray-200 hover:bg-gray-50"
+              }`}
+            >
+              {badge && (
+                <div 
+                  className={`absolute -top-2 -right-2 transform rotate-12 px-3 py-1 rounded-full text-xs font-medium shadow-sm ${
+                    badge === "Popular" 
+                      ? "bg-blue-500 text-white" 
+                      : badge === "Trending"
+                        ? "bg-orange-500 text-white"
+                        : "bg-purple-500 text-white"
+                  }`}
+                  style={{
+                    clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%, 10% 50%)"
+                  }}
+                >
+                  {badge}
+                </div>
+              )}
+              <div className="text-center h-full">
+                <div className="mb-4 h-14 flex flex-col justify-center">
+                  {palette.name.split('\n').map((line, i) => (
+                    <h3 key={i} className={`font-medium leading-tight ${badge ? 'text-elegant-primary' : ''}`}>
+                      {line}
+                    </h3>
+                  ))}
+                </div>
+                <div className="flex justify-center gap-3">
+                  {hexColors.map((color, index) => (
+                    <div
+                      key={index}
+                      style={{ backgroundColor: color }}
+                      className={`w-8 h-8 rounded-full border transition-transform hover:scale-110 ${
+                        badge ? 'border-elegant-primary/20 shadow-sm' : 'border-gray-200'
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       <div className="grid gap-6">
