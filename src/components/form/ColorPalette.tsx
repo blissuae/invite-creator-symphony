@@ -1,8 +1,8 @@
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { HexColorPicker } from "react-colorful";
 import { Button } from "../ui/button";
 import { Wand2, Palette, Upload, PaintBucket, Grid } from "lucide-react";
+import { FormNavigation } from "./FormNavigation";
 
 interface ColorPaletteProps {
   selected: string;
@@ -87,12 +87,28 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
     Array(8).fill(null).map(generateRandomPalette)
   );
   const [selectedTab, setSelectedTab] = useState<'custom' | 'presets' | 'upload'>('custom');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Effect to update customColors when selected value changes
   useEffect(() => {
     const colors = getInitialCustomColors(selected);
     setCustomColors(colors);
   }, [selected]);
+
+  // Handle image upload
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // For now, we'll just use a placeholder palette for the uploaded image
+      // In a real implementation, you would analyze the image to extract colors
+      const uploadedPalette = {
+        colors: ["#E5E5E5", "#D4D4D4", "#FAFAFA"],
+        name: file.name
+      };
+      const paletteValue = `custom###${uploadedPalette.colors.join(",")}###Uploaded: ${uploadedPalette.name}`;
+      onSelect(paletteValue);
+    }
+  };
 
   // Function to handle copying colors from a preset palette
   const handlePresetClick = (colors: string[]) => {
@@ -225,7 +241,11 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
                   <div
                     key={palette.id}
                     onClick={() => handlePresetClick(adjustedColors)}
-                    className="flex flex-col items-center space-y-4 cursor-pointer p-4 rounded-lg hover:bg-gray-50 transition-colors border-2 border-transparent hover:border-gray-200"
+                    className={`flex flex-col items-center space-y-4 cursor-pointer p-4 rounded-lg hover:bg-gray-50 transition-colors border-2 ${
+                      isSelected(paletteValue)
+                        ? "border-elegant-primary"
+                        : "border-transparent hover:border-gray-200"
+                    }`}
                   >
                     <div className="text-center h-full">
                       <div className="mb-4 h-14 flex flex-col justify-center">
@@ -252,12 +272,22 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
 
         {selectedTab === 'upload' && (
           <div className="flex flex-col items-center justify-center p-12 border-2 border-dashed border-gray-300 rounded-lg">
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleImageUpload}
+              accept="image/*"
+              className="hidden"
+            />
             <Upload className="w-12 h-12 text-gray-400 mb-4" />
             <h3 className="text-xl font-medium mb-2">Upload an Image</h3>
             <p className="text-gray-500 mb-4 text-center">
               Upload a photo and we'll extract a beautiful color palette from it
             </p>
-            <Button variant="outline">
+            <Button 
+              variant="outline"
+              onClick={() => fileInputRef.current?.click()}
+            >
               Choose Image
             </Button>
           </div>
