@@ -20,10 +20,14 @@ export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
   const discountDate50 = addDays(new Date(), 50);
 
   const getDateDiscount = (date: Date) => {
-    if (date >= discountDate50) {
-      return { amount: 500, label: "500 AED OFF!" };
-    } else if (date >= discountDate25) {
-      return { amount: 300, label: "300 AED OFF!" };
+    const daysFromNow = Math.floor((date.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+    
+    if (daysFromNow >= 50) {
+      return { amount: 500, label: "500 AED OFF!", color: "green" };
+    } else if (daysFromNow >= 25) {
+      return { amount: 300, label: "300 AED OFF!", color: "blue" };
+    } else if (daysFromNow >= 15) {
+      return { amount: 0, label: "Regular price", color: "orange" };
     }
     return null;
   };
@@ -53,14 +57,28 @@ export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
             mode="single"
             selected={selected}
             onSelect={onSelect}
-            className="rounded-md border shadow-sm w-[400px]" // Increased width
+            className="rounded-md border shadow-sm w-[400px]"
             disabled={{ before: minDate }}
             fromDate={minDate}
             modifiers={{
-              discount300: { from: discountDate25, to: addDays(discountDate50, -1) },
-              discount500: { from: discountDate50 }
+              regular: { 
+                from: minDate,
+                to: addDays(discountDate25, -1)
+              },
+              discount300: { 
+                from: discountDate25, 
+                to: addDays(discountDate50, -1)
+              },
+              discount500: { 
+                from: discountDate50 
+              }
             }}
             modifiersStyles={{
+              regular: {
+                backgroundColor: '#fff7ed',
+                color: '#9a3412',
+                fontWeight: '500'
+              },
               discount300: {
                 backgroundColor: '#e6f3ff',
                 color: '#1e40af',
@@ -97,7 +115,7 @@ export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
 
       <p className="text-sm text-gray-500 text-center max-w-md mx-auto">
         {selected ? (
-          getDateDiscount(selected) ? (
+          getDateDiscount(selected)?.amount ? (
             <span className="text-green-600 font-medium">
               You'll get {getDateDiscount(selected)?.label} on this date! 🎉
             </span>

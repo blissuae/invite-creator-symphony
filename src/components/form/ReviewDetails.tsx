@@ -288,11 +288,27 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
             const hasDiscount = priceRange.includes("OFF!");
             
             if (hasDiscount) {
-              const [price, discount] = priceRange.split(" (");
+              const [discountedPrice, discount] = priceRange.split(" (");
+              const [originalPrice] = (() => {
+                if (discountedPrice.includes("-")) {
+                  const [min, max] = discountedPrice.split("-");
+                  const discountAmount = discount.includes("500") ? 500 : 300;
+                  return [`${parseInt(min) + discountAmount}-${parseInt(max.replace(" AED", "")) + discountAmount} AED`];
+                } else {
+                  const discountAmount = discount.includes("500") ? 500 : 300;
+                  return [`${parseInt(discountedPrice.replace(" AED", "")) + discountAmount} AED`];
+                }
+              })();
+              
               return (
-                <div className="space-y-2">
-                  <div className="text-2xl sm:text-3xl font-medium text-elegant-primary">
-                    {price}
+                <div className="space-y-4">
+                  <div className="flex flex-col items-center gap-1">
+                    <span className="text-gray-500 line-through text-lg">
+                      {originalPrice}
+                    </span>
+                    <div className="text-2xl sm:text-3xl font-medium text-elegant-primary">
+                      {discountedPrice}
+                    </div>
                   </div>
                   <div className="inline-block animate-bounce">
                     <span className="bg-green-100 text-green-800 text-lg font-semibold px-4 py-1 rounded-full">
