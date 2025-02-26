@@ -62,13 +62,12 @@ export const InviteForm = () => {
       case 3:
         return (
           <ContentEditor
-            content={formData.content}
-            hasVideoIdea={formData.hasVideoIdea}
-            onChange={(value) => updateFormData("content", value)}
-            onVideoIdeaChange={(hasIdea, idea) => {
-              updateFormData("hasVideoIdea", hasIdea);
-              updateFormData("videoIdea", idea);
+            formData={{
+              content: formData.content,
+              hasReferenceImage: false,
+              referenceImage: undefined
             }}
+            onChange={updateFormData}
           />
         );
       case 4:
