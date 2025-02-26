@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { HexColorPicker } from "react-colorful";
 import { Button } from "../ui/button";
@@ -102,6 +103,11 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
     return selected === paletteValue;
   };
 
+  // Function to regenerate palettes
+  const regeneratePalettes = () => {
+    setPalettes(Array(8).fill(null).map(generateRandomPalette));
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center mb-8">
@@ -109,7 +115,7 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
           Choose Your Color Palette
         </h2>
         <Button
-          onClick={() => regeneratePalettes()}
+          onClick={regeneratePalettes}
           variant="outline"
           className="flex items-center gap-2"
         >
