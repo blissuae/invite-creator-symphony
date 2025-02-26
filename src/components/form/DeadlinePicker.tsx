@@ -1,6 +1,6 @@
 
 import { Calendar } from "@/components/ui/calendar";
-import { addDays, startOfDay } from "date-fns";
+import { addDays, startOfDay, isSameDay } from "date-fns";
 import { Wand2 } from "lucide-react";
 import {
   Tooltip,
@@ -33,8 +33,8 @@ export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
     return null;
   };
 
-  const getSelectedStyle = (date: Date | null) => {
-    if (!date) return {};
+  const getSelectedStyle = (date: Date) => {
+    if (!selected || !isSameDay(date, selected)) return {};
     const discount = getDateDiscount(date);
     if (!discount) return {};
     
@@ -87,24 +87,24 @@ export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
               }
             }}
             modifiersStyles={{
-              regular: {
+              regular: (date) => ({
                 backgroundColor: '#fff7ed',
                 color: '#9a3412',
                 fontWeight: '500',
-                ...(selected && getDateDiscount(selected)?.selectedBg === '#9a3412' ? getSelectedStyle(selected) : {})
-              },
-              discount300: {
+                ...getSelectedStyle(date)
+              }),
+              discount300: (date) => ({
                 backgroundColor: '#e6f3ff',
                 color: '#1e40af',
                 fontWeight: '500',
-                ...(selected && getDateDiscount(selected)?.selectedBg === '#1e40af' ? getSelectedStyle(selected) : {})
-              },
-              discount500: {
+                ...getSelectedStyle(date)
+              }),
+              discount500: (date) => ({
                 backgroundColor: '#e6ffed',
                 color: '#15803d',
                 fontWeight: '500',
-                ...(selected && getDateDiscount(selected)?.selectedBg === '#15803d' ? getSelectedStyle(selected) : {})
-              }
+                ...getSelectedStyle(date)
+              })
             }}
             classNames={{
               day: "h-12 w-12 text-base font-medium transition-all duration-200 hover:opacity-90",
