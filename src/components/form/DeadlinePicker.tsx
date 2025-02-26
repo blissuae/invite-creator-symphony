@@ -24,11 +24,11 @@ export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
     const compareDate = startOfDay(date);
     
     if (compareDate >= discountDate50) {
-      return { amount: 500, label: "500 AED OFF!", color: "green" };
+      return { amount: 500, label: "500 AED OFF!", color: "green", bgColor: "#e6ffed", textColor: "#15803d" };
     } else if (compareDate >= discountDate25) {
-      return { amount: 300, label: "300 AED OFF!", color: "blue" };
+      return { amount: 300, label: "300 AED OFF!", color: "blue", bgColor: "#e6f3ff", textColor: "#1e40af" };
     } else if (compareDate >= minDate) {
-      return { amount: 0, label: "Regular price", color: "orange" };
+      return { amount: 0, label: "Regular price", color: "orange", bgColor: "#fff7ed", textColor: "#9a3412" };
     }
     return null;
   };
@@ -58,7 +58,7 @@ export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
             mode="single"
             selected={selected}
             onSelect={onSelect}
-            className="rounded-md border shadow-sm w-[600px] p-6"
+            className="rounded-md border shadow-sm w-[800px] p-6"
             disabled={{ before: minDate }}
             fromDate={minDate}
             modifiers={{
@@ -72,7 +72,7 @@ export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
               },
               discount500: { 
                 from: discountDate50,
-                to: addDays(today, 365) // Extend green dates for a year
+                to: addDays(today, 365)
               }
             }}
             modifiersStyles={{
@@ -93,7 +93,7 @@ export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
               }
             }}
             classNames={{
-              day_selected: "bg-[#8b7256] text-white hover:bg-[#8b7256] hover:text-white focus:bg-[#8b7256] focus:text-white ring-2 ring-[#8b7256] ring-offset-2",
+              day_selected: "bg-[#222222] text-white hover:bg-[#222222] hover:text-white focus:bg-[#222222] focus:text-white",
               day: "h-12 w-12 text-base font-medium transition-all duration-200",
               cell: "h-12 w-12 p-0",
               head_cell: "text-muted-foreground rounded-md w-12 font-normal text-[0.9rem]",
@@ -117,7 +117,12 @@ export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
                     </TooltipTrigger>
                     <TooltipContent 
                       side="right" 
-                      className="font-medium text-sm bg-white border shadow-lg px-3 py-1.5"
+                      className="font-medium text-sm px-3 py-1.5"
+                      style={{
+                        backgroundColor: discount.bgColor,
+                        color: discount.textColor,
+                        border: `1px solid ${discount.textColor}20`
+                      }}
                     >
                       {discount.label}
                     </TooltipContent>
