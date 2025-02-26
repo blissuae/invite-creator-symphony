@@ -1,4 +1,3 @@
-
 import { Calendar } from "@/components/ui/calendar";
 import { addDays, startOfDay } from "date-fns";
 import { Wand2 } from "lucide-react";
@@ -77,23 +76,29 @@ export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
             }}
             modifiersStyles={{
               regular: {
-                backgroundColor: '#fff7ed',
-                color: '#9a3412',
-                fontWeight: '500'
+                '&:not([aria-selected="true"])': {
+                  backgroundColor: '#fff7ed',
+                  color: '#9a3412',
+                  fontWeight: '500'
+                }
               },
               discount300: {
-                backgroundColor: '#e6f3ff',
-                color: '#1e40af',
-                fontWeight: '500'
+                '&:not([aria-selected="true"])': {
+                  backgroundColor: '#e6f3ff',
+                  color: '#1e40af',
+                  fontWeight: '500'
+                }
               },
               discount500: {
-                backgroundColor: '#e6ffed',
-                color: '#15803d',
-                fontWeight: '500'
+                '&:not([aria-selected="true"])': {
+                  backgroundColor: '#e6ffed',
+                  color: '#15803d',
+                  fontWeight: '500'
+                }
               }
             }}
             classNames={{
-              day_selected: "bg-[#222222] text-white hover:bg-[#222222] hover:text-white focus:bg-[#222222] focus:text-white",
+              day_selected: "!bg-[#222222] !text-white hover:!bg-[#222222] hover:!text-white focus:!bg-[#222222] focus:!text-white",
               day: "h-12 w-12 text-base font-medium transition-all duration-200",
               cell: "h-12 w-12 p-0",
               head_cell: "text-muted-foreground rounded-md w-12 font-normal text-[0.9rem]",
