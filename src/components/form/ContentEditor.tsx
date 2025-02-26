@@ -40,6 +40,7 @@ export const ContentEditor = ({
   formData,
   onChange
 }: ContentEditorProps) => {
+  const [hasVideoText, setHasVideoText] = useState(false);
   const randomFact = CONTENT_FACTS[Math.floor(Math.random() * CONTENT_FACTS.length)];
   const FactIcon = randomFact.icon;
 
@@ -81,24 +82,49 @@ export const ContentEditor = ({
         </div>
       </div>
 
-      <div className="space-y-4">
-        <h3 className="text-lg font-serif text-elegant-brown">Share your story</h3>
-        <Textarea
-          value={formData.content}
-          onChange={e => onChange("content", e.target.value)}
-          placeholder="Tell us your story idea or the message you want to convey..."
-          className="min-h-[200px]"
-        />
-      </div>
-
       {formData.hasVideoIdea && (
         <div className="space-y-4">
-          <h3 className="text-lg font-serif text-elegant-brown">Your Video Idea</h3>
+          <h3 className="text-lg font-serif text-elegant-brown">Share your idea</h3>
           <Textarea
             value={formData.videoIdea || ""}
             onChange={e => onChange("videoIdea", e.target.value)}
-            placeholder="Describe your video idea in detail..."
+            placeholder="Tell us about your video idea in detail..."
             className="min-h-[150px]"
+          />
+        </div>
+      )}
+
+      <div className="space-y-4">
+        <h3 className="text-lg font-serif text-elegant-brown">Do you want to share the text you want in the video?</h3>
+        <div className="flex gap-4">
+          <Button
+            type="button"
+            variant={hasVideoText ? "default" : "outline"}
+            onClick={() => setHasVideoText(true)}
+          >
+            Yes
+          </Button>
+          <Button
+            type="button"
+            variant={!hasVideoText ? "default" : "outline"}
+            onClick={() => {
+              setHasVideoText(false);
+              onChange("content", "");
+            }}
+          >
+            No
+          </Button>
+        </div>
+      </div>
+
+      {hasVideoText && (
+        <div className="space-y-4">
+          <h3 className="text-lg font-serif text-elegant-brown">Your video text</h3>
+          <Textarea
+            value={formData.content}
+            onChange={e => onChange("content", e.target.value)}
+            placeholder="Enter the text you want to appear in your video..."
+            className="min-h-[200px]"
           />
         </div>
       )}
