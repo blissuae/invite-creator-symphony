@@ -49,11 +49,10 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
       };
     }
     
-    // Extract random palette name from the ID
-    const nameParts = paletteId.split('-')[1]?.split('_') || [];
+    const [_, name] = paletteId.split('-');
     return {
-      name: nameParts.join(' '),
-      colors: ['#E5E5E5', '#D4D4D4', '#FAFAFA'] // Default colors if palette not found
+      name: name ? name.split('_').join(' ') : "Selected Palette",
+      colors: ['#E5E5E5', '#D4D4D4', '#FAFAFA']
     };
   };
 
@@ -347,16 +346,18 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
               const palette = formatColorPalette(formData.colorPalette);
               return (
                 <>
-                  <div className="flex gap-2">
+                  <div className="flex items-center gap-4">
                     {palette.colors.map((color, index) => (
-                      <div
-                        key={index}
-                        style={{ backgroundColor: color }}
-                        className="w-6 h-6 rounded-full border border-gray-200"
-                      />
+                      <div key={index} className="flex items-center gap-2">
+                        <div
+                          style={{ backgroundColor: color }}
+                          className="w-6 h-6 rounded-full border border-gray-200"
+                        />
+                        <span className="text-sm text-gray-600">{color}</span>
+                      </div>
                     ))}
                   </div>
-                  <span>{palette.name}</span>
+                  <span className="ml-4">{palette.name}</span>
                 </>
               );
             })()}

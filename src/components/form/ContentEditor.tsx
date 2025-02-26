@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 
 interface ContentEditorProps {
@@ -17,7 +18,7 @@ export const ContentEditor = ({
     content === "Content will be shared later." ? false : content ? true : null
   );
   
-  const [hasVideoIdea, setHasVideoIdea] = useState<boolean | null>(initialHasVideoIdea ?? null);
+  const [hasVideoIdea, setHasVideoIdea] = useState<boolean | null>(null);
   const [videoIdea, setVideoIdea] = useState("");
   const [mainContent, setMainContent] = useState("");
   const [additionalRequests, setAdditionalRequests] = useState("");
