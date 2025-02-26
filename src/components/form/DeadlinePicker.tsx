@@ -57,7 +57,7 @@ export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
             mode="single"
             selected={selected}
             onSelect={onSelect}
-            className="rounded-md border shadow-sm w-[400px]"
+            className="rounded-md border shadow-sm w-[600px] p-6"
             disabled={{ before: minDate }}
             fromDate={minDate}
             modifiers={{
@@ -70,7 +70,8 @@ export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
                 to: addDays(discountDate50, -1)
               },
               discount500: { 
-                from: discountDate50 
+                from: discountDate50,
+                to: addDays(new Date(), 365) // Extend green dates for a year
               }
             }}
             modifiersStyles={{
@@ -90,6 +91,17 @@ export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
                 fontWeight: '500'
               }
             }}
+            classNames={{
+              day_selected: "bg-[#8b7256] text-white hover:bg-[#8b7256] hover:text-white focus:bg-[#8b7256] focus:text-white",
+              day: "h-12 w-12 text-base font-medium",
+              cell: "h-12 w-12 p-0",
+              head_cell: "text-muted-foreground rounded-md w-12 font-normal text-[0.9rem]",
+              nav_button: "h-9 w-9",
+              table: "w-full border-collapse space-y-4",
+              months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
+              caption: "flex justify-center pt-1 relative items-center mb-4",
+              caption_label: "text-base font-medium"
+            }}
             components={{
               DayContent: ({ date }) => {
                 const discount = getDateDiscount(date);
@@ -102,7 +114,10 @@ export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
                         <span>{date.getDate()}</span>
                       </div>
                     </TooltipTrigger>
-                    <TooltipContent className="font-medium">
+                    <TooltipContent 
+                      side="right" 
+                      className="font-medium text-sm bg-white border shadow-lg px-3 py-1.5"
+                    >
                       {discount.label}
                     </TooltipContent>
                   </Tooltip>
