@@ -24,13 +24,24 @@ export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
     const compareDate = startOfDay(date);
     
     if (compareDate >= discountDate50) {
-      return { amount: 500, label: "500 AED OFF!", color: "green", bgColor: "#e6ffed", textColor: "#15803d" };
+      return { amount: 500, label: "500 AED OFF!", color: "green", bgColor: "#e6ffed", textColor: "#15803d", selectedBg: "#15803d" };
     } else if (compareDate >= discountDate25) {
-      return { amount: 300, label: "300 AED OFF!", color: "blue", bgColor: "#e6f3ff", textColor: "#1e40af" };
+      return { amount: 300, label: "300 AED OFF!", color: "blue", bgColor: "#e6f3ff", textColor: "#1e40af", selectedBg: "#1e40af" };
     } else if (compareDate >= minDate) {
-      return { amount: 0, label: "Regular price", color: "orange", bgColor: "#fff7ed", textColor: "#9a3412" };
+      return { amount: 0, label: "Regular price", color: "orange", bgColor: "#fff7ed", textColor: "#9a3412", selectedBg: "#9a3412" };
     }
     return null;
+  };
+
+  const getSelectedStyle = (date: Date | null) => {
+    if (!date) return {};
+    const discount = getDateDiscount(date);
+    if (!discount) return {};
+    
+    return {
+      backgroundColor: discount.selectedBg,
+      color: 'white'
+    };
   };
 
   return (
@@ -77,24 +88,26 @@ export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
             }}
             modifiersStyles={{
               regular: {
-                backgroundColor: selected ? undefined : '#fff7ed',
-                color: selected ? undefined : '#9a3412',
-                fontWeight: '500'
+                backgroundColor: '#fff7ed',
+                color: '#9a3412',
+                fontWeight: '500',
+                ...(selected && getDateDiscount(selected)?.selectedBg === '#9a3412' ? getSelectedStyle(selected) : {})
               },
               discount300: {
-                backgroundColor: selected ? undefined : '#e6f3ff',
-                color: selected ? undefined : '#1e40af',
-                fontWeight: '500'
+                backgroundColor: '#e6f3ff',
+                color: '#1e40af',
+                fontWeight: '500',
+                ...(selected && getDateDiscount(selected)?.selectedBg === '#1e40af' ? getSelectedStyle(selected) : {})
               },
               discount500: {
-                backgroundColor: selected ? undefined : '#e6ffed',
-                color: selected ? undefined : '#15803d',
-                fontWeight: '500'
+                backgroundColor: '#e6ffed',
+                color: '#15803d',
+                fontWeight: '500',
+                ...(selected && getDateDiscount(selected)?.selectedBg === '#15803d' ? getSelectedStyle(selected) : {})
               }
             }}
             classNames={{
-              day_selected: "!bg-[#222222] !text-white hover:!bg-[#222222] hover:!text-white focus:!bg-[#222222] focus:!text-white",
-              day: "h-12 w-12 text-base font-medium transition-all duration-200",
+              day: "h-12 w-12 text-base font-medium transition-all duration-200 hover:opacity-90",
               cell: "h-12 w-12 p-0",
               head_cell: "text-muted-foreground rounded-md w-12 font-normal text-[0.9rem]",
               nav_button: "h-9 w-9",
