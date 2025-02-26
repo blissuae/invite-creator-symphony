@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { HexColorPicker } from "react-colorful";
 import { Button } from "../ui/button";
@@ -119,7 +118,8 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
           <div
             key={palette.id}
             onClick={() => {
-              onSelect(palette.id);
+              const paletteValue = `${palette.id}###${palette.colors.join(",")}###${palette.name}`;
+              onSelect(paletteValue);
               setTimeout(() => {
                 const continueButton = document.querySelector(
                   'button[data-continue]'
@@ -147,62 +147,63 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
             </div>
           </div>
         ))}
-      </div>
 
-      {/* Custom Palette Picker Dialog */}
-      {showCustomPicker && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg max-w-md w-full">
-            <h3 className="font-medium text-center mb-4">{customPaletteName}</h3>
-            <div className="flex justify-center gap-4 mb-6">
-              {customColors.map((color, index) => (
-                <div
-                  key={index}
-                  style={{ backgroundColor: color }}
-                  className={`w-10 h-10 rounded-full border-2 cursor-pointer ${
-                    currentColorIndex === index ? "border-elegant-primary" : "border-gray-200"
-                  }`}
-                  onClick={() => setCurrentColorIndex(index === currentColorIndex ? null : index)}
-                />
-              ))}
-            </div>
-            {currentColorIndex !== null && (
-              <div className="flex justify-center mb-6">
-                <HexColorPicker
-                  color={customColors[currentColorIndex]}
-                  onChange={(color) => {
-                    const newColors = [...customColors];
-                    newColors[currentColorIndex] = color;
-                    setCustomColors(newColors);
-                  }}
-                />
+        {/* Custom Palette Picker Dialog */}
+        {showCustomPicker && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded-lg max-w-md w-full">
+              <h3 className="font-medium text-center mb-4">{customPaletteName}</h3>
+              <div className="flex justify-center gap-4 mb-6">
+                {customColors.map((color, index) => (
+                  <div
+                    key={index}
+                    style={{ backgroundColor: color }}
+                    className={`w-10 h-10 rounded-full border-2 cursor-pointer ${
+                      currentColorIndex === index ? "border-elegant-primary" : "border-gray-200"
+                    }`}
+                    onClick={() => setCurrentColorIndex(index === currentColorIndex ? null : index)}
+                  />
+                ))}
               </div>
-            )}
-            <div className="flex justify-center gap-4">
-              <Button
-                variant="outline"
-                onClick={() => setShowCustomPicker(false)}
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={() => {
-                  onSelect(`custom-${customColors.join("-")}`);
-                  setShowCustomPicker(false);
-                  setTimeout(() => {
-                    const continueButton = document.querySelector(
-                      'button[data-continue]'
-                    ) as HTMLButtonElement;
-                    continueButton?.click();
-                  }, 300);
-                }}
-              >
-                Use This Palette
-              </Button>
+              {currentColorIndex !== null && (
+                <div className="flex justify-center mb-6">
+                  <HexColorPicker
+                    color={customColors[currentColorIndex]}
+                    onChange={(color) => {
+                      const newColors = [...customColors];
+                      newColors[currentColorIndex] = color;
+                      setCustomColors(newColors);
+                    }}
+                  />
+                </div>
+              )}
+              <div className="flex justify-center gap-4">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowCustomPicker(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={() => {
+                    const paletteValue = `custom###${customColors.join(",")}###Custom Palette`;
+                    onSelect(paletteValue);
+                    setShowCustomPicker(false);
+                    setTimeout(() => {
+                      const continueButton = document.querySelector(
+                        'button[data-continue]'
+                      ) as HTMLButtonElement;
+                      continueButton?.click();
+                    }, 300);
+                  }}
+                >
+                  Use This Palette
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
