@@ -4,9 +4,10 @@ import { Progress } from "@/components/ui/progress";
 interface FormProgressProps {
   steps: readonly string[];
   currentStep: number;
+  onStepClick?: (step: number) => void;
 }
 
-export const FormProgress = ({ steps, currentStep }: FormProgressProps) => {
+export const FormProgress = ({ steps, currentStep, onStepClick }: FormProgressProps) => {
   return (
     <div className="w-full bg-white border-b border-elegant-secondary/20">
       <div className="max-w-screen-xl mx-auto px-4 py-4">
@@ -16,18 +17,20 @@ export const FormProgress = ({ steps, currentStep }: FormProgressProps) => {
             const isCurrent = index === currentStep;
 
             return (
-              <div
+              <button
                 key={step}
+                onClick={() => onStepClick?.(index)}
+                disabled={index > currentStep}
                 className={`flex flex-col items-center ${
                   index < steps.length - 1 ? "relative" : ""
-                }`}
+                } ${index > currentStep ? "cursor-not-allowed" : "cursor-pointer"}`}
               >
                 <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                    isCompleted || isCurrent
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium 
+                    ${isCompleted || isCurrent
                       ? "bg-[#8b7256] text-white"
                       : "bg-gray-100 text-gray-400"
-                  }`}
+                    } ${index <= currentStep ? "hover:bg-[#8b7256]/90" : ""}`}
                 >
                   {isCompleted ? (
                     <svg
@@ -59,7 +62,7 @@ export const FormProgress = ({ steps, currentStep }: FormProgressProps) => {
                 <span className="hidden md:block text-xs mt-2 font-medium text-center min-w-[80px] px-2">
                   {step}
                 </span>
-              </div>
+              </button>
             );
           })}
         </div>

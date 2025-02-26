@@ -15,8 +15,8 @@ export interface InviteFormData {
   animationStyles: string[];
   deadline: Date | null;
   content: string;
-  videoIdea: string;  // Add new field
-  hasVideoIdea: boolean;  // Add new field
+  videoIdea: string;
+  hasVideoIdea: boolean;
   guestCount: string;
   specialRequirements: string;
   deliveryFormats: {
@@ -56,8 +56,8 @@ export const useInviteForm = () => {
     animationStyles: [],
     deadline: null,
     content: "",
-    videoIdea: "",  // Initialize new field
-    hasVideoIdea: false,  // Initialize new field
+    videoIdea: "",
+    hasVideoIdea: false,
     guestCount: "",
     specialRequirements: "",
     deliveryFormats: {
@@ -225,5 +225,6 @@ Special Requirements: ${formData.specialRequirements}
     nextStep,
     prevStep,
     handleSubmit,
+    setCurrentStep,
   };
 };
