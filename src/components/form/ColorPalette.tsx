@@ -131,6 +131,10 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
   );
   const [selectedTab, setSelectedTab] = useState<'custom' | 'presets' | 'upload'>('custom');
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [uploadedImageName, setUploadedImageName] = useState<string>("");
+  const [extractedColors, setExtractedColors] = useState<string[]>([]);
+  const [showImageConfirmation, setShowImageConfirmation] = useState(false);
 
   // Effect to update customColors when selected value changes
   useEffect(() => {
@@ -145,15 +149,23 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
       const img = new Image();
       img.onload = async () => {
         const extractedColors = await extractColorsFromImage(img);
-        const paletteValue = `custom###${extractedColors.join(",")}###Uploaded: ${file.name}`;
-        onSelect(paletteValue);
-        // Automatically continue to next page
-        document.querySelector('[data-continue]')?.dispatchEvent(
-          new MouseEvent('click', { bubbles: true })
-        );
+        setExtractedColors(extractedColors);
+        setUploadedImage(img.src);
+        setUploadedImageName(file.name);
+        setShowImageConfirmation(true);
       };
       img.src = URL.createObjectURL(file);
     }
+  };
+
+  const handleConfirmImageColors = () => {
+    const paletteValue = `custom###${extractedColors.join(",")}###Uploaded: ${uploadedImageName}`;
+    onSelect(paletteValue);
+    setShowImageConfirmation(false);
+    // Automatically continue to next page
+    document.querySelector('[data-continue]')?.dispatchEvent(
+      new MouseEvent('click', { bubbles: true })
+    );
   };
 
   // Function to handle clicking on a preset palette
@@ -388,6 +400,84 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
                   }}
                 >
                   Use This Palette
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Image Upload Confirmation Dialog */}
+        {showImageConfirmation && uploadedImage && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded-lg max-w-4xl w-full mx-4">
+              <h3 className="font-medium text-center mb-6 text-xl">Confirm Color Palette</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* Image Preview */}
+                <div className="space-y-4">
+                  <h4 className="font-medium">Uploaded Image</h4>
+                  <div className="relative aspect-square w-full rounded-lg overflow-hidden border border-gray-200">
+                    <img 
+                      src={uploadedImage} 
+                      alt="Uploaded image"
+                      className="object-cover w-full h-full"
+                    />
+                  </div>
+                </div>
+
+                {/* Color Picker */}
+                <div className="space-y-6">
+                  <h4 className="font-medium">Extracted Colors</h4>
+                  <p className="text-sm text-gray-500">Click on any color to adjust it</p>
+                  <div className="flex flex-col gap-6">
+                    {extractedColors.map((color, index) => (
+                      <div key={index} className="flex items-center gap-4">
+                        <div
+                          className={`w-16 h-16 rounded-lg cursor-pointer border-2 ${
+                            currentColorIndex === index ? 'border-elegant-primary' : 'border-gray-200'
+                          }`}
+                          style={{ backgroundColor: color }}
+                          onClick={() => setCurrentColorIndex(index === currentColorIndex ? null : index)}
+                        />
+                        <div className="text-sm">
+                          <div className="font-medium">Color {index + 1}</div>
+                          <div className="text-gray-500 uppercase">{color}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {currentColorIndex !== null && (
+                    <div className="mt-6">
+                      <h4 className="font-medium mb-4">Adjust Color</h4>
+                      <HexColorPicker
+                        color={extractedColors[currentColorIndex]}
+                        onChange={(color) => {
+                          const newColors = [...extractedColors];
+                          newColors[currentColorIndex] = color;
+                          setExtractedColors(newColors);
+                        }}
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-4 mt-8">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setShowImageConfirmation(false);
+                    setUploadedImage(null);
+                    setExtractedColors([]);
+                    if (fileInputRef.current) {
+                      fileInputRef.current.value = '';
+                    }
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button onClick={handleConfirmImageColors}>
+                  Use These Colors
                 </Button>
               </div>
             </div>
