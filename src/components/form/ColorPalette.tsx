@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { HexColorPicker } from "react-colorful";
 import { Button } from "../ui/button";
@@ -92,6 +91,12 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
     return selected === paletteValue;
   };
 
+  // Function to handle copying colors from a preset palette
+  const handlePresetClick = (colors: string[]) => {
+    setCustomColors(colors);
+    setShowCustomPicker(true);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center mb-8">
@@ -108,10 +113,10 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
         </Button>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-4">
-        {/* Custom Palette Option */}
+      <div className="grid gap-6">
+        {/* Custom Palette Option - Full Width */}
         <div
-          className={`flex flex-col items-center space-y-4 cursor-pointer p-4 rounded-lg hover:bg-gray-50 transition-colors border-2 ${
+          className={`w-full flex flex-col items-center space-y-4 cursor-pointer p-6 rounded-lg hover:bg-gray-50 transition-colors border-2 ${
             isSelected(`custom###${customColors.join(",")}###Custom Palette`)
               ? "border-elegant-primary"
               : "border-dashed border-gray-300 hover:border-gray-400"
@@ -119,67 +124,57 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
           onClick={() => setShowCustomPicker(true)}
         >
           <div className="text-center">
-            <h3 className="font-medium mb-2">Choose Your</h3>
-            <h3 className="font-medium mb-4">Own Palette</h3>
-            <div className="flex justify-center gap-3 mb-2">
+            <h3 className="text-xl font-medium mb-2">Choose Your Own Palette</h3>
+            <p className="text-gray-500 mb-4">Click on any preset below to start with those colors, or create your own</p>
+            <div className="flex justify-center gap-6 mb-2">
               {customColors.map((color, index) => (
                 <div
                   key={index}
                   style={{ backgroundColor: color }}
-                  className="w-8 h-8 rounded-full border border-gray-200"
+                  className="w-12 h-12 rounded-full border border-gray-200"
                 />
               ))}
             </div>
-            <Palette className="w-5 h-5 mx-auto text-gray-400" />
+            <Palette className="w-6 h-6 mx-auto text-gray-400 mt-4" />
           </div>
         </div>
 
-        {/* Generated Palettes */}
-        {palettes.map((palette) => {
-          const paletteValue = `${palette.id}###${palette.colors.join(",")}###${palette.name}`;
-          return (
-            <div
-              key={palette.id}
-              onClick={() => {
-                onSelect(paletteValue);
-                setTimeout(() => {
-                  const continueButton = document.querySelector(
-                    'button[data-continue]'
-                  ) as HTMLButtonElement;
-                  continueButton?.click();
-                }, 300);
-              }}
-              className={`flex flex-col items-center space-y-4 cursor-pointer p-4 rounded-lg hover:bg-gray-50 transition-colors border-2 ${
-                isSelected(paletteValue)
-                  ? "border-elegant-primary"
-                  : "border-transparent"
-              }`}
-            >
-              <div className="text-center h-full">
-                <div className="mb-4 h-14 flex flex-col justify-center">
-                  {palette.name.split('\n').map((line, i) => (
-                    <h3 key={i} className="font-medium leading-tight">{line}</h3>
-                  ))}
-                </div>
-                <div className="flex justify-center gap-3">
-                  {palette.colors.map((color, index) => (
-                    <div
-                      key={index}
-                      style={{ backgroundColor: color }}
-                      className="w-8 h-8 rounded-full border border-gray-200"
-                    />
-                  ))}
+        {/* Grid of Generated Palettes */}
+        <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-4">
+          {palettes.map((palette) => {
+            const paletteValue = `${palette.id}###${palette.colors.join(",")}###${palette.name}`;
+            return (
+              <div
+                key={palette.id}
+                onClick={() => handlePresetClick(palette.colors)}
+                className="flex flex-col items-center space-y-4 cursor-pointer p-4 rounded-lg hover:bg-gray-50 transition-colors border-2 border-transparent hover:border-gray-200"
+              >
+                <div className="text-center h-full">
+                  <div className="mb-4 h-14 flex flex-col justify-center">
+                    {palette.name.split('\n').map((line, i) => (
+                      <h3 key={i} className="font-medium leading-tight">{line}</h3>
+                    ))}
+                  </div>
+                  <div className="flex justify-center gap-3">
+                    {palette.colors.map((color, index) => (
+                      <div
+                        key={index}
+                        style={{ backgroundColor: color }}
+                        className="w-8 h-8 rounded-full border border-gray-200"
+                      />
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
 
         {/* Custom Palette Picker Dialog */}
         {showCustomPicker && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-lg max-w-md w-full">
-              <h3 className="font-medium text-center mb-4">{customPaletteName}</h3>
+              <h3 className="font-medium text-center mb-4">Edit Your Color Palette</h3>
               <div className="flex justify-center gap-4 mb-6">
                 {customColors.map((color, index) => (
                   <div
