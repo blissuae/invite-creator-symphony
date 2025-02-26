@@ -63,38 +63,43 @@ const generateRandomPalette = () => {
   };
 };
 
-export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
-  // Parse the selected value to get initial custom colors
-  const getInitialCustomColors = () => {
-    if (selected && selected.startsWith("custom###")) {
-      const [_, colorsStr] = selected.split("###");
-      if (colorsStr) {
-        return colorsStr.split(",");
+const getInitialCustomColors = (selected: string) => {
+  if (selected && selected.startsWith("custom###")) {
+    const [_, colorsStr] = selected.split("###");
+    if (colorsStr) {
+      const colors = colorsStr.split(",");
+      // Ensure exactly 3 colors
+      while (colors.length < 3) {
+        colors.push("#FAFAFA");
       }
+      return colors.slice(0, 3);
     }
-    return ["#E5E5E5", "#D4D4D4", "#FAFAFA"];
-  };
+  }
+  return ["#E5E5E5", "#D4D4D4", "#FAFAFA"];
+};
 
-  const [customColors, setCustomColors] = useState(getInitialCustomColors());
+export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
+  const [customColors, setCustomColors] = useState(() => getInitialCustomColors(selected));
   const [currentColorIndex, setCurrentColorIndex] = useState<number | null>(null);
-  const [customPaletteName, setCustomPaletteName] = useState("Custom Palette");
-  const [palettes, setPalettes] = useState(() => Array(8).fill(null).map(generateRandomPalette));
   const [showCustomPicker, setShowCustomPicker] = useState(false);
+  const [palettes, setPalettes] = useState(() => 
+    Array(8).fill(null).map(generateRandomPalette)
+  );
 
-  const regeneratePalettes = () => {
-    const newPalettes = Array(8).fill(null).map(generateRandomPalette);
-    setPalettes(newPalettes);
+  // Function to handle copying colors from a preset palette
+  const handlePresetClick = (colors: string[]) => {
+    // Ensure exactly 3 colors when copying from preset
+    const adjustedColors = colors.slice(0, 3);
+    while (adjustedColors.length < 3) {
+      adjustedColors.push("#FAFAFA");
+    }
+    setCustomColors(adjustedColors);
+    setShowCustomPicker(true);
   };
 
   // Highlight selected palette
   const isSelected = (paletteValue: string) => {
     return selected === paletteValue;
-  };
-
-  // Function to handle copying colors from a preset palette
-  const handlePresetClick = (colors: string[]) => {
-    setCustomColors(colors);
-    setShowCustomPicker(true);
   };
 
   return (
@@ -104,7 +109,7 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
           Choose Your Color Palette
         </h2>
         <Button
-          onClick={regeneratePalettes}
+          onClick={() => regeneratePalettes()}
           variant="outline"
           className="flex items-center gap-2"
         >
@@ -142,11 +147,15 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
         {/* Grid of Generated Palettes */}
         <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-4">
           {palettes.map((palette) => {
-            const paletteValue = `${palette.id}###${palette.colors.join(",")}###${palette.name}`;
+            const adjustedColors = palette.colors.slice(0, 3);
+            while (adjustedColors.length < 3) {
+              adjustedColors.push("#FAFAFA");
+            }
+            const paletteValue = `${palette.id}###${adjustedColors.join(",")}###${palette.name}`;
             return (
               <div
                 key={palette.id}
-                onClick={() => handlePresetClick(palette.colors)}
+                onClick={() => handlePresetClick(adjustedColors)}
                 className="flex flex-col items-center space-y-4 cursor-pointer p-4 rounded-lg hover:bg-gray-50 transition-colors border-2 border-transparent hover:border-gray-200"
               >
                 <div className="text-center h-full">
@@ -156,7 +165,7 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
                     ))}
                   </div>
                   <div className="flex justify-center gap-3">
-                    {palette.colors.map((color, index) => (
+                    {adjustedColors.map((color, index) => (
                       <div
                         key={index}
                         style={{ backgroundColor: color }}
@@ -208,7 +217,11 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
                 </Button>
                 <Button
                   onClick={() => {
-                    const paletteValue = `custom###${customColors.join(",")}###Custom Palette`;
+                    const adjustedColors = [...customColors];
+                    while (adjustedColors.length < 3) {
+                      adjustedColors.push("#FAFAFA");
+                    }
+                    const paletteValue = `custom###${adjustedColors.slice(0, 3).join(",")}###Custom Palette`;
                     onSelect(paletteValue);
                     setShowCustomPicker(false);
                     setTimeout(() => {

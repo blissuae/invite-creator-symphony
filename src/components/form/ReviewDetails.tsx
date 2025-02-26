@@ -43,22 +43,17 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
   const formatColorPalette = (paletteId: string) => {
     if (!paletteId) return { name: "No Palette Selected", colors: [] };
 
-    // Parse the new format: id###colors###name
+    // Parse the format: id###colors###name
     const [id, colorsStr, name] = paletteId.split("###");
     
     if (colorsStr && name) {
+      const colors = colorsStr.split(",").slice(0, 3);
+      while (colors.length < 3) {
+        colors.push("#FAFAFA");
+      }
       return {
         name: name,
-        colors: colorsStr.split(",")
-      };
-    }
-    
-    // Fallback for any old format data
-    if (id.startsWith('custom-')) {
-      const colors = id.split('-').slice(1);
-      return {
-        name: "Custom Palette",
-        colors
+        colors: colors
       };
     }
     
@@ -361,7 +356,7 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
                     {palette.name}
                   </div>
                   <div className="text-gray-600">
-                    {palette.colors.join(", ")}
+                    Colors: {palette.colors.join(", ")}
                   </div>
                 </>
               );
