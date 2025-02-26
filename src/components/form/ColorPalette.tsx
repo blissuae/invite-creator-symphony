@@ -65,7 +65,7 @@ const generateRandomPalette = () => {
 };
 
 const getInitialCustomColors = (selected: string) => {
-  if (selected && selected.startsWith("custom###")) {
+  if (selected && selected.includes("###")) {
     const [_, colorsStr] = selected.split("###");
     if (colorsStr) {
       const colors = colorsStr.split(",");
@@ -89,7 +89,8 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
 
   // Effect to update customColors when selected value changes
   useEffect(() => {
-    setCustomColors(getInitialCustomColors(selected));
+    const colors = getInitialCustomColors(selected);
+    setCustomColors(colors);
   }, [selected]);
 
   // Function to handle copying colors from a preset palette
