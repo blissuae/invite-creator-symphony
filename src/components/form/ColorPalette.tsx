@@ -8,6 +8,46 @@ interface ColorPaletteProps {
   onSelect: (value: string) => void;
 }
 
+// Palette name generation arrays
+const RANDOM_PALETTE_PREFIXES = [
+  "Autumn",
+  "Spring",
+  "Summer",
+  "Winter",
+  "Forest",
+  "Ocean",
+  "Desert",
+  "Mountain",
+  "Sunset",
+  "Dawn",
+  "Dusk",
+  "Misty",
+];
+
+const RANDOM_PALETTE_SUFFIXES = [
+  "Morning",
+  "Evening",
+  "Twilight",
+  "Breeze",
+  "Whisper",
+  "Shadow",
+  "Light",
+  "Glow",
+  "Haze",
+  "Mist",
+  "Dream",
+  "Vision",
+];
+
+// Function to get initial custom colors from the selected value
+const getInitialCustomColors = (selected: string): string[] => {
+  if (selected && selected.includes("###")) {
+    const [_, colorsStr] = selected.split("###");
+    return colorsStr.split(",");
+  }
+  return ["#E5D7C9", "#D4C8BE", "#CFCFCF"];
+};
+
 // Function to convert HSL to Hex
 const hslToHex = (h: number, s: number, l: number): string => {
   l /= 100;
@@ -18,6 +58,50 @@ const hslToHex = (h: number, s: number, l: number): string => {
     return Math.round(255 * color).toString(16).padStart(2, '0');
   };
   return `#${f(0)}${f(8)}${f(4)}`;
+};
+
+// Function to extract dominant colors from an image
+const extractColorsFromImage = (imageElement: HTMLImageElement): Promise<string[]> => {
+  return new Promise((resolve) => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    if (!ctx) {
+      resolve(["#E5E5E5", "#D4D4D4", "#FAFAFA"]);
+      return;
+    }
+
+    canvas.width = imageElement.width;
+    canvas.height = imageElement.height;
+    ctx.drawImage(imageElement, 0, 0);
+
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+    const colorMap = new Map<string, number>();
+
+    // Sample every 5th pixel for performance
+    for (let i = 0; i < imageData.length; i += 20) {
+      const r = imageData[i];
+      const g = imageData[i + 1];
+      const b = imageData[i + 2];
+      
+      // Convert to hex
+      const hex = `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+      colorMap.set(hex, (colorMap.get(hex) || 0) + 1);
+    }
+
+    // Sort colors by frequency
+    const sortedColors = Array.from(colorMap.entries())
+      .sort((a, b) => b[1] - a[1])
+      .map(([color]) => color)
+      .slice(0, 3);
+
+    // Ensure we have exactly 3 colors
+    while (sortedColors.length < 3) {
+      sortedColors.push("#FAFAFA");
+    }
+
+    resolve(sortedColors);
+  });
 };
 
 // Function to generate a soft/earthy color in hex format
@@ -40,8 +124,6 @@ const generateContrastingPalette = () => {
   return [generateSoftColor(), generateSoftColor(), generateSoftColor()];
 };
 
-// ... keep existing code (RANDOM_PALETTE_PREFIXES and RANDOM_PALETTE_SUFFIXES)
-
 const generateRandomPalette = () => {
   const prefix = RANDOM_PALETTE_PREFIXES[Math.floor(Math.random() * RANDOM_PALETTE_PREFIXES.length)];
   const suffix = RANDOM_PALETTE_SUFFIXES[Math.floor(Math.random() * RANDOM_PALETTE_SUFFIXES.length)];
@@ -51,8 +133,6 @@ const generateRandomPalette = () => {
     colors: generateContrastingPalette()
   };
 };
-
-// ... keep existing code (getInitialCustomColors and extractColorsFromImage functions)
 
 export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
   const [customColors, setCustomColors] = useState(() => getInitialCustomColors(selected));
@@ -70,6 +150,9 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
   const [showImageConfirmation, setShowImageConfirmation] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
+
+  // Function to check if a palette is selected
+  const isSelected = (value: string) => value === selected;
 
   // Effect to preserve selected palette when regenerating
   useEffect(() => {
