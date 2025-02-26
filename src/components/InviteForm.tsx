@@ -1,4 +1,3 @@
-
 import { FormProgress } from "./form/FormProgress";
 import { BasicDetails } from "./form/BasicDetails";
 import { CharacterOptions } from "./form/CharacterOptions";
@@ -64,8 +63,8 @@ export const InviteForm = () => {
           <ContentEditor
             formData={{
               content: formData.content,
-              hasReferenceImage: false,
-              referenceImage: undefined
+              hasVideoIdea: formData.hasVideoIdea,
+              videoIdea: formData.videoIdea
             }}
             onChange={updateFormData}
           />

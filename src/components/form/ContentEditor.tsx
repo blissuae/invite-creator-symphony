@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
@@ -6,8 +7,8 @@ import { Upload, Star, BookOpen, Heart, Sparkles, MessageCircle } from "lucide-r
 interface ContentEditorProps {
   formData: {
     content: string;
-    hasReferenceImage: boolean;
-    referenceImage?: File;
+    hasVideoIdea: boolean;
+    videoIdea?: string;
   };
   onChange: (field: string, value: any) => void;
 }
@@ -39,39 +40,8 @@ export const ContentEditor = ({
   formData,
   onChange
 }: ContentEditorProps) => {
-  const [dragActive, setDragActive] = useState(false);
   const randomFact = CONTENT_FACTS[Math.floor(Math.random() * CONTENT_FACTS.length)];
   const FactIcon = randomFact.icon;
-
-  const handleDrag = function(e: React.DragEvent<HTMLDivElement>) {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
-      setDragActive(true);
-    } else if (e.type === "dragleave") {
-      setDragActive(false);
-    }
-  };
-
-  const handleDrop = function(e: React.DragEvent<HTMLDivElement>) {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      const file = e.dataTransfer.files[0];
-      onChange("referenceImage", file);
-      onChange("hasReferenceImage", true);
-    }
-  };
-
-  const handleChange = function(e: React.ChangeEvent<HTMLInputElement>) {
-    e.preventDefault();
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      onChange("referenceImage", file);
-      onChange("hasReferenceImage", true);
-    }
-  };
 
   return (
     <div className="space-y-8 animate-fadeIn">
@@ -88,6 +58,29 @@ export const ContentEditor = ({
       </div>
 
       <div className="space-y-4">
+        <h3 className="text-lg font-serif text-elegant-brown">Do you have a video idea in mind?</h3>
+        <div className="flex gap-4">
+          <Button
+            type="button"
+            variant={formData.hasVideoIdea ? "default" : "outline"}
+            onClick={() => onChange("hasVideoIdea", true)}
+          >
+            Yes
+          </Button>
+          <Button
+            type="button"
+            variant={formData.hasVideoIdea === false ? "default" : "outline"}
+            onClick={() => {
+              onChange("hasVideoIdea", false);
+              onChange("videoIdea", "");
+            }}
+          >
+            No
+          </Button>
+        </div>
+      </div>
+
+      <div className="space-y-4">
         <h3 className="text-lg font-serif text-elegant-brown">Share your story</h3>
         <Textarea
           value={formData.content}
@@ -97,30 +90,17 @@ export const ContentEditor = ({
         />
       </div>
 
-      <div className="space-y-4">
-        <h3 className="text-lg font-serif text-elegant-brown">Reference Image (Optional)</h3>
-        <p className="text-sm text-gray-500">Upload an image to help us understand your vision better</p>
-        <div 
-          className={`relative flex flex-col items-center justify-center p-8 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${dragActive ? 'bg-gray-50 border-elegant-primary' : 'border-gray-300 hover:border-gray-400'}`}
-          onDragEnter={handleDrag}
-          onDragOver={handleDrag}
-          onDragLeave={handleDrag}
-          onDrop={handleDrop}
-        >
-          <input 
-            type="file" 
-            className="absolute inset-0 opacity-0 w-full h-full cursor-pointer" 
-            onChange={handleChange}
+      {formData.hasVideoIdea && (
+        <div className="space-y-4">
+          <h3 className="text-lg font-serif text-elegant-brown">Your Video Idea</h3>
+          <Textarea
+            value={formData.videoIdea || ""}
+            onChange={e => onChange("videoIdea", e.target.value)}
+            placeholder="Describe your video idea in detail..."
+            className="min-h-[150px]"
           />
-          <Upload className="w-6 h-6 text-gray-400 mb-2" />
-          <p className="text-sm text-gray-500">Drag and drop an image here, or click to select a file</p>
-          {formData.referenceImage && (
-            <div className="mt-4">
-              <p className="text-sm text-gray-500">Selected File: {formData.referenceImage.name}</p>
-            </div>
-          )}
         </div>
-      </div>
+      )}
     </div>
   );
 };
