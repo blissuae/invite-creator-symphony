@@ -60,7 +60,7 @@ export const ContentEditor = ({
       </div>
 
       <div className="space-y-4">
-        <h3 className="text-lg font-serif text-elegant-brown">Do you have a video idea in mind?</h3>
+        <h3 className="text-lg font-serif text-elegant-brown">Do you have an idea in mind?</h3>
         <div className="flex gap-4">
           <Button
             type="button"
@@ -88,14 +88,14 @@ export const ContentEditor = ({
           <Textarea
             value={formData.videoIdea || ""}
             onChange={e => onChange("videoIdea", e.target.value)}
-            placeholder="Tell us about your video idea in detail..."
+            placeholder="Tell us about your idea in detail..."
             className="min-h-[150px]"
           />
         </div>
       )}
 
       <div className="space-y-4">
-        <h3 className="text-lg font-serif text-elegant-brown">Do you want to share the text you want in the video?</h3>
+        <h3 className="text-lg font-serif text-elegant-brown">Do you want to share text content?</h3>
         <div className="flex gap-4">
           <Button
             type="button"
@@ -119,11 +119,11 @@ export const ContentEditor = ({
 
       {hasVideoText && (
         <div className="space-y-4">
-          <h3 className="text-lg font-serif text-elegant-brown">Your video text</h3>
+          <h3 className="text-lg font-serif text-elegant-brown">Your text content</h3>
           <Textarea
             value={formData.content}
             onChange={e => onChange("content", e.target.value)}
-            placeholder="Enter the text you want to appear in your video..."
+            placeholder="Enter the text you want to appear..."
             className="min-h-[200px]"
           />
         </div>

@@ -99,18 +99,10 @@ export const useInviteForm = () => {
     }
 
     if (currentStep === 3) {  // Content page validation
-      if (formData.hasVideoIdea === undefined) {
+      if (formData.hasVideoIdea && !formData.videoIdea?.trim()) {
         toast({
-          title: "Selection Required",
-          description: "Please indicate whether you have a video idea.",
-          variant: "destructive",
-        });
-        return;
-      }
-      if (isContentReadyNotSelected(formData.content)) {
-        toast({
-          title: "Selection Required",
-          description: "Please indicate whether you have the writing ready.",
+          title: "Content Required",
+          description: "Please share your idea or select 'No'.",
           variant: "destructive",
         });
         return;
