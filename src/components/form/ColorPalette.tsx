@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from "react";
 import { HexColorPicker } from "react-colorful";
 import { Button } from "../ui/button";
 import { Wand2, Palette, Upload, PaintBucket, Grid } from "lucide-react";
-import { FormNavigation } from "./FormNavigation";
 
 interface ColorPaletteProps {
   selected: string;
@@ -79,6 +78,50 @@ const getInitialCustomColors = (selected: string) => {
   return ["#E5E5E5", "#D4D4D4", "#FAFAFA"];
 };
 
+// Function to extract dominant colors from an image
+const extractColorsFromImage = (imageElement: HTMLImageElement): Promise<string[]> => {
+  return new Promise((resolve) => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    if (!ctx) {
+      resolve(["#E5E5E5", "#D4D4D4", "#FAFAFA"]);
+      return;
+    }
+
+    canvas.width = imageElement.width;
+    canvas.height = imageElement.height;
+    ctx.drawImage(imageElement, 0, 0);
+
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+    const colorMap = new Map<string, number>();
+
+    // Sample every 5th pixel for performance
+    for (let i = 0; i < imageData.length; i += 20) {
+      const r = imageData[i];
+      const g = imageData[i + 1];
+      const b = imageData[i + 2];
+      
+      // Convert to hex
+      const hex = `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+      colorMap.set(hex, (colorMap.get(hex) || 0) + 1);
+    }
+
+    // Sort colors by frequency
+    const sortedColors = Array.from(colorMap.entries())
+      .sort((a, b) => b[1] - a[1])
+      .map(([color]) => color)
+      .slice(0, 3);
+
+    // Ensure we have exactly 3 colors
+    while (sortedColors.length < 3) {
+      sortedColors.push("#FAFAFA");
+    }
+
+    resolve(sortedColors);
+  });
+};
+
 export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
   const [customColors, setCustomColors] = useState(() => getInitialCustomColors(selected));
   const [currentColorIndex, setCurrentColorIndex] = useState<number | null>(null);
@@ -95,32 +138,32 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
     setCustomColors(colors);
   }, [selected]);
 
-  // Handle image upload
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  // Handle image upload and color extraction
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      // For now, we'll just use a placeholder palette for the uploaded image
-      // In a real implementation, you would analyze the image to extract colors
-      const uploadedPalette = {
-        colors: ["#E5E5E5", "#D4D4D4", "#FAFAFA"],
-        name: file.name
+      const img = new Image();
+      img.onload = async () => {
+        const extractedColors = await extractColorsFromImage(img);
+        const paletteValue = `custom###${extractedColors.join(",")}###Uploaded: ${file.name}`;
+        onSelect(paletteValue);
+        // Automatically continue to next page
+        document.querySelector('[data-continue]')?.dispatchEvent(
+          new MouseEvent('click', { bubbles: true })
+        );
       };
-      const paletteValue = `custom###${uploadedPalette.colors.join(",")}###Uploaded: ${uploadedPalette.name}`;
-      onSelect(paletteValue);
+      img.src = URL.createObjectURL(file);
     }
   };
 
-  // Function to handle copying colors from a preset palette
-  const handlePresetClick = (colors: string[]) => {
-    // Ensure exactly 3 colors when copying from preset
-    const adjustedColors = colors.slice(0, 3);
-    while (adjustedColors.length < 3) {
-      adjustedColors.push("#FAFAFA");
-    }
-    setCustomColors(adjustedColors);
-    // Instead of opening the picker, directly select these colors
-    const paletteValue = `custom###${adjustedColors.join(",")}###Custom Palette`;
+  // Function to handle clicking on a preset palette
+  const handlePresetClick = (colors: string[], name: string) => {
+    const paletteValue = `custom###${colors.join(",")}###${name}`;
     onSelect(paletteValue);
+    // Automatically continue to next page
+    document.querySelector('[data-continue]')?.dispatchEvent(
+      new MouseEvent('click', { bubbles: true })
+    );
   };
 
   // Highlight selected palette
@@ -240,7 +283,7 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
                 return (
                   <div
                     key={palette.id}
-                    onClick={() => handlePresetClick(adjustedColors)}
+                    onClick={() => handlePresetClick(adjustedColors, palette.name)}
                     className={`flex flex-col items-center space-y-4 cursor-pointer p-4 rounded-lg hover:bg-gray-50 transition-colors border-2 ${
                       isSelected(paletteValue)
                         ? "border-elegant-primary"
@@ -338,6 +381,10 @@ export const ColorPalette = ({ selected, onSelect }: ColorPaletteProps) => {
                     const paletteValue = `custom###${adjustedColors.slice(0, 3).join(",")}###Custom Palette`;
                     onSelect(paletteValue);
                     setShowCustomPicker(false);
+                    // Automatically continue to next page
+                    document.querySelector('[data-continue]')?.dispatchEvent(
+                      new MouseEvent('click', { bubbles: true })
+                    );
                   }}
                 >
                   Use This Palette
