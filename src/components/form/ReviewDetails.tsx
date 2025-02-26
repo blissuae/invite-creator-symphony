@@ -49,9 +49,18 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
       };
     }
     
-    const [_, name] = paletteId.split('-');
+    const parts = paletteId.split('-');
+    if (parts.length >= 4) {
+      const name = parts.slice(3).join('-').replace(/_/g, ' ');
+      const colors = parts[2]?.split('_') || ['#E5E5E5', '#D4D4D4', '#FAFAFA'];
+      return {
+        name,
+        colors
+      };
+    }
+    
     return {
-      name: name ? name.split('_').join(' ') : "Selected Palette",
+      name: "Selected Palette",
       colors: ['#E5E5E5', '#D4D4D4', '#FAFAFA']
     };
   };
@@ -167,7 +176,6 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
       let colorText = `${palette.name} (`;
       
       palette.colors.forEach((color, index) => {
-        // Draw circle
         doc.setFillColor(color);
         doc.circle(contentStartX + (index * (circleSize + circleSpacing)), yPos - 2, circleSize / 2, 'F');
         colorText += `${color}${index < palette.colors.length - 1 ? ', ' : ''}`;
@@ -345,7 +353,7 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
             {(() => {
               const palette = formatColorPalette(formData.colorPalette);
               return (
-                <>
+                <div className="flex flex-col space-y-4">
                   <div className="flex items-center gap-4">
                     {palette.colors.map((color, index) => (
                       <div key={index} className="flex items-center gap-2">
@@ -357,8 +365,10 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
                       </div>
                     ))}
                   </div>
-                  <span className="ml-4">{palette.name}</span>
-                </>
+                  <div className="text-elegant-brown font-medium">
+                    {palette.name}
+                  </div>
+                </div>
               );
             })()}
           </div>
