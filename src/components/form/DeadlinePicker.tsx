@@ -80,7 +80,7 @@ export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
         </div>
       </div>
 
-      {/* Fact Box - Changed from golden to purple */}
+      {/* Fact Box - Changed to match the social validation purple */}
       <div className={`p-6 rounded-lg border shadow-sm mb-8 ${isUrgentDelivery ? 'bg-purple-50 border-purple-200' : 'bg-[#8B5CF6]/10 border-[#8B5CF6]/20'}`}>
         <div className="flex items-start gap-4">
           <div className={`p-2 rounded-full ${isUrgentDelivery ? 'bg-purple-100' : 'bg-[#8B5CF6]/20'}`}>

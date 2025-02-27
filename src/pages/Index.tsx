@@ -65,13 +65,29 @@ const testimonials = [
   }
 ];
 
+// Array of encouraging and fun progress messages
+const progressMessages = [
+  "Let's create something magical together! 🪄",
+  "Off to a great start! Your dream invitation is coming to life...",
+  "You're doing amazing! Keep those creative juices flowing!",
+  "Halfway there! Your guests will be so impressed!",
+  "Looking good! Just a few more details to make it perfect...",
+  "Almost there! Your stunning invitation is taking shape...",
+  "So close now! Your guests will be talking about this for years!",
+  "Final touches! Your dream announcement is just moments away...",
+  "One last step! Get ready to wow your guests!",
+  "Perfection achieved! Ready to make your special day unforgettable!"
+];
+
 const Index = () => {
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [showForm, setShowForm] = useState(false);
   const [formProgress, setFormProgress] = useState(10);
+  const [messageIndex, setMessageIndex] = useState(0);
   const testimonialRef = useRef<HTMLDivElement>(null);
+  const prevProgressRef = useRef(formProgress);
 
   // Auto-scroll testimonials
   useEffect(() => {
@@ -84,7 +100,7 @@ const Index = () => {
     return () => clearInterval(interval);
   }, [isDragging]);
 
-  // Listen for form progress updates from InviteForm component
+  // Listen for form progress updates
   useEffect(() => {
     const handleProgressUpdate = (e: CustomEvent) => {
       setFormProgress(e.detail.progress);
@@ -96,6 +112,19 @@ const Index = () => {
       window.removeEventListener('formProgressUpdate', handleProgressUpdate as EventListener);
     };
   }, []);
+
+  // Update message index when progress changes significantly
+  useEffect(() => {
+    if (formProgress > prevProgressRef.current + 10 || formProgress < prevProgressRef.current) {
+      // Calculate new message index based on progress
+      const newMessageIndex = Math.min(
+        progressMessages.length - 1, 
+        Math.floor(formProgress / (100 / progressMessages.length))
+      );
+      setMessageIndex(newMessageIndex);
+      prevProgressRef.current = formProgress;
+    }
+  }, [formProgress]);
 
   const handlePrevious = () => {
     setCurrentTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length);
@@ -155,12 +184,25 @@ const Index = () => {
               <span className="text-sm text-gray-500">Your progress</span>
               <span className="text-sm font-medium text-elegant-brown">{formProgress}%</span>
             </div>
-            <Progress value={formProgress} className="h-2 bg-gray-200" />
-            <p className="text-xs text-gray-500 mt-1 text-center">
-              {formProgress < 30 ? "Let's get started!" : 
-               formProgress < 60 ? "You're making great progress!" : 
-               formProgress < 90 ? "Almost there!" : 
-               "Just one more step to complete!"}
+            <div className="relative">
+              {/* Brown progress bar */}
+              <Progress value={formProgress} className="h-2 bg-gray-200" 
+                style={{ 
+                  "--primary": "#8b7256", 
+                  "--primary-foreground": "255 255 255"
+                } as React.CSSProperties} 
+              />
+              {/* Circle indicator */}
+              <div 
+                className="absolute top-0 h-4 w-4 rounded-full bg-elegant-brown border-2 border-white shadow-md transform -translate-y-1/4"
+                style={{ 
+                  left: `calc(${formProgress}% - 8px)`,
+                  transition: "left 0.5s ease-out"
+                }}
+              />
+            </div>
+            <p className="text-sm text-elegant-brown mt-4 text-center font-medium animate-fadeIn">
+              {progressMessages[messageIndex]}
             </p>
           </div>
         )}
