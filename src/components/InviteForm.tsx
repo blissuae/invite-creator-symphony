@@ -40,7 +40,10 @@ export const InviteForm = () => {
       : Math.min(95, Math.ceil((currentStep / (FORM_STEPS.length - 1)) * 100));
     
     const progressEvent = new CustomEvent('formProgressUpdate', { 
-      detail: { progress: progressValue } 
+      detail: { 
+        progress: progressValue,
+        currentStep: isSubmitted ? 9 : currentStep // 9 signifies completion
+      } 
     });
     window.dispatchEvent(progressEvent);
   }, [currentStep, isSubmitted]);

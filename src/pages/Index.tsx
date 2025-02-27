@@ -65,19 +65,101 @@ const testimonials = [
   }
 ];
 
-// Array of encouraging and fun progress messages
-const progressMessages = [
-  "Let's create something magical together! 🪄",
-  "Off to a great start! Your dream invitation is coming to life...",
-  "You're doing amazing! Keep those creative juices flowing!",
-  "Halfway there! Your guests will be so impressed!",
-  "Looking good! Just a few more details to make it perfect...",
-  "Almost there! Your stunning invitation is taking shape...",
-  "So close now! Your guests will be talking about this for years!",
-  "Final touches! Your dream announcement is just moments away...",
-  "One last step! Get ready to wow your guests!",
-  "Perfection achieved! Ready to make your special day unforgettable!"
-];
+// Array of encouraging and fun progress messages by step
+const progressMessages = {
+  // Generic messages for start
+  start: [
+    "Let's create something magical together! 🪄",
+    "Your dream invitation is about to come alive! ✨",
+    "Ready to design something extraordinary? Let's go! 🚀"
+  ],
+  
+  // For Basic Details step
+  basicDetails: [
+    "Great! Personal details noted. This will be uniquely yours! 🌟",
+    "Perfect start! We'll craft something special just for you 💝",
+    "Wonderful details! Now let's make your event shine! 🎉"
+  ],
+  
+  // For Delivery Formats step
+  deliveryFormats: [
+    "Excellent choices! Your guests will be so impressed 😍",
+    "Smart selections! Your invitation will look amazing across all platforms 📱💻",
+    "Perfect format picks! Now let's add some personality! 🎯"
+  ],
+  
+  // For Character Options step
+  characterOptions: [
+    "Fantastic choices! Your invite will be just as you imagined 🧙‍♂️",
+    "Perfect characters make for perfect invites! Looking great! 👥",
+    "Your characters will bring your invitation to life! 🌈"
+  ],
+  
+  // For Content Editor step
+  content: [
+    "We love your creativity! That will make for an amazing invite! 💡",
+    "Your words will captivate your guests! Brilliant content! 📝",
+    "Your message is going to shine through beautifully! ✨"
+  ],
+  
+  // For Color Palette step
+  colorPalette: [
+    "You've got great taste! That palette will look stunning! 🎨",
+    "Beautiful color choice! Your guests will be mesmerized! 🌈",
+    "Perfect palette! These colors will make your invitation pop! 💫"
+  ],
+  
+  // For Animation Style step
+  animationStyles: [
+    "Those animations will bring magic to your invite! ✨",
+    "Great pick! Your invitation will come alive with these effects! 🌟",
+    "Perfect animation choices! Your invitation will be unforgettable! 🎬"
+  ],
+  
+  // For Design Style step
+  designStyle: [
+    "Excellent style choice! So elegant and perfect for your event! 👑",
+    "That design will make your invitation truly stand out! 🏆",
+    "Beautiful style selection! It complements your theme perfectly! 🎭"
+  ],
+  
+  // For Deadline step
+  deadline: [
+    "Perfect timing! We're excited to create your invitation! ⏰",
+    "Great! We'll have your beautiful invitation ready right on time! 📅",
+    "Deadline noted! Your dream invitation is just around the corner! 🗓️"
+  ],
+  
+  // For Review step
+  review: [
+    "Almost there! Your dream invitation is taking shape! 🌠",
+    "Just one final look! Your creation is nearly complete! 🏁",
+    "It's all coming together beautifully! Ready for the final step? 💖"
+  ],
+  
+  // For completion
+  complete: [
+    "Perfection achieved! Get ready to wow your guests! 🎊",
+    "Congrats! Your stunning invitation is on its way to becoming reality! 🥂",
+    "Amazing work! Your special day will be announced in style! 🎯"
+  ]
+};
+
+const getFormStepKey = (step: number): keyof typeof progressMessages => {
+  switch(step) {
+    case 0: return "basicDetails";
+    case 1: return "deliveryFormats";
+    case 2: return "characterOptions";
+    case 3: return "content"; 
+    case 4: return "colorPalette";
+    case 5: return "animationStyles";
+    case 6: return "designStyle";
+    case 7: return "deadline";
+    case 8: return "review";
+    case 9: return "complete";
+    default: return "start";
+  }
+};
 
 const Index = () => {
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
@@ -85,9 +167,10 @@ const Index = () => {
   const [startX, setStartX] = useState(0);
   const [showForm, setShowForm] = useState(false);
   const [formProgress, setFormProgress] = useState(10);
-  const [messageIndex, setMessageIndex] = useState(0);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [currentMessage, setCurrentMessage] = useState("");
   const testimonialRef = useRef<HTMLDivElement>(null);
-  const prevProgressRef = useRef(formProgress);
+  const prevStepRef = useRef(-1);
 
   // Auto-scroll testimonials
   useEffect(() => {
@@ -104,6 +187,10 @@ const Index = () => {
   useEffect(() => {
     const handleProgressUpdate = (e: CustomEvent) => {
       setFormProgress(e.detail.progress);
+      // Extract current step from the event
+      if (e.detail.currentStep !== undefined) {
+        setCurrentStep(e.detail.currentStep);
+      }
     };
 
     window.addEventListener('formProgressUpdate', handleProgressUpdate as EventListener);
@@ -113,18 +200,17 @@ const Index = () => {
     };
   }, []);
 
-  // Update message index when progress changes significantly
+  // Update message when step changes
   useEffect(() => {
-    if (formProgress > prevProgressRef.current + 10 || formProgress < prevProgressRef.current) {
-      // Calculate new message index based on progress
-      const newMessageIndex = Math.min(
-        progressMessages.length - 1, 
-        Math.floor(formProgress / (100 / progressMessages.length))
-      );
-      setMessageIndex(newMessageIndex);
-      prevProgressRef.current = formProgress;
+    // Only update if we've moved to a new step
+    if (currentStep !== prevStepRef.current) {
+      const stepKey = getFormStepKey(currentStep);
+      const messagesForStep = progressMessages[stepKey];
+      const randomIndex = Math.floor(Math.random() * messagesForStep.length);
+      setCurrentMessage(messagesForStep[randomIndex]);
+      prevStepRef.current = currentStep;
     }
-  }, [formProgress]);
+  }, [currentStep]);
 
   const handlePrevious = () => {
     setCurrentTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length);
@@ -202,7 +288,7 @@ const Index = () => {
               />
             </div>
             <p className="text-sm text-elegant-brown mt-4 text-center font-medium animate-fadeIn">
-              {progressMessages[messageIndex]}
+              {currentMessage || progressMessages.start[0]}
             </p>
           </div>
         )}
