@@ -24,6 +24,7 @@ interface ReviewDetailsProps {
     };
     hasVideoIdea: boolean;
     videoIdea: string;
+    guestCount: string;
   };
 }
 
@@ -68,12 +69,12 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
     
     if (formData.deliveryFormats.videoInvite) {
       if (!formData.hasCharacters) {
-        baseRange = "1800-2100 AED"; // Increased by 300
+        baseRange = "1800-2100 AED";
       } else if (!formData.showFaces) {
-        baseRange = "2100-2300 AED"; // Increased by 300
+        baseRange = "2100-2300 AED";
       } else {
         const characterCount = parseInt(formData.characterCount) || 0;
-        const basePrice = 2300; // Increased by 300
+        const basePrice = 2300;
         const priceIncrement = 200;
         const minPrice = basePrice + (characterCount - 1) * priceIncrement;
         const maxPrice = minPrice + 200;
@@ -81,22 +82,22 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
       }
     } else if (formData.deliveryFormats.stillInvite) {
       if (!formData.hasCharacters || !formData.showFaces) {
-        baseRange = "1100 AED"; // Increased by 300
+        baseRange = "1100 AED";
       } else {
         const characterCount = parseInt(formData.characterCount) || 0;
         let price;
         switch (characterCount) {
           case 1:
-            price = 1300; // Increased by 300
+            price = 1300;
             break;
           case 2:
-            price = 1500; // Increased by 300
+            price = 1500;
             break;
           case 3:
-            price = 1600; // Increased by 300
+            price = 1600;
             break;
           default:
-            price = 1700; // Increased by 300
+            price = 1700;
             break;
         }
         baseRange = `${price} AED`;
@@ -109,16 +110,27 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
     if (formData.deadline) {
       const today = startOfDay(new Date());
       const days = Math.floor((formData.deadline.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+      
+      // Check for urgent delivery (6-14 days)
+      if (days >= 6 && days <= 14) {
+        // Add 500 AED fee for urgent delivery
+        if (baseRange.includes("-")) {
+          const [min, max] = baseRange.split("-");
+          const minPrice = parseInt(min);
+          const maxPrice = parseInt(max.replace(" AED", ""));
+          baseRange = `${minPrice + 500}-${maxPrice + 500} AED (Urgent Delivery)`;
+        } else {
+          const price = parseInt(baseRange.replace(" AED", ""));
+          baseRange = `${price + 500} AED (Urgent Delivery)`;
+        }
+        return baseRange;
+      }
+      
+      // Apply discounts for longer lead times
       let discount = 0;
       let discountText = "";
-
-      // Urgent delivery fee (6-14 days)
-      if (days >= 6 && days <= 14) {
-        discount = -500; // Negative to indicate a fee
-        discountText = " (+500 AED Urgent Fee)";
-      }
-      // Standard discounts
-      else if (days >= 50) {
+      
+      if (days >= 50) {
         discount = 500;
         discountText = " (500 AED OFF!)";
       } else if (days >= 25) {
@@ -294,7 +306,7 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
           {(() => {
             const priceRange = calculatePriceRange();
             const hasDiscount = priceRange.includes("OFF!");
-            const hasUrgentFee = priceRange.includes("Urgent Fee");
+            const hasUrgentFee = priceRange.includes("Urgent Delivery");
             
             if (hasDiscount) {
               const [discountedPrice, discount] = priceRange.split(" (");
@@ -327,29 +339,17 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
                 </div>
               );
             } else if (hasUrgentFee) {
-              const [basePrice, fee] = priceRange.split(" (");
-              const [originalPrice] = (() => {
-                if (basePrice.includes("-")) {
-                  const [min, max] = basePrice.split("-");
-                  return [`${parseInt(min) + 500}-${parseInt(max.replace(" AED", "")) + 500} AED`];
-                } else {
-                  return [`${parseInt(basePrice.replace(" AED", "")) + 500} AED`];
-                }
-              })();
+              // For urgent delivery, just show the final price without the before/after format
+              const [basePrice] = priceRange.split(" (");
               
               return (
                 <div className="space-y-4">
-                  <div className="flex flex-col items-center gap-1">
-                    <span className="text-gray-500 text-lg">
-                      {originalPrice}
-                    </span>
-                    <div className="text-2xl sm:text-3xl font-medium text-elegant-primary">
-                      {basePrice}
-                    </div>
+                  <div className="text-2xl sm:text-3xl font-medium text-elegant-primary">
+                    {basePrice}
                   </div>
                   <div className="inline-block">
                     <span className="bg-purple-100 text-purple-800 text-lg font-semibold px-4 py-1 rounded-full">
-                      {fee.replace(")", "")} ⚡
+                      Urgent Delivery ⚡
                     </span>
                   </div>
                 </div>

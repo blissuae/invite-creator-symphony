@@ -188,6 +188,15 @@ export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
                 const discount = getDateDiscount(date);
                 if (!discount) return <span>{date.getDate()}</span>;
 
+                // Make purple dates initially unavailable if urgent delivery is not checked
+                if (!isUrgentDelivery && discount.color === "purple") {
+                  return (
+                    <div className="opacity-50 cursor-not-allowed">
+                      <span>{date.getDate()}</span>
+                    </div>
+                  );
+                }
+
                 const isSelectedDate = selected && isSameDay(date, selected);
                 const style = isSelectedDate ? { color: 'white', backgroundColor: discount.selectedBg } : {};
 
