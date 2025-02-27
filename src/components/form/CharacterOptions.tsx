@@ -132,32 +132,6 @@ export const CharacterOptions = ({
                       </SelectContent>
                     </Select>
                   </div>
-
-                  <div className="bg-elegant-beige/10 rounded-lg p-4 border border-elegant-secondary/10">
-                    <h3 className="text-sm font-medium text-elegant-brown mb-3">Pricing Information</h3>
-                    <ul className="space-y-2 text-sm text-gray-600">
-                      <li className="flex justify-between">
-                        <span>1 Character</span>
-                        <span>+0 AED</span>
-                      </li>
-                      <li className="flex justify-between">
-                        <span>2 Characters</span>
-                        <span>+200 AED</span>
-                      </li>
-                      <li className="flex justify-between">
-                        <span>3 Characters</span>
-                        <span>+400 AED</span>
-                      </li>
-                      <li className="flex justify-between">
-                        <span>4 Characters</span>
-                        <span>+600 AED</span>
-                      </li>
-                      <li className="flex justify-between">
-                        <span>5 Characters</span>
-                        <span>+800 AED</span>
-                      </li>
-                    </ul>
-                  </div>
                 </div>
               )}
             </div>
