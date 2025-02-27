@@ -339,17 +339,32 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
                 </div>
               );
             } else if (hasUrgentFee) {
-              // For urgent delivery, just show the final price without the before/after format
-              const [basePrice] = priceRange.split(" (");
+              // Modified urgent delivery price display format
+              const [finalPrice] = priceRange.split(" (");
+              
+              // Calculate the original price (removing 500 AED from the urgent price)
+              const originalPrice = (() => {
+                if (finalPrice.includes("-")) {
+                  const [min, max] = finalPrice.split("-");
+                  return `${parseInt(min) - 500}-${parseInt(max.replace(" AED", "")) - 500} AED`;
+                } else {
+                  return `${parseInt(finalPrice.replace(" AED", "")) - 500} AED`;
+                }
+              })();
               
               return (
                 <div className="space-y-4">
-                  <div className="text-2xl sm:text-3xl font-medium text-elegant-primary">
-                    {basePrice}
+                  <div className="flex flex-col items-center gap-1">
+                    <span className="text-gray-500 line-through text-sm">
+                      Regular price: {originalPrice}
+                    </span>
+                    <div className="text-2xl sm:text-3xl font-medium text-elegant-primary">
+                      {finalPrice}
+                    </div>
                   </div>
                   <div className="inline-block">
                     <span className="bg-purple-100 text-purple-800 text-lg font-semibold px-4 py-1 rounded-full">
-                      Urgent Delivery ⚡
+                      Urgent Delivery (+500 AED) ⚡
                     </span>
                   </div>
                 </div>
