@@ -1,4 +1,3 @@
-
 import { InviteForm } from "@/components/InviteForm";
 import { useState, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -168,9 +167,10 @@ const Index = () => {
   const [showForm, setShowForm] = useState(false);
   const [formProgress, setFormProgress] = useState(10);
   const [currentStep, setCurrentStep] = useState(0);
+  const [prevCompletedStep, setPrevCompletedStep] = useState(-1);
   const [currentMessage, setCurrentMessage] = useState("");
   const testimonialRef = useRef<HTMLDivElement>(null);
-  const prevStepRef = useRef(-1);
+  const highestProgressRef = useRef(0);
 
   // Auto-scroll testimonials
   useEffect(() => {
@@ -186,10 +186,18 @@ const Index = () => {
   // Listen for form progress updates
   useEffect(() => {
     const handleProgressUpdate = (e: CustomEvent) => {
-      setFormProgress(e.detail.progress);
-      // Extract current step from the event
+      // Always keep the highest progress value we've reached
+      const newProgress = Math.max(e.detail.progress, highestProgressRef.current);
+      setFormProgress(newProgress);
+      highestProgressRef.current = newProgress;
+      
+      // Extract current step and previous completed step from the event
       if (e.detail.currentStep !== undefined) {
         setCurrentStep(e.detail.currentStep);
+      }
+      
+      if (e.detail.prevCompletedStep !== undefined) {
+        setPrevCompletedStep(e.detail.prevCompletedStep);
       }
     };
 
@@ -200,17 +208,21 @@ const Index = () => {
     };
   }, []);
 
-  // Update message when step changes
+  // Update message when previous completed step changes
   useEffect(() => {
-    // Only update if we've moved to a new step
-    if (currentStep !== prevStepRef.current) {
-      const stepKey = getFormStepKey(currentStep);
+    if (prevCompletedStep >= 0) {
+      // Get messages for the step we just completed
+      const stepKey = getFormStepKey(prevCompletedStep);
       const messagesForStep = progressMessages[stepKey];
       const randomIndex = Math.floor(Math.random() * messagesForStep.length);
       setCurrentMessage(messagesForStep[randomIndex]);
-      prevStepRef.current = currentStep;
+    } else {
+      // At the beginning, show a generic start message
+      const startMessages = progressMessages.start;
+      const randomIndex = Math.floor(Math.random() * startMessages.length);
+      setCurrentMessage(startMessages[randomIndex]);
     }
-  }, [currentStep]);
+  }, [prevCompletedStep]);
 
   const handlePrevious = () => {
     setCurrentTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length);
