@@ -12,19 +12,26 @@ const Index = () => {
             className="h-8 object-contain mx-auto mb-8"
           />
           <h1 className="text-4xl font-serif mb-4 text-elegant-brown">Create Your Digital Invite</h1>
-          <p className="text-gray-600 font-serif">Tell us your vision and we'll bring it to life</p>
         </div>
         
         {/* Social Validation Section */}
-        <div className="mb-8 bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-sm border border-elegant-secondary/10 animate-fadeIn">
+        <div className="mb-8 bg-[#8B5CF6]/10 rounded-xl p-4 shadow-sm border border-[#8B5CF6]/20 animate-fadeIn">
           <div className="flex items-center justify-center">
             <div className="flex -space-x-2 mr-3 overflow-hidden">
-              {/* Client avatars */}
-              <div className="inline-block h-7 w-7 rounded-full bg-[#E5DEFF] border-2 border-white flex items-center justify-center text-[10px] font-medium text-purple-800">SA</div>
-              <div className="inline-block h-7 w-7 rounded-full bg-[#FDE1D3] border-2 border-white flex items-center justify-center text-[10px] font-medium text-orange-800">MR</div>
-              <div className="inline-block h-7 w-7 rounded-full bg-[#D3E4FD] border-2 border-white flex items-center justify-center text-[10px] font-medium text-blue-800">HJ</div>
-              <div className="inline-block h-7 w-7 rounded-full bg-[#FFDEE2] border-2 border-white flex items-center justify-center text-[10px] font-medium text-pink-800">KL</div>
-              <div className="inline-block h-7 w-7 rounded-full bg-[#F2FCE2] border-2 border-white flex items-center justify-center text-[10px] font-medium text-green-800">+</div>
+              {/* Example customer avatars */}
+              <div className="inline-block h-7 w-7 rounded-full bg-white border-2 border-white overflow-hidden">
+                <img src="/placeholder.svg" alt="Customer" className="w-full h-full object-cover" />
+              </div>
+              <div className="inline-block h-7 w-7 rounded-full bg-white border-2 border-white overflow-hidden">
+                <img src="/placeholder.svg" alt="Customer" className="w-full h-full object-cover" />
+              </div>
+              <div className="inline-block h-7 w-7 rounded-full bg-white border-2 border-white overflow-hidden">
+                <img src="/placeholder.svg" alt="Customer" className="w-full h-full object-cover" />
+              </div>
+              <div className="inline-block h-7 w-7 rounded-full bg-white border-2 border-white overflow-hidden">
+                <img src="/placeholder.svg" alt="Customer" className="w-full h-full object-cover" />
+              </div>
+              <div className="inline-block h-7 w-7 rounded-full bg-white border-2 border-white flex items-center justify-center text-[10px] font-medium text-[#8B5CF6]">+</div>
             </div>
             <p className="text-sm text-gray-700 font-medium">
               <span className="font-bold text-elegant-brown">250+</span> happy clients from 

@@ -64,43 +64,41 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
     };
   };
 
-  const calculatePriceRange = () => {
-    let baseRange = "";
+  // Calculate exact price (rounded to nearest hundred)
+  const calculateExactPrice = () => {
+    let basePrice = 0;
     
     if (formData.deliveryFormats.videoInvite) {
       if (!formData.hasCharacters) {
-        baseRange = "1800-2100 AED";
+        // Average of 1800-2100 is 1950, round to 2000
+        basePrice = 2000;
       } else if (!formData.showFaces) {
-        baseRange = "2100-2300 AED";
+        // Average of 2100-2300 is 2200, already at a hundred
+        basePrice = 2200;
       } else {
         const characterCount = parseInt(formData.characterCount) || 0;
-        const basePrice = 2300;
-        const priceIncrement = 200;
-        const minPrice = basePrice + (characterCount - 1) * priceIncrement;
-        const maxPrice = minPrice + 200;
-        baseRange = `${minPrice}-${maxPrice} AED`;
+        // Start at 2300 and add 200 for each character after the first, plus halfway through the range (100)
+        basePrice = 2400 + (characterCount - 1) * 200; // 2400 is the midpoint between 2300 and 2500
       }
     } else if (formData.deliveryFormats.stillInvite) {
       if (!formData.hasCharacters || !formData.showFaces) {
-        baseRange = "1100 AED";
+        basePrice = 1100; // Already an exact price
       } else {
         const characterCount = parseInt(formData.characterCount) || 0;
-        let price;
         switch (characterCount) {
           case 1:
-            price = 1300;
+            basePrice = 1300;
             break;
           case 2:
-            price = 1500;
+            basePrice = 1500;
             break;
           case 3:
-            price = 1600;
+            basePrice = 1600;
             break;
           default:
-            price = 1700;
+            basePrice = 1700;
             break;
         }
-        baseRange = `${price} AED`;
       }
     } else {
       return "Contact us for pricing";
@@ -113,45 +111,18 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
       
       // Check for urgent delivery (6-14 days)
       if (days >= 6 && days <= 14) {
-        // Add 500 AED fee for urgent delivery
-        if (baseRange.includes("-")) {
-          const [min, max] = baseRange.split("-");
-          const minPrice = parseInt(min);
-          const maxPrice = parseInt(max.replace(" AED", ""));
-          baseRange = `${minPrice + 500}-${maxPrice + 500} AED (Urgent Delivery)`;
-        } else {
-          const price = parseInt(baseRange.replace(" AED", ""));
-          baseRange = `${price + 500} AED (Urgent Delivery)`;
-        }
-        return baseRange;
+        return `${basePrice + 500} AED (Urgent Delivery)`;
       }
       
       // Apply discounts for longer lead times
-      let discount = 0;
-      let discountText = "";
-      
       if (days >= 50) {
-        discount = 500;
-        discountText = " (500 AED OFF!)";
+        return `${basePrice - 500} AED (500 AED OFF!)`;
       } else if (days >= 25) {
-        discount = 300;
-        discountText = " (300 AED OFF!)";
-      }
-
-      if (discount !== 0) {
-        if (baseRange.includes("-")) {
-          const [min, max] = baseRange.split("-");
-          const minPrice = parseInt(min);
-          const maxPrice = parseInt(max.replace(" AED", ""));
-          baseRange = `${minPrice - discount}-${maxPrice - discount} AED${discountText}`;
-        } else {
-          const price = parseInt(baseRange.replace(" AED", ""));
-          baseRange = `${price - discount} AED${discountText}`;
-        }
+        return `${basePrice - 300} AED (300 AED OFF!)`;
       }
     }
 
-    return baseRange;
+    return `${basePrice} AED`;
   };
 
   const renderSection = (title: string, content: React.ReactNode) => (
@@ -277,7 +248,7 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
     doc.setTextColor(primaryColor);
     doc.setFontSize(12);
     doc.text("Estimated Price:", leftMargin, yPos);
-    doc.text(calculatePriceRange(), contentStartX, yPos);
+    doc.text(calculateExactPrice(), contentStartX, yPos);
 
     const fileName = `Bliss-${formData.fullName.replace(/\s+/g, '')}.pdf`;
     doc.save(fileName);
@@ -302,24 +273,16 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
 
       <div className="bg-[#8b7256]/10 p-6 rounded-lg border-2 border-[#8b7256]/20 mb-6">
         <div className="text-center">
-          <h3 className="text-elegant-brown font-serif text-lg mb-2">Estimated Price Range</h3>
+          <h3 className="text-elegant-brown font-serif text-lg mb-2">Estimated Price</h3>
           {(() => {
-            const priceRange = calculatePriceRange();
-            const hasDiscount = priceRange.includes("OFF!");
-            const hasUrgentFee = priceRange.includes("Urgent Delivery");
+            const priceString = calculateExactPrice();
+            const hasDiscount = priceString.includes("OFF!");
+            const hasUrgentFee = priceString.includes("Urgent Delivery");
             
             if (hasDiscount) {
-              const [discountedPrice, discount] = priceRange.split(" (");
-              const [originalPrice] = (() => {
-                if (discountedPrice.includes("-")) {
-                  const [min, max] = discountedPrice.split("-");
-                  const discountAmount = discount.includes("500") ? 500 : 300;
-                  return [`${parseInt(min) + discountAmount}-${parseInt(max.replace(" AED", "")) + discountAmount} AED`];
-                } else {
-                  const discountAmount = discount.includes("500") ? 500 : 300;
-                  return [`${parseInt(discountedPrice.replace(" AED", "")) + discountAmount} AED`];
-                }
-              })();
+              const [discountedPrice, discount] = priceString.split(" (");
+              const discountAmount = discount.includes("500") ? 500 : 300;
+              const originalPrice = `${parseInt(discountedPrice.replace(" AED", "")) + discountAmount} AED`;
               
               return (
                 <div className="space-y-4">
@@ -339,18 +302,8 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
                 </div>
               );
             } else if (hasUrgentFee) {
-              // Modified urgent delivery price display format
-              const [finalPrice] = priceRange.split(" (");
-              
-              // Calculate the original price (removing 500 AED from the urgent price)
-              const originalPrice = (() => {
-                if (finalPrice.includes("-")) {
-                  const [min, max] = finalPrice.split("-");
-                  return `${parseInt(min) - 500}-${parseInt(max.replace(" AED", "")) - 500} AED`;
-                } else {
-                  return `${parseInt(finalPrice.replace(" AED", "")) - 500} AED`;
-                }
-              })();
+              const [urgentPrice] = priceString.split(" (");
+              const originalPrice = `${parseInt(urgentPrice.replace(" AED", "")) - 500} AED`;
               
               return (
                 <div className="space-y-4">
@@ -359,7 +312,7 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
                       Regular price: {originalPrice}
                     </span>
                     <div className="text-2xl sm:text-3xl font-medium text-elegant-primary">
-                      {finalPrice}
+                      {urgentPrice}
                     </div>
                   </div>
                   <div className="inline-block">
@@ -373,7 +326,7 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
             
             return (
               <div className="text-2xl sm:text-3xl font-medium text-elegant-primary">
-                {priceRange}
+                {priceString}
               </div>
             );
           })()}

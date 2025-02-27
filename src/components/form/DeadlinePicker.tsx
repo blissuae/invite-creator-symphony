@@ -27,28 +27,14 @@ export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
   
   const [isUrgentDelivery, setIsUrgentDelivery] = useState(false);
 
-  // Check if currently selected date is in the urgent range
+  // Check if currently selected date is in the urgent range and set the checkbox accordingly
   useEffect(() => {
     if (selected) {
       const compareDate = startOfDay(selected);
       const isInUrgentRange = compareDate >= urgentMinDate && compareDate <= urgentMaxDate;
       setIsUrgentDelivery(isInUrgentRange);
     }
-  }, [selected]);
-
-  // When urgent delivery is toggled, clear the selected date
-  useEffect(() => {
-    if (selected) {
-      const compareDate = startOfDay(selected);
-      const isInUrgentRange = compareDate >= urgentMinDate && compareDate <= urgentMaxDate;
-      const isInRegularRange = compareDate >= regularMinDate;
-      
-      // Clear selection if current date doesn't match the selected mode
-      if ((isUrgentDelivery && !isInUrgentRange) || (!isUrgentDelivery && !isInRegularRange)) {
-        onSelect(null);
-      }
-    }
-  }, [isUrgentDelivery]);
+  }, []);
 
   const getDateDiscount = (date: Date) => {
     const compareDate = startOfDay(date);
