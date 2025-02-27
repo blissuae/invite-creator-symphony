@@ -80,17 +80,17 @@ export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
         </div>
       </div>
 
-      {/* Fact Box */}
-      <div className={`p-6 rounded-lg border shadow-sm mb-8 ${isUrgentDelivery ? 'bg-purple-50 border-purple-200' : 'bg-[#b8860b] border-[#b8860b]/20'}`}>
+      {/* Fact Box - Changed from golden to purple */}
+      <div className={`p-6 rounded-lg border shadow-sm mb-8 ${isUrgentDelivery ? 'bg-purple-50 border-purple-200' : 'bg-[#8B5CF6]/10 border-[#8B5CF6]/20'}`}>
         <div className="flex items-start gap-4">
-          <div className={`p-2 rounded-full ${isUrgentDelivery ? 'bg-purple-100' : 'bg-[#b8860b]/20'}`}>
+          <div className={`p-2 rounded-full ${isUrgentDelivery ? 'bg-purple-100' : 'bg-[#8B5CF6]/20'}`}>
             {isUrgentDelivery ? (
               <AlertTriangle className="w-5 h-5 text-purple-600" />
             ) : (
-              <Wand2 className="w-5 h-5 text-white" />
+              <Wand2 className="w-5 h-5 text-[#8B5CF6]" />
             )}
           </div>
-          <div className={`text-sm flex-1 ${isUrgentDelivery ? 'text-purple-800' : 'text-white'}`}>
+          <div className={`text-sm flex-1 ${isUrgentDelivery ? 'text-purple-800' : 'text-gray-700'}`}>
             {isUrgentDelivery ? (
               <>
                 <span className="font-semibold">URGENT DELIVERY: </span>
