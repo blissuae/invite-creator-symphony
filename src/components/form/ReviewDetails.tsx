@@ -104,13 +104,20 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
       return "Contact us for pricing";
     }
 
-    // Apply date-based discounts
+    // Apply date-based discounts or urgency fees
     if (formData.deadline) {
-      const days = Math.floor((formData.deadline.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+      const today = startOfDay(new Date());
+      const days = Math.floor((formData.deadline.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
       let discount = 0;
       let discountText = "";
 
-      if (days >= 50) {
+      // Urgent delivery fee (6-14 days)
+      if (days >= 6 && days <= 14) {
+        discount = -500; // Negative to indicate a fee
+        discountText = " (+500 AED Urgent Fee)";
+      }
+      // Standard discounts
+      else if (days >= 50) {
         discount = 500;
         discountText = " (500 AED OFF!)";
       } else if (days >= 25) {
@@ -118,7 +125,7 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
         discountText = " (300 AED OFF!)";
       }
 
-      if (discount > 0) {
+      if (discount !== 0) {
         if (baseRange.includes("-")) {
           const [min, max] = baseRange.split("-");
           const minPrice = parseInt(min);
@@ -286,6 +293,7 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
           {(() => {
             const priceRange = calculatePriceRange();
             const hasDiscount = priceRange.includes("OFF!");
+            const hasUrgentFee = priceRange.includes("Urgent Fee");
             
             if (hasDiscount) {
               const [discountedPrice, discount] = priceRange.split(" (");
@@ -313,6 +321,34 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
                   <div className="inline-block animate-bounce">
                     <span className="bg-green-100 text-green-800 text-lg font-semibold px-4 py-1 rounded-full">
                       {discount.replace(")", "")} 🎉
+                    </span>
+                  </div>
+                </div>
+              );
+            } else if (hasUrgentFee) {
+              const [basePrice, fee] = priceRange.split(" (");
+              const [originalPrice] = (() => {
+                if (basePrice.includes("-")) {
+                  const [min, max] = basePrice.split("-");
+                  return [`${parseInt(min) + 500}-${parseInt(max.replace(" AED", "")) + 500} AED`];
+                } else {
+                  return [`${parseInt(basePrice.replace(" AED", "")) + 500} AED`];
+                }
+              })();
+              
+              return (
+                <div className="space-y-4">
+                  <div className="flex flex-col items-center gap-1">
+                    <span className="text-gray-500 text-lg">
+                      {originalPrice}
+                    </span>
+                    <div className="text-2xl sm:text-3xl font-medium text-elegant-primary">
+                      {basePrice}
+                    </div>
+                  </div>
+                  <div className="inline-block">
+                    <span className="bg-purple-100 text-purple-800 text-lg font-semibold px-4 py-1 rounded-full">
+                      {fee.replace(")", "")} ⚡
                     </span>
                   </div>
                 </div>
