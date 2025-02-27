@@ -12,6 +12,7 @@ import { AnimationStyleSelector } from "./form/AnimationStyleSelector";
 import { FormNavigation } from "./form/FormNavigation";
 import { DeliveryFormats } from "./form/DeliveryFormats";
 import { FORM_STEPS, useInviteForm } from "@/hooks/use-invite-form";
+import { useEffect } from "react";
 
 export const InviteForm = () => {
   const {
@@ -31,6 +32,18 @@ export const InviteForm = () => {
       setCurrentStep(step);
     }
   };
+
+  // Update the progress percentage in the parent component
+  useEffect(() => {
+    const progressValue = isSubmitted 
+      ? 100 
+      : Math.min(95, Math.ceil((currentStep / (FORM_STEPS.length - 1)) * 100));
+    
+    const progressEvent = new CustomEvent('formProgressUpdate', { 
+      detail: { progress: progressValue } 
+    });
+    window.dispatchEvent(progressEvent);
+  }, [currentStep, isSubmitted]);
 
   const renderStep = () => {
     if (isSubmitted) {

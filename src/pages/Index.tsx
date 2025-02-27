@@ -3,6 +3,7 @@ import { InviteForm } from "@/components/InviteForm";
 import { useState, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 
 // Testimonial data with added image paths
 const testimonials = [
@@ -69,6 +70,7 @@ const Index = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [showForm, setShowForm] = useState(false);
+  const [formProgress, setFormProgress] = useState(10);
   const testimonialRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll testimonials
@@ -81,6 +83,19 @@ const Index = () => {
 
     return () => clearInterval(interval);
   }, [isDragging]);
+
+  // Listen for form progress updates from InviteForm component
+  useEffect(() => {
+    const handleProgressUpdate = (e: CustomEvent) => {
+      setFormProgress(e.detail.progress);
+    };
+
+    window.addEventListener('formProgressUpdate', handleProgressUpdate as EventListener);
+    
+    return () => {
+      window.removeEventListener('formProgressUpdate', handleProgressUpdate as EventListener);
+    };
+  }, []);
 
   const handlePrevious = () => {
     setCurrentTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length);
@@ -134,6 +149,22 @@ const Index = () => {
           )}
         </div>
         
+        {showForm && (
+          <div className="mb-6 animate-fadeIn">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm text-gray-500">Your progress</span>
+              <span className="text-sm font-medium text-elegant-brown">{formProgress}%</span>
+            </div>
+            <Progress value={formProgress} className="h-2 bg-gray-200" />
+            <p className="text-xs text-gray-500 mt-1 text-center">
+              {formProgress < 30 ? "Let's get started!" : 
+               formProgress < 60 ? "You're making great progress!" : 
+               formProgress < 90 ? "Almost there!" : 
+               "Just one more step to complete!"}
+            </p>
+          </div>
+        )}
+        
         {!showForm ? (
           <>
             {/* Social Validation Section */}
@@ -164,8 +195,8 @@ const Index = () => {
               </div>
             </div>
             
-            {/* Enhanced Testimonials Section */}
-            <div className="mb-12 bg-white rounded-xl p-6 shadow-sm border border-elegant-secondary/10 animate-fadeIn">
+            {/* Enhanced Testimonials Section with subtle background color */}
+            <div className="mb-12 bg-gradient-to-b from-[#f7f1fd] to-white rounded-xl p-6 shadow-sm border border-elegant-secondary/10 animate-fadeIn">
               <h3 className="text-xl font-serif text-center text-elegant-brown mb-6">Our Clients Love Us</h3>
               
               <div 
@@ -199,7 +230,7 @@ const Index = () => {
                   {testimonials.map((testimonial, index) => (
                     <div 
                       key={index} 
-                      className="w-full shrink-0 px-4 py-2"
+                      className="w-full shrink-0 px-8 py-4" // Increased padding
                     >
                       <div className="flex items-center">
                         {/* Left side: Client photo and text */}
@@ -221,16 +252,16 @@ const Index = () => {
                           <p className="italic text-gray-700 mb-3 text-sm md:text-base">"{testimonial.text}"</p>
                         </div>
                         
-                        {/* Right side: Design sample */}
+                        {/* Right side: iPhone 16 design sample (half shown) */}
                         <div className="hidden md:block w-1/3 pl-6">
-                          <div className="relative w-36 h-72 mx-auto">
-                            {/* Phone frame */}
-                            <div className="absolute inset-0 bg-gray-900 rounded-[36px] shadow-xl">
+                          <div className="relative w-32 h-72 mx-auto overflow-hidden">
+                            {/* iPhone 16 frame - showing half of it */}
+                            <div className="absolute inset-0 right-[-50%] bg-gray-900 rounded-[48px] shadow-xl">
                               {/* Inner bezel */}
-                              <div className="absolute inset-1 rounded-[32px] bg-black overflow-hidden">
+                              <div className="absolute inset-1 rounded-[44px] bg-black overflow-hidden">
                                 {/* Screen content */}
                                 <div 
-                                  className="absolute inset-0 rounded-[30px] overflow-hidden"
+                                  className="absolute inset-0 rounded-[42px] overflow-hidden"
                                   style={{ backgroundColor: testimonial.designColor }}
                                 >
                                   <img 
@@ -239,8 +270,8 @@ const Index = () => {
                                     className="w-full h-full object-cover"
                                   />
                                 </div>
-                                {/* Notch */}
-                                <div className="absolute top-2 left-1/2 transform -translate-x-1/2 w-20 h-4 bg-black rounded-b-xl"></div>
+                                {/* Dynamic Island */}
+                                <div className="absolute top-3 left-1/2 transform -translate-x-1/2 w-[80px] h-[10px] bg-black rounded-full"></div>
                               </div>
                             </div>
                           </div>
@@ -267,13 +298,16 @@ const Index = () => {
               </div>
             </div>
             
-            {/* Get Started Button */}
+            {/* Get Started Button with animation */}
             <div className="flex justify-center mb-12 animate-fadeIn">
               <Button 
                 onClick={() => setShowForm(true)}
-                className="bg-elegant-brown hover:bg-elegant-brown/90 text-white font-serif px-8 py-6 text-lg rounded-xl shadow-lg transition-all hover:shadow-xl hover:scale-[1.02]"
+                className="bg-elegant-brown hover:bg-elegant-brown/90 text-white font-serif px-8 py-6 text-lg rounded-xl shadow-lg transition-all hover:shadow-xl hover:scale-[1.02] relative overflow-hidden group"
               >
-                Get Started
+                <span className="relative z-10">Get Started</span>
+                <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-[#b8860b]/20 to-transparent animate-pulse"></span>
+                <span className="absolute right-2 w-6 h-6 rounded-full bg-white/20 animate-ping"></span>
+                <span className="absolute bottom-0 left-0 w-full h-[2px] bg-white scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></span>
               </Button>
             </div>
           </>

@@ -37,8 +37,15 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
 
   const formatDeadline = (date: Date | null) => {
     if (!date) return "Not selected";
+    
+    const today = startOfDay(new Date());
+    const deadlineDate = startOfDay(date);
+    const days = Math.floor((deadlineDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    
+    const isUrgent = days >= 6 && days <= 14;
     const formattedDate = format(date, "MMMM d, yyyy");
-    return formattedDate;
+    
+    return isUrgent ? `${formattedDate} (Urgent Delivery)` : formattedDate;
   };
 
   const formatColorPalette = (paletteId: string) => {
@@ -219,7 +226,7 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
     addColorPalette();
 
     const remainingSections = [
-      { title: "Event Deadline:", content: formatDeadline(formData.deadline) }
+      { title: "Project Deadline:", content: formatDeadline(formData.deadline) }
     ];
 
     remainingSections.forEach((section) => {
@@ -405,7 +412,7 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
           </div>
         )}
         
-        {renderSection("Event Deadline", 
+        {renderSection("Project Deadline", 
           formatDeadline(formData.deadline)
         )}
         
