@@ -46,10 +46,10 @@ export const CharacterOptions = ({
 
   return (
     <div className="space-y-8">
-      {/* Random Fact Display */}
-      <div className="bg-[#b8860b] p-6 rounded-lg border border-[#b8860b]/20 shadow-sm">
+      {/* Random Fact Display - Updated to purple */}
+      <div className="bg-[#9b87f5] p-6 rounded-lg border border-[#9b87f5]/20 shadow-sm">
         <div className="flex items-start gap-4">
-          <div className="p-2 bg-[#b8860b]/20 rounded-full">
+          <div className="p-2 bg-[#9b87f5]/20 rounded-full">
             <FactIcon className="w-5 h-5 text-white" />
           </div>
           <p className="text-sm text-white flex-1">

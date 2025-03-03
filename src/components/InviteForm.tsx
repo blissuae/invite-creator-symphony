@@ -1,3 +1,4 @@
+
 import { FormProgress } from "./form/FormProgress";
 import { BasicDetails } from "./form/BasicDetails";
 import { CharacterOptions } from "./form/CharacterOptions";
@@ -132,7 +133,7 @@ export const InviteForm = () => {
   }
 
   return (
-    <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-elegant-secondary/20 overflow-hidden animate-fadeIn flex flex-col max-h-[calc(100vh-12rem)]">
+    <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-elegant-secondary/20 overflow-hidden animate-fadeIn flex flex-col">
       <FormProgress 
         steps={FORM_STEPS} 
         currentStep={currentStep}
@@ -140,7 +141,7 @@ export const InviteForm = () => {
         onStepClick={handleStepClick}
       />
       <div className="flex flex-col flex-1 overflow-hidden">
-        <div className="p-4 sm:p-8 flex-1 overflow-y-auto">
+        <div className="p-4 sm:p-8 overflow-y-auto">
           <div className="sm:min-h-[400px]">{renderStep()}</div>
         </div>
         <div className="sticky bottom-0 p-4 sm:p-8 border-t border-elegant-secondary/20 bg-white">
