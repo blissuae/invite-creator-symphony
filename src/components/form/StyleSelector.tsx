@@ -1,6 +1,4 @@
 
-import { InfoIcon } from "lucide-react";
-
 interface StyleSelectorProps {
   selected: string;
   onSelect: (value: string) => void;
@@ -27,20 +25,6 @@ export const StyleSelector = ({ selected, onSelect }: StyleSelectorProps) => {
       <h2 className="text-2xl font-serif text-center mb-8 text-elegant-brown">
         Select Your Style
       </h2>
-      
-      {/* DID YOU KNOW - updated to purple */}
-      <div className="bg-[#8B5CF6]/10 p-6 rounded-lg border border-[#8B5CF6]/20 shadow-sm mb-8">
-        <div className="flex items-start gap-4">
-          <div className="p-2 bg-[#8B5CF6]/20 rounded-full">
-            <InfoIcon className="w-5 h-5 text-[#8B5CF6]" />
-          </div>
-          <p className="text-sm text-gray-700 flex-1">
-            <span className="font-semibold">DID YOU KNOW: </span>
-            Your design style sets the tone for your entire invitation. Minimal styles create a sense of sophistication, while modern designs add a contemporary flair that stands out.
-          </p>
-        </div>
-      </div>
-      
       <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
         {STYLES.map((style) => (
           <div

@@ -12,7 +12,7 @@ import { AnimationStyleSelector } from "./form/AnimationStyleSelector";
 import { FormNavigation } from "./form/FormNavigation";
 import { DeliveryFormats } from "./form/DeliveryFormats";
 import { FORM_STEPS, useInviteForm } from "@/hooks/use-invite-form";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 
 export const InviteForm = () => {
   const {
@@ -27,10 +27,6 @@ export const InviteForm = () => {
     setCurrentStep,
   } = useInviteForm();
 
-  // Store the highest progress value
-  const highestProgressRef = useRef(0);
-  const prevCompletedStepRef = useRef(-1);
-
   const handleStepClick = (step: number) => {
     if (step <= maxStep) {
       setCurrentStep(step);
@@ -39,28 +35,18 @@ export const InviteForm = () => {
 
   // Update the progress percentage in the parent component
   useEffect(() => {
-    // Calculate progress based on the maximum step achieved (not the current step)
-    // This ensures progress can only move forward, not backward
-    const baseProgress = Math.min(95, Math.ceil((maxStep / (FORM_STEPS.length - 1)) * 100));
-    
-    // If we've completed a new step, update the previous completed step reference
-    if (currentStep > prevCompletedStepRef.current) {
-      prevCompletedStepRef.current = currentStep - 1; // Store the step we just completed
-    }
-    
-    // For progress calculation, use the max value ever reached (never decrease)
-    const progressValue = isSubmitted ? 100 : Math.max(baseProgress, highestProgressRef.current);
-    highestProgressRef.current = progressValue;
+    const progressValue = isSubmitted 
+      ? 100 
+      : Math.min(95, Math.ceil((currentStep / (FORM_STEPS.length - 1)) * 100));
     
     const progressEvent = new CustomEvent('formProgressUpdate', { 
       detail: { 
         progress: progressValue,
-        currentStep: isSubmitted ? 9 : currentStep,
-        prevCompletedStep: Math.max(0, prevCompletedStepRef.current) // Send which step was just completed
+        currentStep: isSubmitted ? 9 : currentStep // 9 signifies completion
       } 
     });
     window.dispatchEvent(progressEvent);
-  }, [currentStep, maxStep, isSubmitted]);
+  }, [currentStep, isSubmitted]);
 
   const renderStep = () => {
     if (isSubmitted) {

@@ -1,4 +1,3 @@
-
 import { useState, useMemo } from "react";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
@@ -52,13 +51,13 @@ export const ContentEditor = ({
 
   return (
     <div className="space-y-8 animate-fadeIn">
-      {/* Random Fact Display - Updated to use purple */}
-      <div className="bg-[#8B5CF6]/10 p-6 rounded-lg border border-[#8B5CF6]/20 shadow-sm">
+      {/* Random Fact Display */}
+      <div className="bg-[#b8860b] p-6 rounded-lg border border-[#b8860b]/20 shadow-sm">
         <div className="flex items-start gap-4">
-          <div className="p-2 bg-[#8B5CF6]/20 rounded-full">
-            <FactIcon className="w-5 h-5 text-[#8B5CF6]" />
+          <div className="p-2 bg-[#b8860b]/20 rounded-full">
+            <FactIcon className="w-5 h-5 text-white" />
           </div>
-          <p className="text-sm text-gray-700 flex-1">
+          <p className="text-sm text-white flex-1">
             <span className="font-semibold">DID YOU KNOW: </span>
             {randomFact.text}
           </p>
