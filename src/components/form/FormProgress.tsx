@@ -1,10 +1,9 @@
-
 import { Progress } from "@/components/ui/progress";
 
 interface FormProgressProps {
   steps: readonly string[];
   currentStep: number;
-  maxStep: number;  // Add maxStep prop
+  maxStep: number;
   onStepClick?: (step: number) => void;
 }
 

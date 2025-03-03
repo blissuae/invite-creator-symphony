@@ -1,7 +1,7 @@
 
 import { InviteForm } from "@/components/InviteForm";
 import { useState, useEffect, useRef } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 
@@ -13,7 +13,8 @@ const testimonials = [
     text: "The digital invitation for my daughter's wedding was breathtaking. Everyone loved it!",
     avatar: "/placeholder.svg",
     design: "/placeholder.svg",
-    designColor: "#FDE1D3"
+    designColor: "#FDE1D3",
+    rating: 5
   },
   {
     name: "Mohammed R.",
@@ -21,7 +22,8 @@ const testimonials = [
     text: "Bliss created the perfect invitation for our corporate event. Professional and elegant.",
     avatar: "/placeholder.svg",
     design: "/placeholder.svg",
-    designColor: "#E5DEFF"
+    designColor: "#E5DEFF",
+    rating: 5
   },
   {
     name: "Fatima K.",
@@ -29,7 +31,8 @@ const testimonials = [
     text: "I was amazed by how they captured the essence of our family celebration. Truly memorable!",
     avatar: "/placeholder.svg",
     design: "/placeholder.svg",
-    designColor: "#FEF7CD"
+    designColor: "#FEF7CD",
+    rating: 5
   },
   {
     name: "Hassan J.",
@@ -37,7 +40,8 @@ const testimonials = [
     text: "The attention to detail was exceptional. Our guests were impressed with the quality.",
     avatar: "/placeholder.svg",
     design: "/placeholder.svg",
-    designColor: "#D3E4FD"
+    designColor: "#D3E4FD",
+    rating: 4
   },
   {
     name: "Layla M.",
@@ -45,7 +49,8 @@ const testimonials = [
     text: "Beautiful designs and excellent customer service. Highly recommended!",
     avatar: "/placeholder.svg",
     design: "/placeholder.svg",
-    designColor: "#FFDEE2"
+    designColor: "#FFDEE2",
+    rating: 5
   },
   {
     name: "Ahmed Q.",
@@ -53,7 +58,8 @@ const testimonials = [
     text: "The elegance and creativity in our wedding invitation exceeded our expectations.",
     avatar: "/placeholder.svg",
     design: "/placeholder.svg",
-    designColor: "#F2FCE2"
+    designColor: "#F2FCE2",
+    rating: 5
   },
   {
     name: "Noor K.",
@@ -61,11 +67,13 @@ const testimonials = [
     text: "We received countless compliments on our digital invitation. Worth every penny!",
     avatar: "/placeholder.svg",
     design: "/placeholder.svg",
-    designColor: "#F1F0FB"
+    designColor: "#F1F0FB",
+    rating: 5
   }
 ];
 
 // Array of encouraging and fun progress messages by step
+// Modified to reflect the PREVIOUS completed step
 const progressMessages = {
   // Generic messages for start
   start: [
@@ -74,63 +82,63 @@ const progressMessages = {
     "Ready to design something extraordinary? Let's go! 🚀"
   ],
   
-  // For Basic Details step
+  // For after completing Basic Details step
   basicDetails: [
     "Great! Personal details noted. This will be uniquely yours! 🌟",
     "Perfect start! We'll craft something special just for you 💝",
     "Wonderful details! Now let's make your event shine! 🎉"
   ],
   
-  // For Delivery Formats step
+  // For after completing Delivery Formats step
   deliveryFormats: [
-    "Excellent choices! Your guests will be so impressed 😍",
+    "Excellent format choices! Your guests will be so impressed 😍",
     "Smart selections! Your invitation will look amazing across all platforms 📱💻",
     "Perfect format picks! Now let's add some personality! 🎯"
   ],
   
-  // For Character Options step
+  // For after completing Character Options step
   characterOptions: [
-    "Fantastic choices! Your invite will be just as you imagined 🧙‍♂️",
-    "Perfect characters make for perfect invites! Looking great! 👥",
+    "Your character selections will make this invitation pop! 🧙‍♂️",
+    "Perfect character choices! Your invite will be just as you imagined 👥",
     "Your characters will bring your invitation to life! 🌈"
   ],
   
-  // For Content Editor step
+  // For after completing Content Editor step
   content: [
     "We love your creativity! That will make for an amazing invite! 💡",
     "Your words will captivate your guests! Brilliant content! 📝",
     "Your message is going to shine through beautifully! ✨"
   ],
   
-  // For Color Palette step
+  // For after completing Color Palette step
   colorPalette: [
     "You've got great taste! That palette will look stunning! 🎨",
     "Beautiful color choice! Your guests will be mesmerized! 🌈",
     "Perfect palette! These colors will make your invitation pop! 💫"
   ],
   
-  // For Animation Style step
+  // For after completing Animation Style step
   animationStyles: [
     "Those animations will bring magic to your invite! ✨",
-    "Great pick! Your invitation will come alive with these effects! 🌟",
+    "Great animation pick! Your invitation will come alive with these effects! 🌟",
     "Perfect animation choices! Your invitation will be unforgettable! 🎬"
   ],
   
-  // For Design Style step
+  // For after completing Design Style step
   designStyle: [
     "Excellent style choice! So elegant and perfect for your event! 👑",
     "That design will make your invitation truly stand out! 🏆",
     "Beautiful style selection! It complements your theme perfectly! 🎭"
   ],
   
-  // For Deadline step
+  // For after completing Deadline step
   deadline: [
     "Perfect timing! We're excited to create your invitation! ⏰",
     "Great! We'll have your beautiful invitation ready right on time! 📅",
     "Deadline noted! Your dream invitation is just around the corner! 🗓️"
   ],
   
-  // For Review step
+  // For after completing Review step
   review: [
     "Almost there! Your dream invitation is taking shape! 🌠",
     "Just one final look! Your creation is nearly complete! 🏁",
@@ -145,18 +153,21 @@ const progressMessages = {
   ]
 };
 
-const getFormStepKey = (step: number): keyof typeof progressMessages => {
+// Helper function to get the step key for progress messages
+// Modified to return the previous step key instead of current
+const getPreviousStepKey = (step: number): keyof typeof progressMessages => {
+  // Return the key for the previous step
   switch(step) {
-    case 0: return "basicDetails";
-    case 1: return "deliveryFormats";
-    case 2: return "characterOptions";
-    case 3: return "content"; 
-    case 4: return "colorPalette";
-    case 5: return "animationStyles";
-    case 6: return "designStyle";
-    case 7: return "deadline";
-    case 8: return "review";
-    case 9: return "complete";
+    case 0: return "start"; // First step - show generic start messages
+    case 1: return "basicDetails"; // Basic Details completed
+    case 2: return "deliveryFormats"; // Delivery Formats completed
+    case 3: return "characterOptions"; // Character Options completed
+    case 4: return "content"; // Content Editor completed
+    case 5: return "colorPalette"; // Color Palette completed
+    case 6: return "animationStyles"; // Animation Styles completed
+    case 7: return "designStyle"; // Design Style completed
+    case 8: return "deadline"; // Deadline completed
+    case 9: return "review"; // Review completed
     default: return "start";
   }
 };
@@ -204,7 +215,8 @@ const Index = () => {
   useEffect(() => {
     // Only update if we've moved to a new step
     if (currentStep !== prevStepRef.current) {
-      const stepKey = getFormStepKey(currentStep);
+      // Use the previous step key to get appropriate messages
+      const stepKey = getPreviousStepKey(currentStep);
       const messagesForStep = progressMessages[stepKey];
       const randomIndex = Math.floor(Math.random() * messagesForStep.length);
       setCurrentMessage(messagesForStep[randomIndex]);
@@ -248,6 +260,22 @@ const Index = () => {
       document.removeEventListener('mouseup', handleMouseUp);
     };
   }, []);
+
+  // Render star ratings
+  const renderStars = (rating: number) => {
+    return (
+      <div className="flex items-center">
+        {[...Array(5)].map((_, i) => (
+          <Star
+            key={i}
+            className={`w-4 h-4 ${
+              i < rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300"
+            }`}
+          />
+        ))}
+      </div>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-elegant-beige to-white">
@@ -323,7 +351,7 @@ const Index = () => {
               </div>
             </div>
             
-            {/* Enhanced Testimonials Section with subtle background color */}
+            {/* Improved Testimonials Section with new layout */}
             <div className="mb-12 bg-gradient-to-b from-[#f7f1fd] to-white rounded-xl p-6 shadow-sm border border-elegant-secondary/10 animate-fadeIn">
               <h3 className="text-xl font-serif text-center text-elegant-brown mb-6">Our Clients Love Us</h3>
               
@@ -358,48 +386,53 @@ const Index = () => {
                   {testimonials.map((testimonial, index) => (
                     <div 
                       key={index} 
-                      className="w-full shrink-0 px-8 py-4" // Increased padding
+                      className="w-full shrink-0 p-4"
                     >
-                      <div className="flex items-center">
-                        {/* Left side: Client photo and text */}
-                        <div className="flex-1 flex flex-col items-center md:items-start">
-                          <div className="flex items-center mb-4">
-                            <div className="mr-3 h-14 w-14 rounded-full overflow-hidden border-2 border-elegant-beige shadow-md">
+                      <div className="bg-white rounded-xl p-6 shadow-md border border-elegant-secondary/10 flex flex-col md:flex-row gap-6">
+                        {/* Left side: Client photo and info */}
+                        <div className="flex flex-col items-center md:items-start md:w-1/3">
+                          <div className="relative mb-3">
+                            <div className="h-20 w-20 rounded-full overflow-hidden border-4 border-elegant-beige shadow-md">
                               <img src={testimonial.avatar} alt={testimonial.name} className="h-full w-full object-cover" />
                             </div>
-                            <div>
-                              <p className="font-medium text-elegant-brown">{testimonial.name}</p>
-                              <p className="text-xs text-gray-500">{testimonial.location}</p>
+                            <div className="absolute -bottom-2 -right-2 bg-white rounded-full p-1 shadow-md">
+                              {renderStars(testimonial.rating)}
                             </div>
                           </div>
-                          <div className="text-elegant-brown mb-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
-                            </svg>
-                          </div>
-                          <p className="italic text-gray-700 mb-3 text-sm md:text-base">"{testimonial.text}"</p>
+                          <h4 className="font-medium text-lg text-elegant-brown mt-2">{testimonial.name}</h4>
+                          <p className="text-xs text-gray-500 mb-2">{testimonial.location}</p>
                         </div>
                         
-                        {/* Right side: iPhone 16 design sample (half shown) */}
-                        <div className="hidden md:block w-1/3 pl-6">
-                          <div className="relative w-32 h-72 mx-auto overflow-hidden">
-                            {/* iPhone 16 frame - showing half of it */}
-                            <div className="absolute inset-0 right-[-50%] bg-gray-900 rounded-[48px] shadow-xl">
-                              {/* Inner bezel */}
-                              <div className="absolute inset-1 rounded-[44px] bg-black overflow-hidden">
-                                {/* Screen content */}
-                                <div 
-                                  className="absolute inset-0 rounded-[42px] overflow-hidden"
-                                  style={{ backgroundColor: testimonial.designColor }}
-                                >
-                                  <img 
-                                    src={testimonial.design} 
-                                    alt="Design preview" 
-                                    className="w-full h-full object-cover"
-                                  />
+                        {/* Right side: Testimonial text and design preview */}
+                        <div className="md:w-2/3">
+                          <div className="mb-4 relative">
+                            <div className="absolute -top-4 -left-2 text-elegant-brown/20 transform scale-150">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M6.5 10c-.223 0-.437.034-.65.065.069-.232.14-.468.254-.68.114-.308.292-.575.469-.844.148-.291.409-.488.601-.737.201-.242.475-.403.692-.604.213-.21.492-.315.714-.463.232-.133.434-.28.65-.35.208-.086.39-.16.539-.222.302-.125.474-.197.474-.197L9.758 4.03c0 0-.218.052-.597.144-.357.067-.926.19-1.429.39-.25.105-.474.217-.692.336-.238.125-.464.264-.683.428-.225.162-.407.356-.618.54-.195.218-.39.405-.539.66-.144.264-.342.493-.458.74-.118.257-.177.54-.259.812-.102.263-.199.528-.239.792-.035.28-.07.522-.07.81 0 .292.017.565.07.847.059.263.122.524.21.779.073.292.186.549.284.812.111.275.233.525.38.787.128.252.297.49.44.725.153.252.346.493.546.715.199.217.398.42.609.59.18.173.394.351.599.495.195.16.405.29.62.414.208.137.434.238.65.363.21.118.421.235.621.364.203.068.405.186.605.27.51.235.808.354.808.354l-.47-1.098c0 0-.354.152-.736.269-.345.117-.783.229-1.208.346-.214.063-.42.14-.627.223-.23.053-.436.119-.644.189-.2.07-.375.164-.57.233-.165.076-.343.156-.493.232-.107.046-.214.097-.314.142"/>
+                                <path d="M14.986 10c-.223 0-.437.034-.65.065.069-.232.14-.468.254-.68.114-.308.292-.575.469-.844.148-.291.409-.488.601-.737.201-.242.475-.403.692-.604.213-.21.492-.315.714-.463.232-.133.434-.28.65-.35.208-.086.39-.16.539-.222.302-.125.474-.197.474-.197l-.493-1.083c0 0-.218.052-.597.144-.357.067-.926.19-1.429.39-.25.105-.474.217-.692.336-.238.125-.464.264-.683.428-.225.162-.407.356-.618.54-.195.218-.39.405-.539.66-.144.264-.342.493-.458.74-.118.257-.177.54-.259.812-.102.263-.199.528-.239.792-.035.28-.07.522-.07.81 0 .292.017.565.07.847.059.263.122.524.21.779.073.292.186.549.284.812.111.275.233.525.38.787.128.252.297.49.44.725.153.252.346.493.546.715.199.217.398.42.609.59.18.173.394.351.599.495.195.16.405.29.62.414.208.137.434.238.65.363.21.118.421.235.621.364.203.068.405.186.605.27.51.235.808.354.808.354l-.47-1.098c0 0-.354.152-.736.269-.345.117-.783.229-1.208.346-.214.063-.42.14-.627.223-.23.053-.436.119-.644.189-.2.07-.375.164-.57.233-.165.076-.343.156-.493.232-.107.046-.214.097-.314.142"/>
+                              </svg>
+                            </div>
+                            <p className="text-gray-700 pl-6 leading-relaxed italic">"{testimonial.text}"</p>
+                          </div>
+                          
+                          {/* Design preview in device mockup */}
+                          <div className="hidden md:flex justify-end">
+                            <div className="relative w-24 h-48 overflow-hidden">
+                              {/* Phone mockup */}
+                              <div className="absolute inset-0 bg-gray-900 rounded-[24px] shadow-lg">
+                                <div className="absolute inset-[2px] rounded-[22px] bg-black overflow-hidden">
+                                  {/* Screen content with design color */}
+                                  <div 
+                                    className="absolute inset-0 rounded-[20px] overflow-hidden"
+                                    style={{ backgroundColor: testimonial.designColor }}
+                                  >
+                                    <img 
+                                      src={testimonial.design} 
+                                      alt="Design preview" 
+                                      className="w-full h-full object-cover opacity-60"
+                                    />
+                                  </div>
                                 </div>
-                                {/* Dynamic Island */}
-                                <div className="absolute top-3 left-1/2 transform -translate-x-1/2 w-[80px] h-[10px] bg-black rounded-full"></div>
                               </div>
                             </div>
                           </div>

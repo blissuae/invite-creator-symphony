@@ -1,4 +1,3 @@
-
 import { FormProgress } from "./form/FormProgress";
 import { BasicDetails } from "./form/BasicDetails";
 import { CharacterOptions } from "./form/CharacterOptions";
@@ -33,20 +32,19 @@ export const InviteForm = () => {
     }
   };
 
-  // Update the progress percentage in the parent component
   useEffect(() => {
     const progressValue = isSubmitted 
       ? 100 
-      : Math.min(95, Math.ceil((currentStep / (FORM_STEPS.length - 1)) * 100));
+      : Math.min(95, Math.ceil((maxStep / (FORM_STEPS.length - 1)) * 100));
     
     const progressEvent = new CustomEvent('formProgressUpdate', { 
       detail: { 
         progress: progressValue,
-        currentStep: isSubmitted ? 9 : currentStep // 9 signifies completion
+        currentStep: currentStep
       } 
     });
     window.dispatchEvent(progressEvent);
-  }, [currentStep, isSubmitted]);
+  }, [currentStep, maxStep, isSubmitted]);
 
   const renderStep = () => {
     if (isSubmitted) {
