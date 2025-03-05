@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { generatePDF } from "@/utils/pdfGenerator";
@@ -162,7 +163,7 @@ export const useInviteForm = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          access_key: 'YOUR-ACCESS-KEY',
+          access_key: '46a75bca-72c3-4648-8b3a-c0e0d2d8f6c1', // Updated valid access key
           from_name: formData.fullName,
           subject: `New Invitation Request - ${formData.occasion}`,
           to: 'hello@bliss-go.com',
