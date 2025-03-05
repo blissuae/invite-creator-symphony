@@ -14,49 +14,83 @@ interface AnimationStyle {
 
 const ANIMATION_STYLES: AnimationStyle[] = [
   {
-    id: "matrix",
-    title: "Matrix Style",
-    imageUrl: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&q=80",
-    description: "Digital, fast-paced, dynamic transitions"
+    id: "style1",
+    title: "Swan Lake",
+    imageUrl: "public/lovable-uploads/ff818b60-8216-4a6d-a885-091fed76b631.png",
+    description: "Serene lake scene with elegant swans and floral elements"
   },
   {
-    id: "tech",
-    title: "Tech Flow",
-    imageUrl: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=800&q=80",
-    description: "Modern, code-inspired animations"
+    id: "style2",
+    title: "Engagement",
+    imageUrl: "public/lovable-uploads/e1b1cf21-4a11-4f37-8d40-3d12bfecf394.png",
+    description: "Romantic couple in traditional attire with glowing light effects"
   },
   {
-    id: "minimalist",
-    title: "Minimalist",
-    imageUrl: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&q=80",
-    description: "Clean, subtle movements"
+    id: "style3",
+    title: "Elegant Arch",
+    imageUrl: "public/lovable-uploads/5a57d3c7-f02d-486e-bcb5-6a894cdcc316.png",
+    description: "Minimalist arch design with swan motifs and calligraphy"
   },
   {
-    id: "nature",
-    title: "Nature Flow",
-    imageUrl: "https://images.unsplash.com/photo-1500673922987-e212871fec22?w=800&q=80",
-    description: "Organic, smooth transitions"
+    id: "style4",
+    title: "Lantern Glow",
+    imageUrl: "public/lovable-uploads/7cb2b978-f451-48b6-8512-a3b8921ab2a7.png",
+    description: "Couple silhouette with floating lanterns against night sky"
   },
   {
-    id: "glass",
-    title: "Glass Effect",
-    imageUrl: "https://images.unsplash.com/photo-1439337153520-7082a56a81f4?w=800&q=80",
-    description: "Transparent, subtle animations"
-  },
-  // ... Adding more styles to reach 20
-  {
-    id: "geometric",
-    title: "Geometric",
-    imageUrl: "https://images.unsplash.com/photo-1507721999472-8ed4421c4af2?w=800&q=80",
-    description: "Shape-based transitions"
+    id: "style5",
+    title: "Sketch Landscape",
+    imageUrl: "public/lovable-uploads/6ec01f16-613f-47df-80b0-221c7d80098c.png",
+    description: "Delicate hand-drawn landscape with balloon and butterfly motifs"
   },
   {
-    id: "neon",
-    title: "Neon Glow",
-    imageUrl: "https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=800&q=80",
-    description: "Vibrant, glowing effects"
+    id: "style6",
+    title: "Hummingbird",
+    imageUrl: "public/lovable-uploads/611211f3-9b04-42fd-a632-92da49cb99be.png",
+    description: "Elegant hummingbird and flower illustration with calligraphy"
   },
-  // ... Continue with more styles to reach 20 total
+  {
+    id: "style7",
+    title: "Wedding Ceremony",
+    imageUrl: "public/lovable-uploads/12ba5bc8-98a2-4ca3-b7bc-eb2e763609ad.png",
+    description: "Traditional wedding ceremony with soft lighting and particles"
+  },
+  {
+    id: "style8",
+    title: "Starry Hands",
+    imageUrl: "public/lovable-uploads/7e101b10-542f-48a6-a69b-aa27de3a7948.png",
+    description: "Holding hands under a starry night sky with magical elements"
+  },
+  {
+    id: "style9",
+    title: "Desert Moon",
+    imageUrl: "public/lovable-uploads/559348e5-f742-4d5d-ac43-9ced803a4cba.png",
+    description: "Palm trees silhouette with full moon and desert landscape"
+  },
+  {
+    id: "style10",
+    title: "Floral Arch",
+    imageUrl: "public/lovable-uploads/bc1cf2bf-6d61-4ecf-aa82-eab5ee33dde6.png",
+    description: "Couple under a beautiful floral arch with city backdrop"
+  },
+  {
+    id: "style11",
+    title: "Elegant Interior",
+    imageUrl: "public/lovable-uploads/11485946-22a3-44d2-8312-7607215dd4c4.png",
+    description: "Sophisticated interior with antique furniture and dove"
+  },
+  {
+    id: "style12",
+    title: "Royal Couple",
+    imageUrl: "public/lovable-uploads/0160104c-0db2-4236-af52-4a25c0a1b0b3.png",
+    description: "Couple with crown motif in elegant wedding attire"
+  },
+  {
+    id: "style13",
+    title: "Floral Frame",
+    imageUrl: "public/lovable-uploads/bb24db12-85e5-4c72-8213-769e8797ce38.png",
+    description: "Ornate frame with doves and flowers against serene backdrop"
+  }
 ];
 
 export default function AnimationStyles() {
