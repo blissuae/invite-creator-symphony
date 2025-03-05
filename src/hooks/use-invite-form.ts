@@ -191,82 +191,36 @@ export const useInviteForm = () => {
         return isUrgent ? `${formattedDate} (Urgent Delivery)` : formattedDate;
       };
 
-      const emailMessage = `
-<h2 style="color: #8b7256; font-size: 24px; margin-bottom: 20px;">Digital Invitation Request Details</h2>
-
-<div style="margin-bottom: 30px; padding: 15px; background-color: #f5f0e6; border-radius: 8px;">
-  <h3 style="color: #8b7256; margin-bottom: 10px;">Estimated Price</h3>
-  <div style="font-size: 20px; font-weight: bold; color: #8b7256;">${calculateExactPrice(formData)}</div>
-</div>
-
-<table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
-  <tr style="background-color: #f5f0e6;">
-    <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold; width: 30%;">Full Name:</td>
-    <td style="padding: 10px; border: 1px solid #e0d5c0;">${formData.fullName}</td>
-  </tr>
-  <tr>
-    <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold;">Instagram ID:</td>
-    <td style="padding: 10px; border: 1px solid #e0d5c0;">${formData.instagramId || "Not provided"}</td>
-  </tr>
-  <tr style="background-color: #f5f0e6;">
-    <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold;">Occasion:</td>
-    <td style="padding: 10px; border: 1px solid #e0d5c0;">${formData.occasion === "Other" ? formData.customOccasion : formData.occasion}</td>
-  </tr>
-  <tr>
-    <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold;">Delivery Formats:</td>
-    <td style="padding: 10px; border: 1px solid #e0d5c0;">${formatDeliveryFormats()}</td>
-  </tr>
-  <tr style="background-color: #f5f0e6;">
-    <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold;">Character Details:</td>
-    <td style="padding: 10px; border: 1px solid #e0d5c0;">
-      Include Characters: ${formData.hasCharacters ? "Yes" : "No"}
-      ${formData.hasCharacters ? `<br>Show Faces: ${formData.showFaces ? "Yes" : "No"}` : ""}
-      ${formData.hasCharacters && formData.showFaces ? `<br>Number of Characters: ${formData.characterCount}` : ""}
-    </td>
-  </tr>
-  <tr>
-    <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold;">Video Idea:</td>
-    <td style="padding: 10px; border: 1px solid #e0d5c0;">
-      ${formData.hasVideoIdea ? formData.videoIdea : "No specific idea provided"}
-    </td>
-  </tr>
-  <tr style="background-color: #f5f0e6;">
-    <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold;">Animation Styles:</td>
-    <td style="padding: 10px; border: 1px solid #e0d5c0;">${formData.animationStyles.join(", ") || "Not selected"}</td>
-  </tr>
-  <tr>
-    <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold;">Color Palette:</td>
-    <td style="padding: 10px; border: 1px solid #e0d5c0;">${formatColorPalette()}</td>
-  </tr>
-  <tr style="background-color: #f5f0e6;">
-    <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold;">Project Deadline:</td>
-    <td style="padding: 10px; border: 1px solid #e0d5c0;">${formatDeadline()}</td>
-  </tr>
-  <tr>
-    <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold;">Invitation Content:</td>
-    <td style="padding: 10px; border: 1px solid #e0d5c0; white-space: pre-wrap;">${formData.content || "No content added"}</td>
-  </tr>
-  ${formData.specialRequirements ? `
-  <tr style="background-color: #f5f0e6;">
-    <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold;">Additional Requests:</td>
-    <td style="padding: 10px; border: 1px solid #e0d5c0; white-space: pre-wrap;">${formData.specialRequirements}</td>
-  </tr>
-  ` : ''}
-  ${formData.guestCount ? `
-  <tr>
-    <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold;">Guest Count:</td>
-    <td style="padding: 10px; border: 1px solid #e0d5c0;">${formData.guestCount}</td>
-  </tr>
-  ` : ''}
-</table>
-
-<p style="font-size: 14px; color: #666; text-align: center;">
-  A PDF with these details is attached to this email.
-</p>
-`;
+      // Format animation styles with their display names
+      const formatAnimationStyles = () => {
+        const styleMap = {
+          "style1": "Cute",
+          "style2": "Earthy",
+          "style3": "Elegant",
+          "style4": "Fantasy",
+          "style5": "Hand-Drawn",
+          "style6": "Heritage",
+          "style7": "Luxury",
+          "style8": "Magical",
+          "style9": "Minimal",
+          "style10": "Nostalgic",
+          "style11": "Regal",
+          "style12": "Royal",
+          "style13": "Serene",
+          "style14": "Traditional",
+          "style15": "Whimsical"
+        };
+        
+        if (!formData.animationStyles.length) return "Not selected";
+        
+        return formData.animationStyles.map(style => {
+          const displayName = styleMap[style as keyof typeof styleMap] || style;
+          return `${style} (${displayName})`;
+        }).join(", ");
+      };
 
       // Helper function to calculate price (copied from existing logic)
-      function calculateExactPrice(data) {
+      function calculateExactPrice(data: InviteFormData) {
         let basePrice = 0;
         
         if (data.deliveryFormats.videoInvite) {
@@ -317,18 +271,126 @@ export const useInviteForm = () => {
         return `${basePrice} AED`;
       }
 
+      // Create a plain text version for email clients that don't support HTML
+      const plainTextMessage = `
+Digital Invitation Request Details
+
+Estimated Price: ${calculateExactPrice(formData)}
+
+Full Name: ${formData.fullName}
+Instagram ID: ${formData.instagramId || "Not provided"}
+Occasion: ${formData.occasion === "Other" ? formData.customOccasion : formData.occasion}
+Delivery Formats: ${formatDeliveryFormats()}
+Character Details: 
+  Include Characters: ${formData.hasCharacters ? "Yes" : "No"}
+  ${formData.hasCharacters ? `Show Faces: ${formData.showFaces ? "Yes" : "No"}` : ""}
+  ${formData.hasCharacters && formData.showFaces ? `Number of Characters: ${formData.characterCount}` : ""}
+Video Idea: ${formData.hasVideoIdea ? formData.videoIdea : "No specific idea provided"}
+Animation Styles: ${formatAnimationStyles()}
+Color Palette: ${formatColorPalette()}
+Project Deadline: ${formatDeadline()}
+Invitation Content: ${formData.content || "No content added"}
+${formData.specialRequirements ? `Additional Requests: ${formData.specialRequirements}` : ""}
+${formData.guestCount ? `Guest Count: ${formData.guestCount}` : ""}
+`;
+
+      // Create HTML email with proper content type and styling
+      const emailMessage = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digital Invitation Request</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; padding: 20px;">
+  <h2 style="color: #8b7256; font-size: 24px; margin-bottom: 20px; text-align: center;">Digital Invitation Request Details</h2>
+
+  <div style="margin-bottom: 30px; padding: 15px; background-color: #f5f0e6; border-radius: 8px; text-align: center;">
+    <h3 style="color: #8b7256; margin-bottom: 10px;">Estimated Price</h3>
+    <div style="font-size: 20px; font-weight: bold; color: #8b7256;">${calculateExactPrice(formData)}</div>
+  </div>
+
+  <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+    <tr style="background-color: #f5f0e6;">
+      <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold; width: 30%;">Full Name:</td>
+      <td style="padding: 10px; border: 1px solid #e0d5c0;">${formData.fullName}</td>
+    </tr>
+    <tr>
+      <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold;">Instagram ID:</td>
+      <td style="padding: 10px; border: 1px solid #e0d5c0;">${formData.instagramId || "Not provided"}</td>
+    </tr>
+    <tr style="background-color: #f5f0e6;">
+      <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold;">Occasion:</td>
+      <td style="padding: 10px; border: 1px solid #e0d5c0;">${formData.occasion === "Other" ? formData.customOccasion : formData.occasion}</td>
+    </tr>
+    <tr>
+      <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold;">Delivery Formats:</td>
+      <td style="padding: 10px; border: 1px solid #e0d5c0;">${formatDeliveryFormats()}</td>
+    </tr>
+    <tr style="background-color: #f5f0e6;">
+      <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold;">Character Details:</td>
+      <td style="padding: 10px; border: 1px solid #e0d5c0;">
+        Include Characters: ${formData.hasCharacters ? "Yes" : "No"}
+        ${formData.hasCharacters ? `<br>Show Faces: ${formData.showFaces ? "Yes" : "No"}` : ""}
+        ${formData.hasCharacters && formData.showFaces ? `<br>Number of Characters: ${formData.characterCount}` : ""}
+      </td>
+    </tr>
+    <tr>
+      <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold;">Video Idea:</td>
+      <td style="padding: 10px; border: 1px solid #e0d5c0;">
+        ${formData.hasVideoIdea ? formData.videoIdea : "No specific idea provided"}
+      </td>
+    </tr>
+    <tr style="background-color: #f5f0e6;">
+      <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold;">Animation Styles:</td>
+      <td style="padding: 10px; border: 1px solid #e0d5c0;">${formatAnimationStyles()}</td>
+    </tr>
+    <tr>
+      <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold;">Color Palette:</td>
+      <td style="padding: 10px; border: 1px solid #e0d5c0;">${formatColorPalette()}</td>
+    </tr>
+    <tr style="background-color: #f5f0e6;">
+      <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold;">Project Deadline:</td>
+      <td style="padding: 10px; border: 1px solid #e0d5c0;">${formatDeadline()}</td>
+    </tr>
+    <tr>
+      <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold;">Invitation Content:</td>
+      <td style="padding: 10px; border: 1px solid #e0d5c0; white-space: pre-wrap;">${formData.content || "No content added"}</td>
+    </tr>
+    ${formData.specialRequirements ? `
+    <tr style="background-color: #f5f0e6;">
+      <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold;">Additional Requests:</td>
+      <td style="padding: 10px; border: 1px solid #e0d5c0; white-space: pre-wrap;">${formData.specialRequirements}</td>
+    </tr>
+    ` : ''}
+    ${formData.guestCount ? `
+    <tr>
+      <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold;">Guest Count:</td>
+      <td style="padding: 10px; border: 1px solid #e0d5c0;">${formData.guestCount}</td>
+    </tr>
+    ` : ''}
+  </table>
+
+  <p style="font-size: 14px; color: #666; text-align: center;">
+    A PDF with these details is attached to this email.
+  </p>
+</body>
+</html>
+`;
+
       const response = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          access_key: '69f9ea87-6fcf-4a71-af9d-b781e7673e13', // Updated with your new access key
+          access_key: '69f9ea87-6fcf-4a71-af9d-b781e7673e13', 
           from_name: formData.fullName,
           subject: `New Invitation Request - ${formData.occasion}`,
           to: 'hello@bliss-go.com',
-          message: emailMessage,
-          html: emailMessage,
+          message: plainTextMessage, // Plain text fallback
+          html: emailMessage, // HTML content
           attachments: [
             {
               name: `Bliss-${formData.fullName.replace(/\s+/g, '')}.pdf`,

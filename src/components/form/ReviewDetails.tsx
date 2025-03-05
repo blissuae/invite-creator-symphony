@@ -70,6 +70,35 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
     };
   };
 
+  // Map to convert style IDs to their display names
+  const styleNameMap: Record<string, string> = {
+    "style1": "Cute",
+    "style2": "Earthy",
+    "style3": "Elegant",
+    "style4": "Fantasy",
+    "style5": "Hand-Drawn",
+    "style6": "Heritage",
+    "style7": "Luxury",
+    "style8": "Magical",
+    "style9": "Minimal",
+    "style10": "Nostalgic",
+    "style11": "Regal",
+    "style12": "Royal",
+    "style13": "Serene",
+    "style14": "Traditional",
+    "style15": "Whimsical"
+  };
+
+  // Format animation styles with their display names
+  const formatAnimationStyles = (styles: string[]) => {
+    if (!styles.length) return "Not selected";
+    
+    return styles.map(styleId => {
+      const displayName = styleNameMap[styleId] || styleId;
+      return `${styleId} (${displayName})`;
+    }).join(", ");
+  };
+
   // Calculate exact price (rounded to nearest hundred)
   const calculateExactPrice = () => {
     let basePrice = 0;
@@ -382,7 +411,7 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
         
         {renderSection("Animation Styles", 
           <div className="flex items-center gap-2">
-            <span className="capitalize">{formData.animationStyles.join(", ") || "Not selected"}</span>
+            <span>{formatAnimationStyles(formData.animationStyles) || "Not selected"}</span>
           </div>
         )}
         
