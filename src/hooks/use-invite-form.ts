@@ -157,6 +157,166 @@ export const useInviteForm = () => {
     try {
       const pdfDataUri = generatePDF(formData);
       
+      // Create a more detailed and formatted email message
+      const formatDeliveryFormats = () => {
+        const formats = [];
+        if (formData.deliveryFormats.videoInvite) formats.push("Video Invite (.mp4)");
+        if (formData.deliveryFormats.stillInvite) formats.push("Still Invite (PDF)");
+        if (formData.deliveryFormats.logo) formats.push("Logo (PDF)");
+        return formats.join(", ");
+      };
+
+      const formatColorPalette = () => {
+        if (!formData.colorPalette) return "Not selected";
+        const [id, colorsStr, name] = formData.colorPalette.split("###");
+        if (colorsStr && name) {
+          const colors = colorsStr.split(",").slice(0, 3);
+          return `${name} (${colors.join(", ")})`;
+        }
+        return "Selected Palette";
+      };
+
+      const formatDeadline = () => {
+        if (!formData.deadline) return "Not selected";
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        const deadlineDate = new Date(formData.deadline);
+        deadlineDate.setHours(0, 0, 0, 0);
+        
+        const days = Math.floor((deadlineDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+        const formattedDate = formData.deadline.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+        
+        const isUrgent = days >= 6 && days <= 14;
+        return isUrgent ? `${formattedDate} (Urgent Delivery)` : formattedDate;
+      };
+
+      const emailMessage = `
+<h2 style="color: #8b7256; font-size: 24px; margin-bottom: 20px;">Digital Invitation Request Details</h2>
+
+<div style="margin-bottom: 30px; padding: 15px; background-color: #f5f0e6; border-radius: 8px;">
+  <h3 style="color: #8b7256; margin-bottom: 10px;">Estimated Price</h3>
+  <div style="font-size: 20px; font-weight: bold; color: #8b7256;">${calculateExactPrice(formData)}</div>
+</div>
+
+<table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+  <tr style="background-color: #f5f0e6;">
+    <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold; width: 30%;">Full Name:</td>
+    <td style="padding: 10px; border: 1px solid #e0d5c0;">${formData.fullName}</td>
+  </tr>
+  <tr>
+    <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold;">Instagram ID:</td>
+    <td style="padding: 10px; border: 1px solid #e0d5c0;">${formData.instagramId || "Not provided"}</td>
+  </tr>
+  <tr style="background-color: #f5f0e6;">
+    <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold;">Occasion:</td>
+    <td style="padding: 10px; border: 1px solid #e0d5c0;">${formData.occasion === "Other" ? formData.customOccasion : formData.occasion}</td>
+  </tr>
+  <tr>
+    <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold;">Delivery Formats:</td>
+    <td style="padding: 10px; border: 1px solid #e0d5c0;">${formatDeliveryFormats()}</td>
+  </tr>
+  <tr style="background-color: #f5f0e6;">
+    <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold;">Character Details:</td>
+    <td style="padding: 10px; border: 1px solid #e0d5c0;">
+      Include Characters: ${formData.hasCharacters ? "Yes" : "No"}
+      ${formData.hasCharacters ? `<br>Show Faces: ${formData.showFaces ? "Yes" : "No"}` : ""}
+      ${formData.hasCharacters && formData.showFaces ? `<br>Number of Characters: ${formData.characterCount}` : ""}
+    </td>
+  </tr>
+  <tr>
+    <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold;">Video Idea:</td>
+    <td style="padding: 10px; border: 1px solid #e0d5c0;">
+      ${formData.hasVideoIdea ? formData.videoIdea : "No specific idea provided"}
+    </td>
+  </tr>
+  <tr style="background-color: #f5f0e6;">
+    <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold;">Animation Styles:</td>
+    <td style="padding: 10px; border: 1px solid #e0d5c0;">${formData.animationStyles.join(", ") || "Not selected"}</td>
+  </tr>
+  <tr>
+    <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold;">Color Palette:</td>
+    <td style="padding: 10px; border: 1px solid #e0d5c0;">${formatColorPalette()}</td>
+  </tr>
+  <tr style="background-color: #f5f0e6;">
+    <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold;">Project Deadline:</td>
+    <td style="padding: 10px; border: 1px solid #e0d5c0;">${formatDeadline()}</td>
+  </tr>
+  <tr>
+    <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold;">Invitation Content:</td>
+    <td style="padding: 10px; border: 1px solid #e0d5c0; white-space: pre-wrap;">${formData.content || "No content added"}</td>
+  </tr>
+  ${formData.specialRequirements ? `
+  <tr style="background-color: #f5f0e6;">
+    <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold;">Additional Requests:</td>
+    <td style="padding: 10px; border: 1px solid #e0d5c0; white-space: pre-wrap;">${formData.specialRequirements}</td>
+  </tr>
+  ` : ''}
+  ${formData.guestCount ? `
+  <tr>
+    <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold;">Guest Count:</td>
+    <td style="padding: 10px; border: 1px solid #e0d5c0;">${formData.guestCount}</td>
+  </tr>
+  ` : ''}
+</table>
+
+<p style="font-size: 14px; color: #666; text-align: center;">
+  A PDF with these details is attached to this email.
+</p>
+`;
+
+      // Helper function to calculate price (copied from existing logic)
+      function calculateExactPrice(data) {
+        let basePrice = 0;
+        
+        if (data.deliveryFormats.videoInvite) {
+          if (!data.hasCharacters) {
+            basePrice = 2000;
+          } else if (!data.showFaces) {
+            basePrice = 2200;
+          } else {
+            const characterCount = parseInt(data.characterCount) || 0;
+            basePrice = 2400 + (characterCount - 1) * 200;
+          }
+        } else if (data.deliveryFormats.stillInvite) {
+          if (!data.hasCharacters || !data.showFaces) {
+            basePrice = 1100;
+          } else {
+            const characterCount = parseInt(data.characterCount) || 0;
+            switch (characterCount) {
+              case 1: basePrice = 1300; break;
+              case 2: basePrice = 1500; break;
+              case 3: basePrice = 1600; break;
+              default: basePrice = 1700; break;
+            }
+          }
+        } else {
+          return "Contact us for pricing";
+        }
+
+        if (data.deadline) {
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          
+          const deadlineDate = new Date(data.deadline);
+          deadlineDate.setHours(0, 0, 0, 0);
+          
+          const days = Math.floor((deadlineDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+          
+          if (days >= 6 && days <= 14) {
+            return `${basePrice + 500} AED (Urgent Delivery)`;
+          }
+          
+          if (days >= 50) {
+            return `${basePrice - 500} AED (500 AED OFF!)`;
+          } else if (days >= 25) {
+            return `${basePrice - 300} AED (300 AED OFF!)`;
+          }
+        }
+
+        return `${basePrice} AED`;
+      }
+
       const response = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
         headers: {
@@ -167,15 +327,8 @@ export const useInviteForm = () => {
           from_name: formData.fullName,
           subject: `New Invitation Request - ${formData.occasion}`,
           to: 'hello@bliss-go.com',
-          message: `
-Full Name: ${formData.fullName}
-Occasion: ${formData.occasion === 'Other' ? formData.customOccasion : formData.occasion}
-Color Palette: ${formData.colorPalette}
-Deadline: ${formData.deadline ? new Date(formData.deadline).toLocaleDateString() : 'Not specified'}
-Content: ${formData.content}
-Guest Count: ${formData.guestCount}
-Special Requirements: ${formData.specialRequirements}
-          `.trim(),
+          message: emailMessage,
+          html: emailMessage,
           attachments: [
             {
               name: `Bliss-${formData.fullName.replace(/\s+/g, '')}.pdf`,
