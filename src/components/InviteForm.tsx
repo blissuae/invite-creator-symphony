@@ -3,7 +3,6 @@ import { FormProgress } from "./form/FormProgress";
 import { BasicDetails } from "./form/BasicDetails";
 import { CharacterOptions } from "./form/CharacterOptions";
 import { ColorPalette } from "./form/ColorPalette";
-import { StyleSelector } from "./form/StyleSelector";
 import { DeadlinePicker } from "./form/DeadlinePicker";
 import { ContentEditor } from "./form/ContentEditor";
 import { ReviewDetails } from "./form/ReviewDetails";
@@ -101,19 +100,12 @@ export const InviteForm = () => {
         );
       case 6:
         return (
-          <StyleSelector
-            selected={formData.style}
-            onSelect={(value) => updateFormData("style", value)}
-          />
-        );
-      case 7:
-        return (
           <DeadlinePicker
             selected={formData.deadline}
             onSelect={(value) => updateFormData("deadline", value)}
           />
         );
-      case 8:
+      case 7:
         return (
           <ReviewDetails
             formData={formData}

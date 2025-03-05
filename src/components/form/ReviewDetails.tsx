@@ -12,7 +12,6 @@ interface ReviewDetailsProps {
     showFaces: boolean;
     characterCount: string;
     colorPalette: string;
-    style: string;
     animationStyles: string[];
     deadline: Date | null;
     content: string;
@@ -204,7 +203,6 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
       { title: "Character Details:", content: toTitleCase(`Characters: ${formData.hasCharacters ? "Yes" : "No"}${formData.hasCharacters ? `, Faces: ${formData.showFaces ? "Yes" : "No"}` : ""}`) },
       { title: "Video Idea:", content: formData.hasVideoIdea ? formData.videoIdea : "No specific idea provided" },
       { title: "Content:", content: formData.content.split("\n\nVideo Idea:")[0].split("\n\nAdditional Requests:")[0] },
-      { title: "Style:", content: toTitleCase(formData.style || "Not Selected") },
       { title: "Animation Styles:", content: toTitleCase(formData.animationStyles.join(", ") || "Not Selected") }
     ];
 
@@ -379,12 +377,6 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
                 {formData.videoIdea}
               </div>
             )}
-          </div>
-        )}
-        
-        {renderSection("Selected Style", 
-          <div className="flex items-center gap-2">
-            <span className="capitalize">{formData.style || "Not selected"}</span>
           </div>
         )}
         

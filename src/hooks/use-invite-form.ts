@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -11,7 +10,6 @@ export interface InviteFormData {
   showFaces: boolean;
   characterCount: string;
   colorPalette: string;
-  style: string;
   animationStyles: string[];
   deadline: Date | null;
   content: string;
@@ -33,7 +31,6 @@ export const FORM_STEPS = [
   "Idea & Content",
   "Color Palette",
   "Animation Style",
-  "Design Style",
   "Deadline",
   "Review"
 ] as const;
@@ -52,7 +49,6 @@ export const useInviteForm = () => {
     showFaces: false,
     characterCount: "",
     colorPalette: "",
-    style: "",
     animationStyles: [],
     deadline: null,
     content: "",
@@ -128,18 +124,7 @@ export const useInviteForm = () => {
       return;
     }
 
-    if (currentStep === 6) {  // Design Style validation
-      if (!formData.style) {
-        toast({
-          title: "Selection Required",
-          description: "Please select a design style to continue.",
-          variant: "destructive",
-        });
-        return;
-      }
-    }
-
-    if (currentStep === 7) {  // Deadline validation
+    if (currentStep === 6) {  // Deadline validation
       if (!formData.deadline) {
         toast({
           title: "Selection Required",
