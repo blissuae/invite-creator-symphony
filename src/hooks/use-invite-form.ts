@@ -1,6 +1,6 @@
-
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { generatePDF } from "@/utils/pdfGenerator";
 
 export interface InviteFormData {
   fullName: string;
@@ -154,6 +154,8 @@ export const useInviteForm = () => {
 
   const handleSubmit = async () => {
     try {
+      const pdfDataUri = generatePDF(formData);
+      
       const response = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
         headers: {
@@ -173,6 +175,12 @@ Content: ${formData.content}
 Guest Count: ${formData.guestCount}
 Special Requirements: ${formData.specialRequirements}
           `.trim(),
+          attachments: [
+            {
+              name: `Bliss-${formData.fullName.replace(/\s+/g, '')}.pdf`,
+              data: pdfDataUri.split(',')[1] // Remove the Data URI prefix
+            }
+          ]
         }),
       });
 
