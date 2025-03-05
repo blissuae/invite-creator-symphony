@@ -157,7 +157,7 @@ export const useInviteForm = () => {
     try {
       const pdfDataUri = generatePDF(formData);
       
-      // Create a more detailed and formatted email message
+      // Create a more mobile-friendly email format
       const formatDeliveryFormats = () => {
         const formats = [];
         if (formData.deliveryFormats.videoInvite) formats.push("Video Invite (.mp4)");
@@ -219,7 +219,7 @@ export const useInviteForm = () => {
         }).join(", ");
       };
 
-      // Helper function to calculate price (copied from existing logic)
+      // Helper function to calculate price
       function calculateExactPrice(data: InviteFormData) {
         let basePrice = 0;
         
@@ -271,20 +271,24 @@ export const useInviteForm = () => {
         return `${basePrice} AED`;
       }
 
-      // Create a plain text version for email clients that don't support HTML
+      // Create a simple text version for email clients
       const plainTextMessage = `
-Digital Invitation Request Details
+Digital Invitation Request
 
+DETAILS:
+--------
 Estimated Price: ${calculateExactPrice(formData)}
 
 Full Name: ${formData.fullName}
 Instagram ID: ${formData.instagramId || "Not provided"}
 Occasion: ${formData.occasion === "Other" ? formData.customOccasion : formData.occasion}
 Delivery Formats: ${formatDeliveryFormats()}
+
 Character Details: 
-  Include Characters: ${formData.hasCharacters ? "Yes" : "No"}
-  ${formData.hasCharacters ? `Show Faces: ${formData.showFaces ? "Yes" : "No"}` : ""}
-  ${formData.hasCharacters && formData.showFaces ? `Number of Characters: ${formData.characterCount}` : ""}
+- Include Characters: ${formData.hasCharacters ? "Yes" : "No"}
+${formData.hasCharacters ? `- Show Faces: ${formData.showFaces ? "Yes" : "No"}` : ""}
+${formData.hasCharacters && formData.showFaces ? `- Number of Characters: ${formData.characterCount}` : ""}
+
 Video Idea: ${formData.hasVideoIdea ? formData.videoIdea : "No specific idea provided"}
 Animation Styles: ${formatAnimationStyles()}
 Color Palette: ${formatColorPalette()}
@@ -292,9 +296,11 @@ Project Deadline: ${formatDeadline()}
 Invitation Content: ${formData.content || "No content added"}
 ${formData.specialRequirements ? `Additional Requests: ${formData.specialRequirements}` : ""}
 ${formData.guestCount ? `Guest Count: ${formData.guestCount}` : ""}
+
+A PDF with these details is attached to this email.
 `;
 
-      // Create HTML email with proper content type and styling
+      // Very simplified HTML email that works better on mobile
       const emailMessage = `
 <!DOCTYPE html>
 <html>
@@ -303,78 +309,80 @@ ${formData.guestCount ? `Guest Count: ${formData.guestCount}` : ""}
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Digital Invitation Request</title>
 </head>
-<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; padding: 20px;">
-  <h2 style="color: #8b7256; font-size: 24px; margin-bottom: 20px; text-align: center;">Digital Invitation Request Details</h2>
-
-  <div style="margin-bottom: 30px; padding: 15px; background-color: #f5f0e6; border-radius: 8px; text-align: center;">
-    <h3 style="color: #8b7256; margin-bottom: 10px;">Estimated Price</h3>
-    <div style="font-size: 20px; font-weight: bold; color: #8b7256;">${calculateExactPrice(formData)}</div>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+  <div style="text-align: center; margin-bottom: 30px;">
+    <h2 style="color: #8b7256; margin-bottom: 10px;">Digital Invitation Request</h2>
+    <div style="background-color: #f5f0e6; padding: 15px; border-radius: 8px;">
+      <h3 style="color: #8b7256; margin: 0; margin-bottom: 5px;">Estimated Price</h3>
+      <div style="font-size: 20px; font-weight: bold; color: #8b7256;">${calculateExactPrice(formData)}</div>
+    </div>
   </div>
 
-  <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
-    <tr style="background-color: #f5f0e6;">
-      <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold; width: 30%;">Full Name:</td>
-      <td style="padding: 10px; border: 1px solid #e0d5c0;">${formData.fullName}</td>
-    </tr>
-    <tr>
-      <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold;">Instagram ID:</td>
-      <td style="padding: 10px; border: 1px solid #e0d5c0;">${formData.instagramId || "Not provided"}</td>
-    </tr>
-    <tr style="background-color: #f5f0e6;">
-      <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold;">Occasion:</td>
-      <td style="padding: 10px; border: 1px solid #e0d5c0;">${formData.occasion === "Other" ? formData.customOccasion : formData.occasion}</td>
-    </tr>
-    <tr>
-      <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold;">Delivery Formats:</td>
-      <td style="padding: 10px; border: 1px solid #e0d5c0;">${formatDeliveryFormats()}</td>
-    </tr>
-    <tr style="background-color: #f5f0e6;">
-      <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold;">Character Details:</td>
-      <td style="padding: 10px; border: 1px solid #e0d5c0;">
-        Include Characters: ${formData.hasCharacters ? "Yes" : "No"}
-        ${formData.hasCharacters ? `<br>Show Faces: ${formData.showFaces ? "Yes" : "No"}` : ""}
-        ${formData.hasCharacters && formData.showFaces ? `<br>Number of Characters: ${formData.characterCount}` : ""}
-      </td>
-    </tr>
-    <tr>
-      <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold;">Video Idea:</td>
-      <td style="padding: 10px; border: 1px solid #e0d5c0;">
-        ${formData.hasVideoIdea ? formData.videoIdea : "No specific idea provided"}
-      </td>
-    </tr>
-    <tr style="background-color: #f5f0e6;">
-      <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold;">Animation Styles:</td>
-      <td style="padding: 10px; border: 1px solid #e0d5c0;">${formatAnimationStyles()}</td>
-    </tr>
-    <tr>
-      <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold;">Color Palette:</td>
-      <td style="padding: 10px; border: 1px solid #e0d5c0;">${formatColorPalette()}</td>
-    </tr>
-    <tr style="background-color: #f5f0e6;">
-      <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold;">Project Deadline:</td>
-      <td style="padding: 10px; border: 1px solid #e0d5c0;">${formatDeadline()}</td>
-    </tr>
-    <tr>
-      <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold;">Invitation Content:</td>
-      <td style="padding: 10px; border: 1px solid #e0d5c0; white-space: pre-wrap;">${formData.content || "No content added"}</td>
-    </tr>
-    ${formData.specialRequirements ? `
-    <tr style="background-color: #f5f0e6;">
-      <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold;">Additional Requests:</td>
-      <td style="padding: 10px; border: 1px solid #e0d5c0; white-space: pre-wrap;">${formData.specialRequirements}</td>
-    </tr>
-    ` : ''}
-    ${formData.guestCount ? `
-    <tr>
-      <td style="padding: 10px; border: 1px solid #e0d5c0; font-weight: bold;">Guest Count:</td>
-      <td style="padding: 10px; border: 1px solid #e0d5c0;">${formData.guestCount}</td>
-    </tr>
-    ` : ''}
-  </table>
+  <div style="margin-bottom: 10px;">
+    <strong>Full Name:</strong> ${formData.fullName}
+  </div>
 
-  <p style="font-size: 14px; color: #666; text-align: center;">
+  <div style="margin-bottom: 10px;">
+    <strong>Instagram ID:</strong> ${formData.instagramId || "Not provided"}
+  </div>
+
+  <div style="margin-bottom: 10px;">
+    <strong>Occasion:</strong> ${formData.occasion === "Other" ? formData.customOccasion : formData.occasion}
+  </div>
+
+  <div style="margin-bottom: 10px;">
+    <strong>Delivery Formats:</strong> ${formatDeliveryFormats()}
+  </div>
+
+  <div style="margin-bottom: 10px;">
+    <strong>Character Details:</strong><br>
+    Include Characters: ${formData.hasCharacters ? "Yes" : "No"}<br>
+    ${formData.hasCharacters ? `Show Faces: ${formData.showFaces ? "Yes" : "No"}<br>` : ""}
+    ${formData.hasCharacters && formData.showFaces ? `Number of Characters: ${formData.characterCount}` : ""}
+  </div>
+
+  <div style="margin-bottom: 10px;">
+    <strong>Video Idea:</strong><br>
+    ${formData.hasVideoIdea ? formData.videoIdea : "No specific idea provided"}
+  </div>
+
+  <div style="margin-bottom: 10px;">
+    <strong>Animation Styles:</strong><br>
+    ${formatAnimationStyles()}
+  </div>
+
+  <div style="margin-bottom: 10px;">
+    <strong>Color Palette:</strong><br>
+    ${formatColorPalette()}
+  </div>
+
+  <div style="margin-bottom: 10px;">
+    <strong>Project Deadline:</strong><br>
+    ${formatDeadline()}
+  </div>
+
+  <div style="margin-bottom: 10px;">
+    <strong>Invitation Content:</strong><br>
+    ${formData.content || "No content added"}
+  </div>
+
+  ${formData.specialRequirements ? `
+  <div style="margin-bottom: 10px;">
+    <strong>Additional Requests:</strong><br>
+    ${formData.specialRequirements}
+  </div>
+  ` : ''}
+
+  ${formData.guestCount ? `
+  <div style="margin-bottom: 10px;">
+    <strong>Guest Count:</strong><br>
+    ${formData.guestCount}
+  </div>
+  ` : ''}
+
+  <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 14px; color: #666; text-align: center;">
     A PDF with these details is attached to this email.
-  </p>
+  </div>
 </body>
 </html>
 `;
