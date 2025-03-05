@@ -90,6 +90,18 @@ const ANIMATION_STYLES: AnimationStyle[] = [
     title: "Floral Frame",
     imageUrl: "public/lovable-uploads/bb24db12-85e5-4c72-8213-769e8797ce38.png",
     description: "Ornate frame with doves and flowers against serene backdrop"
+  },
+  {
+    id: "style14",
+    title: "Islamic Architecture",
+    imageUrl: "public/lovable-uploads/31e0ad1e-a5c5-4ebe-84c3-7546ec31643f.png",
+    description: "Ancient Islamic architecture with Arabic calligraphy and doves"
+  },
+  {
+    id: "style15",
+    title: "Paper Crane",
+    imageUrl: "public/lovable-uploads/476f2124-fdd8-424a-b796-4279e1bcc940.png",
+    description: "Hands exchanging paper crane with flowers and Arabic calligraphy"
   }
 ];
 
@@ -162,13 +174,12 @@ export default function AnimationStyles() {
                 }`} />
                 {selectedStyles.includes(style.id) && (
                   <div className="absolute top-4 right-4 bg-elegant-primary rounded-full p-1">
-                    <Check className="w-4 h-4 text-white" />
+                    <Check className="w-4 w-4 text-white" />
                   </div>
                 )}
               </div>
               <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent">
                 <h3 className="text-white font-serif mb-1">{style.title}</h3>
-                <p className="text-white/80 text-sm">{style.description}</p>
               </div>
             </div>
           ))}

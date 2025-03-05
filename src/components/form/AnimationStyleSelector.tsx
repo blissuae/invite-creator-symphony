@@ -88,6 +88,18 @@ const ANIMATION_STYLES: AnimationStyle[] = [
     title: "Floral Frame",
     imageUrl: "public/lovable-uploads/bb24db12-85e5-4c72-8213-769e8797ce38.png",
     description: "Ornate frame with doves and flowers against serene backdrop"
+  },
+  {
+    id: "style14",
+    title: "Islamic Architecture",
+    imageUrl: "public/lovable-uploads/31e0ad1e-a5c5-4ebe-84c3-7546ec31643f.png",
+    description: "Ancient Islamic architecture with Arabic calligraphy and doves"
+  },
+  {
+    id: "style15",
+    title: "Paper Crane",
+    imageUrl: "public/lovable-uploads/476f2124-fdd8-424a-b796-4279e1bcc940.png",
+    description: "Hands exchanging paper crane with flowers and Arabic calligraphy"
   }
 ];
 
@@ -164,7 +176,6 @@ export const AnimationStyleSelector = ({ selected, onSelect }: AnimationStyleSel
             </div>
             <div className="text-center">
               <h3 className="font-serif text-lg mb-1 text-elegant-brown">{style.title}</h3>
-              <p className="text-sm text-gray-600">{style.description}</p>
             </div>
           </div>
         ))}
