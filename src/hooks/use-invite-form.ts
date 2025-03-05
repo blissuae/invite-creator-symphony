@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -166,7 +167,6 @@ export const useInviteForm = () => {
           message: `
 Full Name: ${formData.fullName}
 Occasion: ${formData.occasion === 'Other' ? formData.customOccasion : formData.occasion}
-Style: ${formData.style}
 Color Palette: ${formData.colorPalette}
 Deadline: ${formData.deadline ? new Date(formData.deadline).toLocaleDateString() : 'Not specified'}
 Content: ${formData.content}
