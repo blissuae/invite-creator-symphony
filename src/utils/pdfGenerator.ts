@@ -1,3 +1,4 @@
+
 import { jsPDF } from "jspdf";
 import { InviteFormData } from "@/types/invite-form-types";
 import { format, startOfDay } from "date-fns";
@@ -107,7 +108,7 @@ export const generatePDF = (formData: InviteFormData): string => {
     return formatAnimationStyles(styles);
   };
 
-  const calculateExactPrice = () => {
+  const getPrice = () => {
     return calculateExactPrice(formData);
   };
 
@@ -170,8 +171,9 @@ export const generatePDF = (formData: InviteFormData): string => {
   doc.setTextColor(primaryColor);
   doc.setFontSize(12);
   doc.text("Estimated Price:", leftMargin, yPos);
-  doc.text(calculateExactPrice(formData), contentStartX, yPos);
+  doc.text(getPrice(), contentStartX, yPos);
 
   // Return PDF as base64 string
   return doc.output('datauristring');
 };
+
