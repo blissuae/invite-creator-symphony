@@ -1,3 +1,4 @@
+
 import { jsPDF } from "jspdf";
 import { InviteFormData } from "@/hooks/use-invite-form";
 import { format, startOfDay } from "date-fns";
@@ -101,6 +102,33 @@ export const generatePDF = (formData: InviteFormData): string => {
     yPos += lineHeight * 2;
   };
 
+  const formatAnimationStyles = (styles: string[]) => {
+    if (!styles.length) return "Not selected";
+    
+    const styleNameMap: Record<string, string> = {
+      "style1": "Cute",
+      "style2": "Earthy",
+      "style3": "Elegant",
+      "style4": "Fantasy",
+      "style5": "Hand-Drawn",
+      "style6": "Heritage",
+      "style7": "Luxury",
+      "style8": "Magical",
+      "style9": "Minimal",
+      "style10": "Nostalgic",
+      "style11": "Regal",
+      "style12": "Royal",
+      "style13": "Serene",
+      "style14": "Traditional",
+      "style15": "Whimsical"
+    };
+    
+    return styles.map(styleId => {
+      const displayName = styleNameMap[styleId] || styleId;
+      return `${styleId} (${displayName})`;
+    }).join(", ");
+  };
+
   const calculateExactPrice = () => {
     let basePrice = 0;
     
@@ -170,7 +198,7 @@ export const generatePDF = (formData: InviteFormData): string => {
     { title: "Character Details:", content: toTitleCase(`Characters: ${formData.hasCharacters ? "Yes" : "No"}${formData.hasCharacters ? `, Faces: ${formData.showFaces ? "Yes" : "No"}` : ""}`) },
     { title: "Video Idea:", content: formData.hasVideoIdea ? formData.videoIdea : "No specific idea provided" },
     { title: "Content:", content: formData.content.split("\n\nVideo Idea:")[0].split("\n\nAdditional Requests:")[0] },
-    { title: "Animation Styles:", content: toTitleCase(formData.animationStyles.join(", ") || "Not Selected") }
+    { title: "Animation Styles:", content: formatAnimationStyles(formData.animationStyles) }
   ];
 
   sections.forEach((section) => {
