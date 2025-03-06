@@ -1,7 +1,8 @@
-
 import { jsPDF } from "jspdf";
-import { InviteFormData } from "@/hooks/use-invite-form";
+import { InviteFormData } from "@/types/invite-form-types";
 import { format, startOfDay } from "date-fns";
+import { calculateExactPrice } from "@/utils/pricing-utils";
+import { formatAnimationStyles } from "@/utils/format-utils";
 
 export const generatePDF = (formData: InviteFormData): string => {
   const doc = new jsPDF();
@@ -102,91 +103,12 @@ export const generatePDF = (formData: InviteFormData): string => {
     yPos += lineHeight * 2;
   };
 
-  const formatAnimationStyles = (styles: string[]) => {
-    if (!styles.length) return "Not selected";
-    
-    const styleNameMap: Record<string, string> = {
-      "style1": "Cute",
-      "style2": "Earthy",
-      "style3": "Elegant",
-      "style4": "Fantasy",
-      "style5": "Hand-Drawn",
-      "style6": "Heritage",
-      "style7": "Luxury",
-      "style8": "Magical",
-      "style9": "Minimal",
-      "style10": "Nostalgic",
-      "style11": "Regal",
-      "style12": "Royal",
-      "style13": "Serene",
-      "style14": "Traditional",
-      "style15": "Whimsical"
-    };
-    
-    return styles.map(styleId => {
-      const displayName = styleNameMap[styleId] || styleId;
-      return `${styleId} (${displayName})`;
-    }).join(", ");
+  const formatAnimationStylesForPDF = (styles: string[]) => {
+    return formatAnimationStyles(styles);
   };
 
   const calculateExactPrice = () => {
-    let basePrice = 0;
-    
-    if (formData.deliveryFormats.videoInvite) {
-      if (!formData.hasCharacters) {
-        // Average of 1800-2100 is 1950, round to 2000
-        basePrice = 2000;
-      } else if (!formData.showFaces) {
-        // Average of 2100-2300 is 2200, already at a hundred
-        basePrice = 2200;
-      } else {
-        const characterCount = parseInt(formData.characterCount) || 0;
-        // Start at 2300 and add 200 for each character after the first, plus halfway through the range (100)
-        basePrice = 2400 + (characterCount - 1) * 200; // 2400 is the midpoint between 2300 and 2500
-      }
-    } else if (formData.deliveryFormats.stillInvite) {
-      if (!formData.hasCharacters || !formData.showFaces) {
-        basePrice = 1100; // Already an exact price
-      } else {
-        const characterCount = parseInt(formData.characterCount) || 0;
-        switch (characterCount) {
-          case 1:
-            basePrice = 1300;
-            break;
-          case 2:
-            basePrice = 1500;
-            break;
-          case 3:
-            basePrice = 1600;
-            break;
-          default:
-            basePrice = 1700;
-            break;
-        }
-      }
-    } else {
-      return "Contact us for pricing";
-    }
-
-    // Apply date-based discounts or urgency fees
-    if (formData.deadline) {
-      const today = startOfDay(new Date());
-      const days = Math.floor((formData.deadline.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-      
-      // Check for urgent delivery (6-14 days)
-      if (days >= 6 && days <= 14) {
-        return `${basePrice + 500} AED (Urgent Delivery)`;
-      }
-      
-      // Apply discounts for longer lead times
-      if (days >= 50) {
-        return `${basePrice - 500} AED (500 AED OFF!)`;
-      } else if (days >= 25) {
-        return `${basePrice - 300} AED (300 AED OFF!)`;
-      }
-    }
-
-    return `${basePrice} AED`;
+    return calculateExactPrice(formData);
   };
 
   const sections = [
@@ -198,7 +120,7 @@ export const generatePDF = (formData: InviteFormData): string => {
     { title: "Character Details:", content: toTitleCase(`Characters: ${formData.hasCharacters ? "Yes" : "No"}${formData.hasCharacters ? `, Faces: ${formData.showFaces ? "Yes" : "No"}` : ""}`) },
     { title: "Video Idea:", content: formData.hasVideoIdea ? formData.videoIdea : "No specific idea provided" },
     { title: "Content:", content: formData.content.split("\n\nVideo Idea:")[0].split("\n\nAdditional Requests:")[0] },
-    { title: "Animation Styles:", content: formatAnimationStyles(formData.animationStyles) }
+    { title: "Animation Styles:", content: formatAnimationStylesForPDF(formData.animationStyles) }
   ];
 
   sections.forEach((section) => {
@@ -248,7 +170,7 @@ export const generatePDF = (formData: InviteFormData): string => {
   doc.setTextColor(primaryColor);
   doc.setFontSize(12);
   doc.text("Estimated Price:", leftMargin, yPos);
-  doc.text(calculateExactPrice(), contentStartX, yPos);
+  doc.text(calculateExactPrice(formData), contentStartX, yPos);
 
   // Return PDF as base64 string
   return doc.output('datauristring');

@@ -1,4 +1,3 @@
-
 import { FormProgress } from "./form/FormProgress";
 import { BasicDetails } from "./form/BasicDetails";
 import { CharacterOptions } from "./form/CharacterOptions";
@@ -10,7 +9,7 @@ import { SuccessScreen } from "./form/SuccessScreen";
 import { AnimationStyleSelector } from "./form/AnimationStyleSelector";
 import { FormNavigation } from "./form/FormNavigation";
 import { DeliveryFormats } from "./form/DeliveryFormats";
-import { FORM_STEPS, useInviteForm } from "@/hooks/use-invite-form";
+import { useInviteForm, FORM_STEPS } from "@/hooks/use-invite-form";
 import { useEffect } from "react";
 
 export const InviteForm = () => {
