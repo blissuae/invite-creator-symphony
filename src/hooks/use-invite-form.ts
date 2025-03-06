@@ -5,6 +5,7 @@ import { generatePDF } from "@/utils/pdfGenerator";
 export interface InviteFormData {
   fullName: string;
   instagramId: string;
+  email: string;
   occasion: string;
   customOccasion: string;
   hasCharacters: boolean;
@@ -44,6 +45,7 @@ export const useInviteForm = () => {
   const [formData, setFormData] = useState<InviteFormData>({
     fullName: "",
     instagramId: "",
+    email: "",
     occasion: "",
     customOccasion: "",
     hasCharacters: false,
@@ -70,7 +72,7 @@ export const useInviteForm = () => {
 
   const nextStep = () => {
     if (currentStep === 0) {
-      if (!formData.fullName.trim() || !formData.instagramId.trim() || !formData.occasion ||
+      if (!formData.fullName.trim() || !formData.instagramId.trim() || !formData.email.trim() || !formData.occasion ||
           (formData.occasion === 'Other' && !formData.customOccasion.trim())) {
         toast({
           title: "Required Fields Missing",
@@ -274,6 +276,7 @@ DETAILS:
 Estimated Price: ${calculateExactPrice(formData)}
 
 Full Name: ${formData.fullName}
+Email: ${formData.email}
 Instagram ID: ${formData.instagramId || "Not provided"}
 Occasion: ${formData.occasion === "Other" ? formData.customOccasion : formData.occasion}
 Delivery Formats: ${formatDeliveryFormats()}

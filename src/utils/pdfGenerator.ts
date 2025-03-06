@@ -1,4 +1,3 @@
-
 import { jsPDF } from "jspdf";
 import { InviteFormData } from "@/hooks/use-invite-form";
 import { format, startOfDay } from "date-fns";
@@ -102,7 +101,6 @@ export const generatePDF = (formData: InviteFormData): string => {
     yPos += lineHeight * 2;
   };
 
-  // Calculate exact price (rounded to nearest hundred)
   const calculateExactPrice = () => {
     let basePrice = 0;
     
@@ -165,6 +163,7 @@ export const generatePDF = (formData: InviteFormData): string => {
 
   const sections = [
     { title: "Full Name:", content: toTitleCase(formData.fullName) },
+    { title: "Email:", content: formData.email },
     { title: "Instagram ID:", content: toTitleCase(formData.instagramId || "Not Provided") },
     { title: "Occasion:", content: toTitleCase(formData.occasion === "Other" ? formData.customOccasion : formData.occasion) },
     { title: "Delivery Formats:", content: `Video: ${formData.deliveryFormats.videoInvite ? "Yes" : "No"}, Still: ${formData.deliveryFormats.stillInvite ? "Yes" : "No"}, Logo: ${formData.deliveryFormats.logo ? "Yes" : "No"}` },

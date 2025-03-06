@@ -1,11 +1,9 @@
-
 import { InviteForm } from "@/components/InviteForm";
 import { useState, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 
-// Testimonial data with added image paths
 const testimonials = [
   {
     name: "Sara A.",
@@ -72,80 +70,67 @@ const testimonials = [
   }
 ];
 
-// Array of encouraging and fun progress messages by step
-// Modified to reflect the PREVIOUS completed step
 const progressMessages = {
-  // Generic messages for start
   start: [
     "Let's create something magical together! 🪄",
     "Your dream invitation is about to come alive! ✨",
     "Ready to design something extraordinary? Let's go! 🚀"
   ],
   
-  // For after completing Basic Details step
   basicDetails: [
     "Great! Personal details noted. This will be uniquely yours! 🌟",
     "Perfect start! We'll craft something special just for you 💝",
     "Wonderful details! Now let's make your event shine! 🎉"
   ],
   
-  // For after completing Delivery Formats step
   deliveryFormats: [
     "Excellent format choices! Your guests will be so impressed 😍",
     "Smart selections! Your invitation will look amazing across all platforms 📱💻",
     "Perfect format picks! Now let's add some personality! 🎯"
   ],
   
-  // For after completing Character Options step
   characterOptions: [
     "Your character selections will make this invitation pop! 🧙‍♂️",
     "Perfect character choices! Your invite will be just as you imagined 👥",
     "Your characters will bring your invitation to life! 🌈"
   ],
   
-  // For after completing Content Editor step
   content: [
     "We love your creativity! That will make for an amazing invite! 💡",
     "Your words will captivate your guests! Brilliant content! 📝",
     "Your message is going to shine through beautifully! ✨"
   ],
   
-  // For after completing Color Palette step
   colorPalette: [
     "You've got great taste! That palette will look stunning! 🎨",
     "Beautiful color choice! Your guests will be mesmerized! 🌈",
     "Perfect palette! These colors will make your invitation pop! 💫"
   ],
   
-  // For after completing Animation Style step
   animationStyles: [
     "Those animations will bring magic to your invite! ✨",
     "Great animation pick! Your invitation will come alive with these effects! 🌟",
     "Perfect animation choices! Your invitation will be unforgettable! 🎬"
   ],
   
-  // For after completing Design Style step
   designStyle: [
     "Excellent style choice! So elegant and perfect for your event! 👑",
     "That design will make your invitation truly stand out! 🏆",
     "Beautiful style selection! It complements your theme perfectly! 🎭"
   ],
   
-  // For after completing Deadline step
   deadline: [
     "Perfect timing! We're excited to create your invitation! ⏰",
     "Great! We'll have your beautiful invitation ready right on time! 📅",
     "Deadline noted! Your dream invitation is just around the corner! 🗓️"
   ],
   
-  // For after completing Review step
   review: [
     "Almost there! Your dream invitation is taking shape! 🌠",
     "Just one final look! Your creation is nearly complete! 🏁",
     "It's all coming together beautifully! Ready for the final step? 💖"
   ],
   
-  // For completion
   complete: [
     "Perfection achieved! Get ready to wow your guests! 🎊",
     "Congrats! Your stunning invitation is on its way to becoming reality! 🥂",
@@ -153,21 +138,18 @@ const progressMessages = {
   ]
 };
 
-// Helper function to get the step key for progress messages
-// Modified to return the previous step key instead of current
 const getPreviousStepKey = (step: number): keyof typeof progressMessages => {
-  // Return the key for the previous step
   switch(step) {
-    case 0: return "start"; // First step - show generic start messages
-    case 1: return "basicDetails"; // Basic Details completed
-    case 2: return "deliveryFormats"; // Delivery Formats completed
-    case 3: return "characterOptions"; // Character Options completed
-    case 4: return "content"; // Content Editor completed
-    case 5: return "colorPalette"; // Color Palette completed
-    case 6: return "animationStyles"; // Animation Styles completed
-    case 7: return "designStyle"; // Design Style completed
-    case 8: return "deadline"; // Deadline completed
-    case 9: return "review"; // Review completed
+    case 0: return "start";
+    case 1: return "basicDetails";
+    case 2: return "deliveryFormats";
+    case 3: return "characterOptions";
+    case 4: return "content";
+    case 5: return "colorPalette";
+    case 6: return "animationStyles";
+    case 7: return "designStyle";
+    case 8: return "deadline";
+    case 9: return "review";
     default: return "start";
   }
 };
@@ -183,7 +165,6 @@ const Index = () => {
   const testimonialRef = useRef<HTMLDivElement>(null);
   const prevStepRef = useRef(-1);
 
-  // Auto-scroll testimonials
   useEffect(() => {
     const interval = setInterval(() => {
       if (!isDragging) {
@@ -194,11 +175,9 @@ const Index = () => {
     return () => clearInterval(interval);
   }, [isDragging]);
 
-  // Listen for form progress updates
   useEffect(() => {
     const handleProgressUpdate = (e: CustomEvent) => {
       setFormProgress(e.detail.progress);
-      // Extract current step from the event
       if (e.detail.currentStep !== undefined) {
         setCurrentStep(e.detail.currentStep);
       }
@@ -211,11 +190,8 @@ const Index = () => {
     };
   }, []);
 
-  // Update message when step changes
   useEffect(() => {
-    // Only update if we've moved to a new step
     if (currentStep !== prevStepRef.current) {
-      // Use the previous step key to get appropriate messages
       const stepKey = getPreviousStepKey(currentStep);
       const messagesForStep = progressMessages[stepKey];
       const randomIndex = Math.floor(Math.random() * messagesForStep.length);
@@ -261,7 +237,6 @@ const Index = () => {
     };
   }, []);
 
-  // Render star ratings
   const renderStars = (rating: number) => {
     return (
       <div className="flex items-center">
@@ -299,14 +274,12 @@ const Index = () => {
               <span className="text-sm font-medium text-elegant-brown">{formProgress}%</span>
             </div>
             <div className="relative">
-              {/* Brown progress bar */}
               <Progress value={formProgress} className="h-2 bg-gray-200" 
                 style={{ 
                   "--primary": "#8b7256", 
                   "--primary-foreground": "255 255 255"
                 } as React.CSSProperties} 
               />
-              {/* Circle indicator */}
               <div 
                 className="absolute top-0 h-4 w-4 rounded-full bg-elegant-brown border-2 border-white shadow-md transform -translate-y-1/4"
                 style={{ 
@@ -323,11 +296,9 @@ const Index = () => {
         
         {!showForm ? (
           <>
-            {/* Social Validation Section */}
             <div className="mb-6 bg-[#8B5CF6]/10 rounded-xl p-4 shadow-sm border border-[#8B5CF6]/20 animate-fadeIn">
               <div className="flex items-center justify-center">
                 <div className="flex -space-x-2 mr-3 overflow-hidden">
-                  {/* Example customer avatars */}
                   <div className="inline-block h-7 w-7 rounded-full bg-white border-2 border-white overflow-hidden">
                     <img src="/placeholder.svg" alt="Customer" className="w-full h-full object-cover" />
                   </div>
@@ -351,7 +322,6 @@ const Index = () => {
               </div>
             </div>
             
-            {/* Improved Testimonials Section with new layout */}
             <div className="mb-12 bg-gradient-to-b from-[#f7f1fd] to-white rounded-xl p-6 shadow-sm border border-elegant-secondary/10 animate-fadeIn">
               <h3 className="text-xl font-serif text-center text-elegant-brown mb-6">Our Clients Love Us</h3>
               
@@ -389,7 +359,6 @@ const Index = () => {
                       className="w-full shrink-0 p-4"
                     >
                       <div className="bg-white rounded-xl p-6 shadow-md border border-elegant-secondary/10 flex flex-col md:flex-row gap-6">
-                        {/* Left side: Client photo and info */}
                         <div className="flex flex-col items-center md:items-start md:w-1/3">
                           <div className="relative mb-3">
                             <div className="h-20 w-20 rounded-full overflow-hidden border-4 border-elegant-beige shadow-md">
@@ -403,7 +372,6 @@ const Index = () => {
                           <p className="text-xs text-gray-500 mb-2">{testimonial.location}</p>
                         </div>
                         
-                        {/* Right side: Testimonial text and design preview */}
                         <div className="md:w-2/3">
                           <div className="mb-4 relative">
                             <div className="absolute -top-4 -left-2 text-elegant-brown/20 transform scale-150">
@@ -413,28 +381,6 @@ const Index = () => {
                               </svg>
                             </div>
                             <p className="text-gray-700 pl-6 leading-relaxed italic">"{testimonial.text}"</p>
-                          </div>
-                          
-                          {/* Design preview in device mockup */}
-                          <div className="hidden md:flex justify-end">
-                            <div className="relative w-24 h-48 overflow-hidden">
-                              {/* Phone mockup */}
-                              <div className="absolute inset-0 bg-gray-900 rounded-[24px] shadow-lg">
-                                <div className="absolute inset-[2px] rounded-[22px] bg-black overflow-hidden">
-                                  {/* Screen content with design color */}
-                                  <div 
-                                    className="absolute inset-0 rounded-[20px] overflow-hidden"
-                                    style={{ backgroundColor: testimonial.designColor }}
-                                  >
-                                    <img 
-                                      src={testimonial.design} 
-                                      alt="Design preview" 
-                                      className="w-full h-full object-cover opacity-60"
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
                           </div>
                         </div>
                       </div>
@@ -459,7 +405,6 @@ const Index = () => {
               </div>
             </div>
             
-            {/* Get Started Button with animation */}
             <div className="flex justify-center mb-12 animate-fadeIn">
               <Button 
                 onClick={() => setShowForm(true)}

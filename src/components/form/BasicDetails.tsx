@@ -1,3 +1,4 @@
+
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Cake, Heart, Gift, GraduationCap, PartyPopper, Sparkles } from "lucide-react";
@@ -5,6 +6,7 @@ interface BasicDetailsProps {
   formData: {
     fullName: string;
     instagramId: string;
+    email: string;
     occasion: string;
     customOccasion: string;
   };
@@ -45,7 +47,11 @@ export const BasicDetails = ({
   onChange
 }: BasicDetailsProps) => {
   const isFormValid = () => {
-    return formData.fullName.trim() !== '' && formData.instagramId.trim() !== '' && formData.occasion !== '' && (formData.occasion !== 'Other' || formData.customOccasion.trim() !== '');
+    return formData.fullName.trim() !== '' && 
+           formData.instagramId.trim() !== '' && 
+           formData.email.trim() !== '' &&
+           formData.occasion !== '' && 
+           (formData.occasion !== 'Other' || formData.customOccasion.trim() !== '');
   };
   return <div className="space-y-6 sm:space-y-8 animate-fadeIn">
       <h2 className="text-xl sm:text-2xl font-serif text-center mb-6 sm:mb-8 text-elegant-brown">Great! Let's get to know you :)</h2>
@@ -63,6 +69,13 @@ export const BasicDetails = ({
             Instagram ID <span className="text-red-500">*</span>
           </span>
           <Input type="text" value={formData.instagramId} onChange={e => onChange("instagramId", e.target.value)} placeholder="Your Instagram username" className="w-full border-elegant-secondary/30 focus:border-elegant-primary h-9 sm:h-10 text-sm sm:text-base" required />
+        </label>
+
+        <label className="block">
+          <span className="text-elegant-brown font-serif block mb-1.5 sm:mb-2 text-sm sm:text-base">
+            Email Address <span className="text-red-500">*</span>
+          </span>
+          <Input type="email" value={formData.email} onChange={e => onChange("email", e.target.value)} placeholder="Your email address" className="w-full border-elegant-secondary/30 focus:border-elegant-primary h-9 sm:h-10 text-sm sm:text-base" required />
         </label>
 
         <label className="block">

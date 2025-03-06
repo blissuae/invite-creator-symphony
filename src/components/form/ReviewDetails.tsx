@@ -1,4 +1,3 @@
-
 import { format, startOfDay } from "date-fns";
 import { jsPDF } from "jspdf";
 
@@ -6,6 +5,7 @@ interface ReviewDetailsProps {
   formData: {
     fullName: string;
     instagramId: string;
+    email: string;
     occasion: string;
     customOccasion: string;
     hasCharacters: boolean;
@@ -50,7 +50,6 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
   const formatColorPalette = (paletteId: string) => {
     if (!paletteId) return { name: "No Palette Selected", colors: [] };
 
-    // Parse the format: id###colors###name
     const [id, colorsStr, name] = paletteId.split("###");
     
     if (colorsStr && name) {
@@ -70,7 +69,6 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
     };
   };
 
-  // Map to convert style IDs to their display names
   const styleNameMap: Record<string, string> = {
     "style1": "Cute",
     "style2": "Earthy",
@@ -89,7 +87,6 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
     "style15": "Whimsical"
   };
 
-  // Format animation styles with their display names
   const formatAnimationStyles = (styles: string[]) => {
     if (!styles.length) return "Not selected";
     
@@ -99,25 +96,21 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
     }).join(", ");
   };
 
-  // Calculate exact price (rounded to nearest hundred)
   const calculateExactPrice = () => {
     let basePrice = 0;
     
     if (formData.deliveryFormats.videoInvite) {
       if (!formData.hasCharacters) {
-        // Average of 1800-2100 is 1950, round to 2000
         basePrice = 2000;
       } else if (!formData.showFaces) {
-        // Average of 2100-2300 is 2200, already at a hundred
         basePrice = 2200;
       } else {
         const characterCount = parseInt(formData.characterCount) || 0;
-        // Start at 2300 and add 200 for each character after the first, plus halfway through the range (100)
-        basePrice = 2400 + (characterCount - 1) * 200; // 2400 is the midpoint between 2300 and 2500
+        basePrice = 2400 + (characterCount - 1) * 200;
       }
     } else if (formData.deliveryFormats.stillInvite) {
       if (!formData.hasCharacters || !formData.showFaces) {
-        basePrice = 1100; // Already an exact price
+        basePrice = 1100;
       } else {
         const characterCount = parseInt(formData.characterCount) || 0;
         switch (characterCount) {
@@ -139,17 +132,14 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
       return "Contact us for pricing";
     }
 
-    // Apply date-based discounts or urgency fees
     if (formData.deadline) {
       const today = startOfDay(new Date());
       const days = Math.floor((formData.deadline.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
       
-      // Check for urgent delivery (6-14 days)
       if (days >= 6 && days <= 14) {
         return `${basePrice + 500} AED (Urgent Delivery)`;
       }
       
-      // Apply discounts for longer lead times
       if (days >= 50) {
         return `${basePrice - 500} AED (500 AED OFF!)`;
       } else if (days >= 25) {
@@ -226,6 +216,7 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
 
     const sections = [
       { title: "Full Name:", content: toTitleCase(formData.fullName) },
+      { title: "Email:", content: formData.email },
       { title: "Instagram ID:", content: toTitleCase(formData.instagramId || "Not Provided") },
       { title: "Occasion:", content: toTitleCase(formData.occasion === "Other" ? formData.customOccasion : formData.occasion) },
       { title: "Delivery Formats:", content: `Video: ${formData.deliveryFormats.videoInvite ? "Yes" : "No"}, Still: ${formData.deliveryFormats.stillInvite ? "Yes" : "No"}, Logo: ${formData.deliveryFormats.logo ? "Yes" : "No"}` },
@@ -369,6 +360,8 @@ export const ReviewDetails = ({ formData }: ReviewDetailsProps) => {
 
       <div className="grid gap-6 p-6 bg-[#8b7256]/5 rounded-lg border border-[#8b7256]/20">
         {renderSection("Full Name", formData.fullName)}
+        
+        {renderSection("Email", formData.email)}
         
         {renderSection("Instagram ID", formData.instagramId || "Not provided")}
         
