@@ -1,8 +1,11 @@
+
 import { InviteForm } from "@/components/InviteForm";
 import { useState, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { FAQButton } from "@/components/FAQ/FAQButton";
+import { FAQAccordion } from "@/components/FAQ/FAQAccordion";
 
 const testimonials = [
   {
@@ -162,6 +165,7 @@ const Index = () => {
   const [formProgress, setFormProgress] = useState(10);
   const [currentStep, setCurrentStep] = useState(0);
   const [currentMessage, setCurrentMessage] = useState("");
+  const [showFAQ, setShowFAQ] = useState(false);
   const testimonialRef = useRef<HTMLDivElement>(null);
   const prevStepRef = useRef(-1);
 
@@ -199,6 +203,18 @@ const Index = () => {
       prevStepRef.current = currentStep;
     }
   }, [currentStep]);
+
+  // Prevent body scroll when FAQ is open
+  useEffect(() => {
+    if (showFAQ) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [showFAQ]);
 
   const handlePrevious = () => {
     setCurrentTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length);
@@ -254,6 +270,10 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-elegant-beige to-white">
+      <FAQButton onClick={() => setShowFAQ(true)} />
+      
+      {showFAQ && <FAQAccordion onClose={() => setShowFAQ(false)} />}
+      
       <div className="container max-w-3xl mx-auto py-12 px-4">
         <div className="text-center mb-8 animate-fadeIn">
           <img 
