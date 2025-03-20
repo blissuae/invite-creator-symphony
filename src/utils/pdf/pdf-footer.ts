@@ -24,10 +24,10 @@ export const addFooter = (doc: jsPDF, pageNum: number, totalPages: number, margi
   doc.text(`Page ${pageNum} of ${totalPages}`, pageWidth - margin - 25, footerY);
   
   // Add social media icons using the newly uploaded image
-  const socialY = footerY + 4; // Moved down to avoid overlap with the line
+  const socialY = footerY + 24; // Moved down by 20px (from 4 to 24)
   const socialX = margin;
   const socialIconHeight = 8; // Fixed height for the social icons
-  const socialIconWidth = 16; // Width calculated to maintain aspect ratio (2:1)
+  const socialIconWidth = 8; // Width equal to height to maintain aspect ratio (1:1)
   
   // Add the uploaded social media icons image
   doc.addImage(
