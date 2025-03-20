@@ -24,24 +24,24 @@ export const addFooter = (doc: jsPDF, pageNum: number, totalPages: number, margi
   doc.text(`Page ${pageNum} of ${totalPages}`, pageWidth - margin - 25, footerY);
   
   // Add social media icons using the newly uploaded image
-  const socialY = footerY + 2; // Adjusted Y position for better alignment
+  const socialY = footerY + 4; // Moved down to avoid overlap with the line
   const socialX = margin;
-  const socialIconsWidth = 30; // Width of the social icons image
-  const socialIconsHeight = 10; // Height of the social icons image
+  const socialIconHeight = 8; // Fixed height for the social icons
+  const socialIconWidth = 16; // Width calculated to maintain aspect ratio (2:1)
   
   // Add the uploaded social media icons image
   doc.addImage(
     "/lovable-uploads/73967cd6-93e4-42c7-baa5-b0830cffd64c.png", 
     "PNG", 
     socialX, 
-    socialY - socialIconsHeight, 
-    socialIconsWidth, 
-    socialIconsHeight
+    socialY - socialIconHeight, 
+    socialIconWidth, 
+    socialIconHeight
   );
   
   // Social media handle - positioned next to the icons
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(pdfColors.mutedTextColor);
   doc.setFontSize(8);
-  doc.text("weave.bliss", socialX + socialIconsWidth + 2, socialY - 2);
+  doc.text("weave.bliss", socialX + socialIconWidth + 2, socialY - 2);
 };
