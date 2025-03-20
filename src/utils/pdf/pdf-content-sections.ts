@@ -14,6 +14,11 @@ export const addClientSection = (
   lineHeight: number
 ): number => {
   yPos = addSectionHeader(doc, "CLIENT DETAILS", margin, yPos);
+  
+  // Create a 2-column layout for client details
+  const halfWidth = (doc.internal.pageSize.width - (margin * 3)) / 2;
+  
+  // Left column
   yPos = addContentRow(doc, "Full Name:", formData.fullName, margin, yPos, lineHeight);
   yPos = addContentRow(doc, "Email:", formData.email, margin, yPos, lineHeight);
   yPos = addContentRow(doc, "Instagram:", formData.instagramId || "Not Provided", margin, yPos, lineHeight);
@@ -29,6 +34,7 @@ export const addProjectSection = (
   lineHeight: number
 ): number => {
   yPos = addSectionHeader(doc, "PROJECT DETAILS", margin, yPos);
+  
   yPos = addContentRow(
     doc, 
     "Occasion:", 
@@ -41,7 +47,7 @@ export const addProjectSection = (
   // Add deliverables with checkboxes
   doc.setFontSize(10);
   doc.setFont('helvetica', 'bold');
-  doc.setTextColor('#8b7256');
+  doc.setTextColor('#444444');
   doc.text("Deliverables:", margin + 5, yPos);
   yPos += lineHeight + 3;
   
@@ -51,7 +57,7 @@ export const addProjectSection = (
   
   yPos += 5;
   
-  // Add character details (including the character count)
+  // Add character details
   let characterDetails = "None Requested";
   if (formData.hasCharacters) {
     characterDetails = "Characters: Yes";
@@ -66,7 +72,7 @@ export const addProjectSection = (
   }
   yPos = addContentRow(doc, "Characters:", characterDetails, margin, yPos, lineHeight);
   
-  // Add animation styles in a cleaner format
+  // Add animation styles
   const styles = formatAnimationStyles(formData.animationStyles);
   yPos = addContentRow(doc, "Animation Styles:", styles, margin, yPos, lineHeight);
   
@@ -101,7 +107,25 @@ export const addContentSection = (
   // Format content to remove any video idea text that's duplicated
   let contentText = formData.content;
   contentText = contentText.split("\n\nVideo Idea:")[0].split("\n\nAdditional Requests:")[0];
-  yPos = addContentRow(doc, "Content:", contentText, margin, yPos, lineHeight);
+  
+  // Add content with proper spacing
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(pdfColors.primaryColor);
+  doc.setFontSize(10);
+  doc.text("Content:", margin + 5, yPos);
+  
+  yPos += 5;
+  
+  // Content text
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(pdfColors.textColor);
+  doc.setFontSize(10);
+  
+  const contentWidth = doc.internal.pageSize.width - (margin * 2) - 10;
+  const contentLines = doc.splitTextToSize(contentText, contentWidth);
+  doc.text(contentLines, margin + 10, yPos);
+  
+  yPos += (contentLines.length * lineHeight) + 10;
   
   if (formData.hasVideoIdea) {
     yPos = addContentRow(doc, "Video Idea:", formData.videoIdea, margin, yPos, lineHeight);

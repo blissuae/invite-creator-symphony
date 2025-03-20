@@ -42,23 +42,36 @@ export const addColorPalette = (
   doc.text(`Selected Palette: ${palette.name}`, margin + 5, yPos);
   
   // Add more space between text and color swatches
-  yPos += 15;
+  yPos += 20;
   
-  // Draw color swatches
-  const swatchSize = 15;
-  const swatchSpacing = 10;
+  // Draw color swatches in a more modern style
+  const swatchSize = 20;
+  const swatchSpacing = 15;
   const swatchY = yPos - swatchSize;
   
   palette.colors.forEach((color, index) => {
-    // Draw color swatch
+    // Draw color swatch with subtle shadow effect
+    // Shadow
+    doc.setFillColor('#EEEEEE');
+    doc.roundedRect(
+      margin + 5 + (index * (swatchSize + swatchSpacing)) + 1, 
+      swatchY + 1, 
+      swatchSize, 
+      swatchSize, 
+      2, 
+      2, 
+      'F'
+    );
+    
+    // Actual color swatch
     doc.setFillColor(color);
     doc.roundedRect(
       margin + 5 + (index * (swatchSize + swatchSpacing)), 
       swatchY, 
       swatchSize, 
       swatchSize, 
-      1, 
-      1, 
+      2, 
+      2, 
       'F'
     );
     
@@ -69,7 +82,7 @@ export const addColorPalette = (
     doc.text(
       color, 
       margin + 5 + (index * (swatchSize + swatchSpacing)), 
-      swatchY + swatchSize + 5
+      swatchY + swatchSize + 10
     );
   });
   
@@ -90,19 +103,19 @@ export const addPricingBox = (
   const { yPos: newYPos, addedPage } = addPageIfNeeded(doc, yPos, pricingBoxHeight + 10);
   yPos = newYPos;
   
-  // Redesigned elegant pricing section - without rounded corners
-  // Add divider line before pricing 
-  doc.setDrawColor(pdfColors.primaryColor);
-  doc.setLineWidth(0.5);
+  // Clean, modern pricing section with horizontal lines
+  // Add top divider line
+  doc.setDrawColor('#DDDDDD');
+  doc.setLineWidth(1);
   doc.line(margin, yPos, pageWidth - margin, yPos);
   
-  yPos += 10;
+  yPos += 15;
   
-  // Add pricing label
+  // Add pricing label - left aligned
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(pdfColors.primaryColor);
   doc.setFontSize(12);
-  doc.text("PRICE:", margin + 10, yPos);
+  doc.text("PRICE", margin + 5, yPos);
   
   // Add price value - right aligned
   const price = calculateExactPrice(formData);
@@ -110,13 +123,13 @@ export const addPricingBox = (
   doc.setTextColor(pdfColors.secondaryColor);
   doc.setFontSize(16);
   const priceWidth = doc.getTextWidth(price);
-  doc.text(price, pageWidth - margin - priceWidth, yPos);
+  doc.text(price, pageWidth - margin - priceWidth - 5, yPos);
   
-  // Add second line below
+  // Add bottom divider line
   yPos += 10;
-  doc.setDrawColor(pdfColors.primaryColor);
-  doc.setLineWidth(0.5);
-  doc.line(margin, yPos + 10, pageWidth - margin, yPos + 10);
+  doc.setDrawColor('#DDDDDD');
+  doc.setLineWidth(1);
+  doc.line(margin, yPos + 5, pageWidth - margin, yPos + 5);
   
   return yPos + pricingBoxHeight - 10;
 };

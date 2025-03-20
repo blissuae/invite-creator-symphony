@@ -9,26 +9,26 @@ export const addSectionHeader = (
   yPos: number
 ): number => {
   // Check if we need to add a new page
-  const { yPos: newYPos, addedPage } = addPageIfNeeded(doc, yPos, 15);
+  const { yPos: newYPos, addedPage } = addPageIfNeeded(doc, yPos, 22);
   yPos = newYPos;
   
-  // Add decorative element
-  doc.setDrawColor(pdfColors.primaryColor);
-  doc.setLineWidth(0.5);
-  doc.line(margin, yPos - 5, margin + 5, yPos - 5);
+  // Add section header with modern design
+  doc.setFillColor(pdfColors.sectionBgColor);
+  const contentWidth = doc.internal.pageSize.width - (margin * 2);
+  doc.rect(margin, yPos - 5, contentWidth, 20, 'F');
+  
+  // Add accent line
+  doc.setDrawColor(pdfColors.secondaryColor);
+  doc.setLineWidth(1);
+  doc.line(margin, yPos - 5, margin, yPos + 15);
   
   // Add header text
   doc.setFont('helvetica', 'bold');
-  doc.setTextColor(pdfColors.headerColor);
+  doc.setTextColor(pdfColors.primaryColor);
   doc.setFontSize(12);
-  doc.text(title, margin + 10, yPos);
+  doc.text(title, margin + 10, yPos + 5);
   
-  // Add decorative line after text
-  const textWidth = doc.getTextWidth(title);
-  const contentWidth = doc.internal.pageSize.width - (margin * 2);
-  doc.line(margin + 15 + textWidth, yPos - 5, margin + contentWidth - 10, yPos - 5);
-  
-  return yPos + 8;
+  return yPos + 22;
 };
 
 export const addContentRow = (
@@ -43,13 +43,6 @@ export const addContentRow = (
   const { yPos: newYPos, addedPage } = addPageIfNeeded(doc, yPos, lineHeight + 10);
   yPos = newYPos;
   
-  // Draw subtle row background on alternating rows
-  const contentWidth = doc.internal.pageSize.width - (margin * 2);
-  if ((yPos / 10) % 2 === 0) {
-    doc.setFillColor(248, 247, 252); // Very light purple
-    doc.rect(margin, yPos - 5, contentWidth, lineHeight + 5, 'F');
-  }
-  
   // Add label
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(pdfColors.primaryColor);
@@ -60,6 +53,7 @@ export const addContentRow = (
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(pdfColors.textColor);
   
+  const contentWidth = doc.internal.pageSize.width - (margin * 2);
   const maxValueWidth = contentWidth - 70; // Leave room for the label
   const valueXPos = margin + 60;
   
@@ -72,7 +66,7 @@ export const addContentRow = (
   yPos += lineHeight + additionalHeight + 3;
   
   // Add subtle horizontal separator
-  doc.setDrawColor('#E5E5E5');
+  doc.setDrawColor('#EEEEEE');
   doc.setLineWidth(0.2);
   doc.line(margin, yPos - 1, margin + contentWidth, yPos - 1);
   
@@ -91,15 +85,15 @@ export const addCheckboxRow = (
   const { yPos: newYPos, addedPage } = addPageIfNeeded(doc, yPos, lineHeight + 5);
   yPos = newYPos;
   
-  // Draw checkbox
-  doc.setDrawColor('#333333');
+  // Draw checkbox (square with rounded corners)
+  doc.setDrawColor('#CCCCCC');
   doc.setLineWidth(0.3);
-  doc.rect(margin + 5, yPos - 4, 5, 5, 'S');
+  doc.roundedRect(margin + 5, yPos - 4, 5, 5, 1, 1, 'S');
   
   // Fill checkbox if checked
   if (isChecked) {
-    doc.setFillColor(pdfColors.primaryColor);
-    doc.rect(margin + 5, yPos - 4, 5, 5, 'F');
+    doc.setFillColor(pdfColors.secondaryColor);
+    doc.roundedRect(margin + 5, yPos - 4, 5, 5, 1, 1, 'F');
     
     // Add checkmark
     doc.setDrawColor('#FFFFFF');
