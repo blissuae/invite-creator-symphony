@@ -23,32 +23,25 @@ export const addFooter = (doc: jsPDF, pageNum: number, totalPages: number, margi
   doc.setFontSize(8);
   doc.text(`Page ${pageNum} of ${totalPages}`, pageWidth - margin - 25, footerY);
   
-  // Add social media
-  const socialY = footerY + 5;
+  // Add social media icons using the uploaded image
+  const socialY = footerY + 2; // Adjusted Y position for better alignment
   const socialX = margin;
-  const iconSize = 3;
+  const socialIconsWidth = 30; // Width of the social icons image
+  const socialIconsHeight = 10; // Height of the social icons image
   
-  // Instagram icon (simplified square with circle)
-  doc.setDrawColor(pdfColors.mutedTextColor);
-  doc.setFillColor(pdfColors.mutedTextColor);
-  doc.roundedRect(socialX, socialY - iconSize, iconSize, iconSize, 0.8, 0.8, 'FD');
-  doc.setDrawColor('#FFFFFF');
-  doc.setLineWidth(0.2);
-  doc.circle(socialX + iconSize/2, socialY - iconSize/2, iconSize/3, 'S');
-  doc.setFillColor('#FFFFFF');
-  doc.circle(socialX + iconSize*0.8, socialY - iconSize*0.8, iconSize/6, 'F');
+  // Add the uploaded social media icons image
+  doc.addImage(
+    "/lovable-uploads/ab1da135-362a-4ad6-a2f6-fe3f68926c57.png", 
+    "PNG", 
+    socialX, 
+    socialY - socialIconsHeight, 
+    socialIconsWidth, 
+    socialIconsHeight
+  );
   
-  // TikTok icon (simplified musical note)
-  doc.setDrawColor(pdfColors.mutedTextColor);
-  doc.setFillColor(pdfColors.mutedTextColor);
-  doc.setLineWidth(0.5);
-  doc.line(socialX + iconSize + 5, socialY - iconSize, socialX + iconSize + 5, socialY);
-  doc.line(socialX + iconSize + 5, socialY - iconSize, socialX + iconSize + 7, socialY - iconSize + 1);
-  doc.circle(socialX + iconSize + 7, socialY - 1, 1, 'F');
-  
-  // Social media handle
+  // Social media handle - positioned next to the icons
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(pdfColors.mutedTextColor);
   doc.setFontSize(8);
-  doc.text("weave.bliss", socialX + iconSize + 10, socialY - 0.5);
+  doc.text("weave.bliss", socialX + socialIconsWidth + 2, socialY - 2);
 };
