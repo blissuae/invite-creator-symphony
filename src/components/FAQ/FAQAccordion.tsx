@@ -66,6 +66,15 @@ export const FAQAccordion = ({ onClose }: FAQAccordionProps) => {
         <p>To maintain our brand identity, we include a watermark at the bottom of all videos. We don't remove it, except in special circumstances, such as when working with businesses or government entities where the watermark is not suitable.</p>
       )
     },
+    {
+      category: "Resale Rights",
+      content: (
+        <div>
+          <p>Bliss retains the resale rights to completed projects, provided that any personalized elements included in the video—such as character faces, houses, or other custom features created upon request—are replaced.</p>
+          <p className="mt-2">In general, however, we retain ownership of the videos we create and reserve the right to resell them to our audience as ready-made templates.</p>
+        </div>
+      )
+    },
   ];
 
   return (
