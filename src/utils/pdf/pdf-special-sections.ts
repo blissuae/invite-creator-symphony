@@ -2,7 +2,7 @@
 import { jsPDF } from "jspdf";
 import { InviteFormData } from "@/types/invite-form-types";
 import { calculateExactPrice } from "@/utils/pricing-utils";
-import { pdfColors, addPageIfNeeded } from "./pdf-core";
+import { pdfColors, addPageIfNeeded, getTwoColumnXPositions } from "./pdf-core";
 
 export const addColorPalette = (
   doc: jsPDF, 
@@ -42,7 +42,7 @@ export const addColorPalette = (
   doc.text(`Selected Palette: ${palette.name}`, margin + 5, yPos);
   
   // Add more space between text and color swatches
-  yPos += 20;
+  yPos += 15;
   
   // Draw color swatches in a more modern style
   const swatchSize = 20;
@@ -86,7 +86,7 @@ export const addColorPalette = (
     );
   });
   
-  return yPos + swatchSize + 15;
+  return yPos + swatchSize + 10; // Slightly reduced spacing
 };
 
 export const addPricingBox = (
@@ -97,7 +97,7 @@ export const addPricingBox = (
 ): number => {
   const pageWidth = doc.internal.pageSize.width;
   const contentWidth = pageWidth - (margin * 2);
-  const pricingBoxHeight = 40;
+  const pricingBoxHeight = 35; // Reduced height
   
   // Check if we need to add a new page for pricing box
   const { yPos: newYPos, addedPage } = addPageIfNeeded(doc, yPos, pricingBoxHeight + 10);
@@ -109,7 +109,7 @@ export const addPricingBox = (
   doc.setLineWidth(1);
   doc.line(margin, yPos, pageWidth - margin, yPos);
   
-  yPos += 15;
+  yPos += 10; // Reduced spacing
   
   // Add pricing label - left aligned
   doc.setFont('helvetica', 'bold');
@@ -126,7 +126,7 @@ export const addPricingBox = (
   doc.text(price, pageWidth - margin - priceWidth - 5, yPos);
   
   // Add bottom divider line
-  yPos += 10;
+  yPos += 8; // Reduced spacing
   doc.setDrawColor('#DDDDDD');
   doc.setLineWidth(1);
   doc.line(margin, yPos + 5, pageWidth - margin, yPos + 5);

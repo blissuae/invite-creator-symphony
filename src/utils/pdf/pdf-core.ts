@@ -50,3 +50,12 @@ export const addPageIfNeeded = (
   
   return { yPos, addedPage: false };
 };
+
+// New function to help with column layout
+export const getTwoColumnXPositions = (doc: jsPDF, margin: number): { col1: number, col2: number } => {
+  const pageWidth = doc.internal.pageSize.width;
+  const col1 = margin;
+  const col2 = margin + (pageWidth - (margin * 2)) / 2 + 5;
+  
+  return { col1, col2 };
+};

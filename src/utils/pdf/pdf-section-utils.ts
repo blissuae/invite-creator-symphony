@@ -15,20 +15,20 @@ export const addSectionHeader = (
   // Add section header with modern design
   doc.setFillColor(pdfColors.sectionBgColor);
   const contentWidth = doc.internal.pageSize.width - (margin * 2);
-  doc.rect(margin, yPos - 5, contentWidth, 20, 'F');
+  doc.rect(margin, yPos - 5, contentWidth, 18, 'F'); // Reduce height
   
   // Add accent line
   doc.setDrawColor(pdfColors.secondaryColor);
   doc.setLineWidth(1);
-  doc.line(margin, yPos - 5, margin, yPos + 15);
+  doc.line(margin, yPos - 5, margin, yPos + 13);
   
   // Add header text
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(pdfColors.primaryColor);
-  doc.setFontSize(12);
+  doc.setFontSize(11); // Slightly smaller font
   doc.text(title, margin + 10, yPos + 5);
   
-  return yPos + 22;
+  return yPos + 20; // Reduced spacing
 };
 
 export const addContentRow = (
@@ -40,7 +40,7 @@ export const addContentRow = (
   lineHeight: number
 ): number => {
   // Check if we need to add a new page
-  const { yPos: newYPos, addedPage } = addPageIfNeeded(doc, yPos, lineHeight + 10);
+  const { yPos: newYPos, addedPage } = addPageIfNeeded(doc, yPos, lineHeight + 5);
   yPos = newYPos;
   
   // Add label
@@ -63,7 +63,7 @@ export const addContentRow = (
   // Calculate how much to move down based on number of lines
   const additionalHeight = Math.max((lines.length - 1) * lineHeight, 0);
   
-  yPos += lineHeight + additionalHeight + 3;
+  yPos += lineHeight + additionalHeight + 2; // Reduced spacing
   
   // Add subtle horizontal separator
   doc.setDrawColor('#EEEEEE');
@@ -82,7 +82,7 @@ export const addCheckboxRow = (
   lineHeight: number
 ): number => {
   // Check if we need to add a new page
-  const { yPos: newYPos, addedPage } = addPageIfNeeded(doc, yPos, lineHeight + 5);
+  const { yPos: newYPos, addedPage } = addPageIfNeeded(doc, yPos, lineHeight + 2);
   yPos = newYPos;
   
   // Draw checkbox (square with rounded corners)
@@ -105,8 +105,8 @@ export const addCheckboxRow = (
   // Add label
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(pdfColors.textColor);
-  doc.setFontSize(10);
+  doc.setFontSize(9);
   doc.text(label, margin + 15, yPos);
   
-  return yPos + lineHeight;
+  return yPos + lineHeight - 1; // Reduced spacing
 };
