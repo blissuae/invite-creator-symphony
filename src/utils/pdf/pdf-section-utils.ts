@@ -9,26 +9,26 @@ export const addSectionHeader = (
   yPos: number
 ): number => {
   // Check if we need to add a new page
-  const { yPos: newYPos, addedPage } = addPageIfNeeded(doc, yPos, 22);
+  const { yPos: newYPos, addedPage } = addPageIfNeeded(doc, yPos, 15);
   yPos = newYPos;
   
-  // Add section header with modern design
-  doc.setFillColor(pdfColors.sectionBgColor);
-  const contentWidth = doc.internal.pageSize.width - (margin * 2);
-  doc.rect(margin, yPos - 5, contentWidth, 18, 'F'); // Reduce height
-  
-  // Add accent line
-  doc.setDrawColor(pdfColors.secondaryColor);
-  doc.setLineWidth(1);
-  doc.line(margin, yPos - 5, margin, yPos + 13);
+  // Add decorative element
+  doc.setDrawColor(pdfColors.primaryColor);
+  doc.setLineWidth(0.5);
+  doc.line(margin, yPos - 5, margin + 5, yPos - 5);
   
   // Add header text
   doc.setFont('helvetica', 'bold');
-  doc.setTextColor(pdfColors.primaryColor);
-  doc.setFontSize(11); // Slightly smaller font
-  doc.text(title, margin + 10, yPos + 5);
+  doc.setTextColor(pdfColors.headerColor);
+  doc.setFontSize(12);
+  doc.text(title, margin + 10, yPos);
   
-  return yPos + 20; // Reduced spacing
+  // Add decorative line after text
+  const textWidth = doc.getTextWidth(title);
+  const contentWidth = doc.internal.pageSize.width - (margin * 2);
+  doc.line(margin + 15 + textWidth, yPos - 5, margin + contentWidth - 10, yPos - 5);
+  
+  return yPos + 8;
 };
 
 export const addContentRow = (
@@ -40,8 +40,15 @@ export const addContentRow = (
   lineHeight: number
 ): number => {
   // Check if we need to add a new page
-  const { yPos: newYPos, addedPage } = addPageIfNeeded(doc, yPos, lineHeight + 5);
+  const { yPos: newYPos, addedPage } = addPageIfNeeded(doc, yPos, lineHeight + 10);
   yPos = newYPos;
+  
+  // Draw subtle row background on alternating rows
+  const contentWidth = doc.internal.pageSize.width - (margin * 2);
+  if ((yPos / 10) % 2 === 0) {
+    doc.setFillColor(248, 247, 252); // Very light purple
+    doc.rect(margin, yPos - 5, contentWidth, lineHeight + 5, 'F');
+  }
   
   // Add label
   doc.setFont('helvetica', 'bold');
@@ -53,7 +60,6 @@ export const addContentRow = (
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(pdfColors.textColor);
   
-  const contentWidth = doc.internal.pageSize.width - (margin * 2);
   const maxValueWidth = contentWidth - 70; // Leave room for the label
   const valueXPos = margin + 60;
   
@@ -63,10 +69,10 @@ export const addContentRow = (
   // Calculate how much to move down based on number of lines
   const additionalHeight = Math.max((lines.length - 1) * lineHeight, 0);
   
-  yPos += lineHeight + additionalHeight + 2; // Reduced spacing
+  yPos += lineHeight + additionalHeight + 3;
   
   // Add subtle horizontal separator
-  doc.setDrawColor('#EEEEEE');
+  doc.setDrawColor('#E5E5E5');
   doc.setLineWidth(0.2);
   doc.line(margin, yPos - 1, margin + contentWidth, yPos - 1);
   
@@ -82,18 +88,18 @@ export const addCheckboxRow = (
   lineHeight: number
 ): number => {
   // Check if we need to add a new page
-  const { yPos: newYPos, addedPage } = addPageIfNeeded(doc, yPos, lineHeight + 2);
+  const { yPos: newYPos, addedPage } = addPageIfNeeded(doc, yPos, lineHeight + 5);
   yPos = newYPos;
   
-  // Draw checkbox (square with rounded corners)
-  doc.setDrawColor('#CCCCCC');
+  // Draw checkbox
+  doc.setDrawColor('#333333');
   doc.setLineWidth(0.3);
-  doc.roundedRect(margin + 5, yPos - 4, 5, 5, 1, 1, 'S');
+  doc.rect(margin + 5, yPos - 4, 5, 5, 'S');
   
   // Fill checkbox if checked
   if (isChecked) {
-    doc.setFillColor(pdfColors.secondaryColor);
-    doc.roundedRect(margin + 5, yPos - 4, 5, 5, 1, 1, 'F');
+    doc.setFillColor(pdfColors.primaryColor);
+    doc.rect(margin + 5, yPos - 4, 5, 5, 'F');
     
     // Add checkmark
     doc.setDrawColor('#FFFFFF');
@@ -105,8 +111,8 @@ export const addCheckboxRow = (
   // Add label
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(pdfColors.textColor);
-  doc.setFontSize(9);
+  doc.setFontSize(10);
   doc.text(label, margin + 15, yPos);
   
-  return yPos + lineHeight - 1; // Reduced spacing
+  return yPos + lineHeight;
 };

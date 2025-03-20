@@ -1,10 +1,10 @@
+
 import { jsPDF } from "jspdf";
 import { InviteFormData } from "@/types/invite-form-types";
 import { format, startOfDay } from "date-fns";
 import { formatAnimationStyles } from "@/utils/format-utils";
 import { addSectionHeader, addContentRow, addCheckboxRow } from "./pdf-section-utils";
 import { addColorPalette, addPricingBox } from "./pdf-special-sections";
-import { pdfColors, addPageIfNeeded, getTwoColumnXPositions } from "./pdf-core";
 
 export const addClientSection = (
   doc: jsPDF, 
@@ -14,17 +14,11 @@ export const addClientSection = (
   lineHeight: number
 ): number => {
   yPos = addSectionHeader(doc, "CLIENT DETAILS", margin, yPos);
+  yPos = addContentRow(doc, "Full Name:", formData.fullName, margin, yPos, lineHeight);
+  yPos = addContentRow(doc, "Email:", formData.email, margin, yPos, lineHeight);
+  yPos = addContentRow(doc, "Instagram:", formData.instagramId || "Not Provided", margin, yPos, lineHeight);
   
-  // Create a 2-column layout for client details
-  const { col1, col2 } = getTwoColumnXPositions(doc, margin);
-  
-  // Client details in two columns
-  yPos = addContentRow(doc, "Full Name:", formData.fullName, col1, yPos, lineHeight);
-  yPos = addContentRow(doc, "Email:", formData.email, col2, yPos - lineHeight, lineHeight);
-  
-  yPos = addContentRow(doc, "Instagram:", formData.instagramId || "Not Provided", col1, yPos, lineHeight);
-  
-  return yPos + 5; // Add minimal spacing for next section
+  return yPos + 15; // Add spacing for next section
 };
 
 export const addProjectSection = (
@@ -35,12 +29,46 @@ export const addProjectSection = (
   lineHeight: number
 ): number => {
   yPos = addSectionHeader(doc, "PROJECT DETAILS", margin, yPos);
+  yPos = addContentRow(
+    doc, 
+    "Occasion:", 
+    formData.occasion === "Other" ? formData.customOccasion : formData.occasion, 
+    margin, 
+    yPos, 
+    lineHeight
+  );
   
-  // Two column layout
-  const { col1, col2 } = getTwoColumnXPositions(doc, margin);
+  // Add deliverables with checkboxes
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor('#8b7256');
+  doc.text("Deliverables:", margin + 5, yPos);
+  yPos += lineHeight + 3;
   
-  const occasion = formData.occasion === "Other" ? formData.customOccasion : formData.occasion;
-  yPos = addContentRow(doc, "Occasion:", occasion, col1, yPos, lineHeight);
+  yPos = addCheckboxRow(doc, "Video Invitation", formData.deliveryFormats.videoInvite, margin, yPos, lineHeight);
+  yPos = addCheckboxRow(doc, "Still Image", formData.deliveryFormats.stillInvite, margin, yPos, lineHeight);
+  yPos = addCheckboxRow(doc, "Logo Design", formData.deliveryFormats.logo, margin, yPos, lineHeight);
+  
+  yPos += 5;
+  
+  // Add character details (including the character count)
+  let characterDetails = "None Requested";
+  if (formData.hasCharacters) {
+    characterDetails = "Characters: Yes";
+    if (formData.showFaces) {
+      characterDetails += ", Faces: Yes";
+      if (formData.characterCount) {
+        characterDetails += `, Number of Characters: ${formData.characterCount}`;
+      }
+    } else {
+      characterDetails += ", Faces: No";
+    }
+  }
+  yPos = addContentRow(doc, "Characters:", characterDetails, margin, yPos, lineHeight);
+  
+  // Add animation styles in a cleaner format
+  const styles = formatAnimationStyles(formData.animationStyles);
+  yPos = addContentRow(doc, "Animation Styles:", styles, margin, yPos, lineHeight);
   
   // Format the deadline with urgency indicator
   const formatDeadline = (date: Date | null) => {
@@ -51,47 +79,14 @@ export const addProjectSection = (
     const days = Math.floor((deadlineDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
     
     const isUrgent = days >= 6 && days <= 14;
-    const formattedDate = format(date, "MMM d, yyyy");
+    const formattedDate = format(date, "MMMM d, yyyy");
     
-    return isUrgent ? `${formattedDate} (Urgent)` : formattedDate;
+    return isUrgent ? `${formattedDate} (Urgent Delivery)` : formattedDate;
   };
   
-  yPos = addContentRow(doc, "Deadline:", formatDeadline(formData.deadline), col2, yPos - lineHeight, lineHeight);
+  yPos = addContentRow(doc, "Deadline:", formatDeadline(formData.deadline), margin, yPos, lineHeight);
   
-  // Add deliverables with checkboxes - left column
-  doc.setFontSize(10);
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(pdfColors.primaryColor);
-  doc.text("Deliverables:", col1 + 5, yPos);
-  
-  // Character details - right column
-  let characterDetails = "None";
-  if (formData.hasCharacters) {
-    characterDetails = formData.showFaces ? "Yes, with faces" : "Yes, no faces";
-    if (formData.characterCount) {
-      characterDetails += `, ${formData.characterCount} characters`;
-    }
-  }
-  
-  yPos += lineHeight + 3;
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(pdfColors.primaryColor);
-  doc.text("Characters:", col2 + 5, yPos - lineHeight - 3);
-  
-  doc.setFont('helvetica', 'normal');
-  doc.setTextColor(pdfColors.textColor);
-  doc.text(characterDetails, col2 + 60, yPos - lineHeight - 3);
-  
-  yPos = addCheckboxRow(doc, "Video Invitation", formData.deliveryFormats.videoInvite, col1, yPos, lineHeight);
-  yPos = addCheckboxRow(doc, "Still Image", formData.deliveryFormats.stillInvite, col1, yPos, lineHeight);
-  yPos = addCheckboxRow(doc, "Logo Design", formData.deliveryFormats.logo, col1, yPos, lineHeight);
-  
-  // Add animation styles - more compact
-  const styles = formatAnimationStyles(formData.animationStyles);
-  yPos += lineHeight;
-  yPos = addContentRow(doc, "Animation Styles:", styles, margin, yPos, lineHeight);
-  
-  return yPos + 5; // Add minimal spacing for next section
+  return yPos + 15; // Add spacing for next section
 };
 
 export const addContentSection = (
@@ -106,45 +101,18 @@ export const addContentSection = (
   // Format content to remove any video idea text that's duplicated
   let contentText = formData.content;
   contentText = contentText.split("\n\nVideo Idea:")[0].split("\n\nAdditional Requests:")[0];
-  
-  // Add content with proper spacing
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(pdfColors.primaryColor);
-  doc.setFontSize(10);
-  doc.text("Content:", margin + 5, yPos);
-  
-  yPos += 5;
-  
-  // Content text - more compact
-  doc.setFont('helvetica', 'normal');
-  doc.setTextColor(pdfColors.textColor);
-  doc.setFontSize(9); // Slightly smaller font
-  
-  const contentWidth = doc.internal.pageSize.width - (margin * 2) - 10;
-  const contentLines = doc.splitTextToSize(contentText, contentWidth);
-  doc.text(contentLines, margin + 10, yPos);
-  
-  yPos += (contentLines.length * (lineHeight - 1)) + 5; // Reduced spacing
-  
-  // Two column layout for additional details if available
-  const { col1, col2 } = getTwoColumnXPositions(doc, margin);
+  yPos = addContentRow(doc, "Content:", contentText, margin, yPos, lineHeight);
   
   if (formData.hasVideoIdea) {
-    yPos = addContentRow(doc, "Video Idea:", formData.videoIdea, col1, yPos, lineHeight);
+    yPos = addContentRow(doc, "Video Idea:", formData.videoIdea, margin, yPos, lineHeight);
   }
   
   // Add special requirements if available
   if (formData.specialRequirements) {
-    if (formData.hasVideoIdea) {
-      // If we have video idea, put special requirements in the second column
-      yPos = addContentRow(doc, "Special Requests:", formData.specialRequirements, col2, yPos - lineHeight, lineHeight);
-    } else {
-      // Otherwise put it in the first column
-      yPos = addContentRow(doc, "Special Requests:", formData.specialRequirements, col1, yPos, lineHeight);
-    }
+    yPos = addContentRow(doc, "Special Requests:", formData.specialRequirements, margin, yPos, lineHeight);
   }
   
-  return yPos + 5; // Add minimal spacing for next section
+  return yPos + 15; // Add spacing for next section
 };
 
 export const addColorSection = (
@@ -156,5 +124,5 @@ export const addColorSection = (
   yPos = addSectionHeader(doc, "COLOR PALETTE", margin, yPos);
   yPos = addColorPalette(doc, formData.colorPalette, margin, yPos);
   
-  return yPos + 5; // Add minimal spacing for next section
+  return yPos + 15; // Add spacing for next section
 };
