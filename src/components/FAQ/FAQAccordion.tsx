@@ -2,6 +2,7 @@
 import React from 'react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { X } from 'lucide-react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 type FAQItem = {
   category: string;
@@ -37,11 +38,30 @@ export const FAQAccordion = ({ onClose }: FAQAccordionProps) => {
       content: (
         <div>
           <p>If you wish to cancel your order and request a refund after confirmation, please note the following:</p>
-          <ul className="list-disc pl-5 mt-2 space-y-1">
-            <li>If we haven't started yet: You'll receive a 90% refund of the total amount.</li>
-            <li>If we're in the design phase: A 50% refund will be provided.</li>
-            <li>If we've completed the design and are in the animation phase: Unfortunately, no refunds will be available.</li>
-          </ul>
+          <div className="mt-3 overflow-x-auto">
+            <Table>
+              <TableHeader className="bg-elegant-brown/5">
+                <TableRow>
+                  <TableHead className="w-1/2 font-serif text-elegant-brown">Project Stage</TableHead>
+                  <TableHead className="w-1/2 font-serif text-elegant-brown">Refund Amount</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                <TableRow>
+                  <TableCell className="font-medium">Before We Start</TableCell>
+                  <TableCell>90% of total amount</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="font-medium">During Design Phase</TableCell>
+                  <TableCell>50% of total amount</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="font-medium">After Design Completion</TableCell>
+                  <TableCell>No refunds available</TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </div>
         </div>
       )
     },
