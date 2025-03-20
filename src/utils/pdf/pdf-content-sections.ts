@@ -5,6 +5,7 @@ import { format, startOfDay } from "date-fns";
 import { formatAnimationStyles } from "@/utils/format-utils";
 import { addSectionHeader, addContentRow, addCheckboxRow } from "./pdf-section-utils";
 import { addColorPalette, addPricingBox } from "./pdf-special-sections";
+import { pdfColors, addPageIfNeeded } from "./pdf-core";
 
 export const addClientSection = (
   doc: jsPDF, 
