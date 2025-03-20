@@ -42,7 +42,7 @@ Digital Invitation Request
 
 DETAILS:
 --------
-Estimated Price: ${calculateExactPrice(formData)}
+Price: ${calculateExactPrice(formData)}
 
 Full Name: ${formData.fullName}
 Email: ${formData.email}
