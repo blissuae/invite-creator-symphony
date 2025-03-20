@@ -38,7 +38,7 @@ export const DownloadButton = ({ formData }: DownloadButtonProps) => {
         description: "Your invitation details have been saved as a PDF.",
       });
     } catch (err) {
-      console.error("PDF generation error:", err);
+      console.error("PDF download error:", err);
       toast({
         title: "Download Failed",
         description: "There was a problem generating your PDF. Please try again.",

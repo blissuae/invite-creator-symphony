@@ -48,7 +48,7 @@ export const addProjectSection = (
   // Add deliverables with checkboxes
   doc.setFontSize(10);
   doc.setFont('helvetica', 'bold');
-  doc.setTextColor('#444444');
+  doc.setTextColor(pdfColors.primaryColor);
   doc.text("Deliverables:", margin + 5, yPos);
   yPos += lineHeight + 3;
   
