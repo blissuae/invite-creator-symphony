@@ -5,5 +5,5 @@
 
 [[redirects]]
   from = "/*"
-  to = "invite-creator-symphony/index.html"
+  to = "/index.html"
   status = 200
