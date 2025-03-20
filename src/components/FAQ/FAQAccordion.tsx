@@ -123,6 +123,15 @@ export const FAQAccordion = ({ onClose }: FAQAccordionProps) => {
               </AccordionItem>
             ))}
           </Accordion>
+          
+          <div className="mt-8 pt-4 border-t border-elegant-brown/10 text-center">
+            <p className="text-sm text-gray-600">
+              If you have any questions, please reach out to us at{" "}
+              <a href="mailto:hello@bliss-go.com" className="text-elegant-brown hover:underline">
+                hello@bliss-go.com
+              </a>
+            </p>
+          </div>
         </div>
       </div>
     </div>
