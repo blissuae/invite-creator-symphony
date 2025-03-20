@@ -23,7 +23,7 @@ export const addFooter = (doc: jsPDF, pageNum: number, totalPages: number, margi
   doc.setFontSize(8);
   doc.text(`Page ${pageNum} of ${totalPages}`, pageWidth - margin - 25, footerY);
   
-  // Add social media icons using the uploaded image
+  // Add social media icons using the newly uploaded image
   const socialY = footerY + 2; // Adjusted Y position for better alignment
   const socialX = margin;
   const socialIconsWidth = 30; // Width of the social icons image
@@ -31,7 +31,7 @@ export const addFooter = (doc: jsPDF, pageNum: number, totalPages: number, margi
   
   // Add the uploaded social media icons image
   doc.addImage(
-    "/lovable-uploads/ab1da135-362a-4ad6-a2f6-fe3f68926c57.png", 
+    "/lovable-uploads/73967cd6-93e4-42c7-baa5-b0830cffd64c.png", 
     "PNG", 
     socialX, 
     socialY - socialIconsHeight, 
