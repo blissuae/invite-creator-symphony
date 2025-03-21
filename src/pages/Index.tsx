@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { FAQButton } from "@/components/FAQ/FAQButton";
 import { FAQAccordion } from "@/components/FAQ/FAQAccordion";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 const testimonials = [
   {
@@ -15,7 +16,9 @@ const testimonials = [
     avatar: "/placeholder.svg",
     design: "/placeholder.svg",
     designColor: "#FDE1D3",
-    rating: 5
+    rating: 5,
+    initials: "SA",
+    bgColor: "#9b87f5"
   },
   {
     name: "Mohammed R.",
@@ -24,7 +27,9 @@ const testimonials = [
     avatar: "/placeholder.svg",
     design: "/placeholder.svg",
     designColor: "#E5DEFF",
-    rating: 5
+    rating: 5,
+    initials: "MR",
+    bgColor: "#F97316"
   },
   {
     name: "Fatima K.",
@@ -33,7 +38,9 @@ const testimonials = [
     avatar: "/placeholder.svg",
     design: "/placeholder.svg",
     designColor: "#FEF7CD",
-    rating: 5
+    rating: 5,
+    initials: "FK",
+    bgColor: "#D946EF"
   },
   {
     name: "Hassan J.",
@@ -42,7 +49,9 @@ const testimonials = [
     avatar: "/placeholder.svg",
     design: "/placeholder.svg",
     designColor: "#D3E4FD",
-    rating: 4
+    rating: 4,
+    initials: "HJ",
+    bgColor: "#0EA5E9"
   },
   {
     name: "Layla M.",
@@ -51,7 +60,9 @@ const testimonials = [
     avatar: "/placeholder.svg",
     design: "/placeholder.svg",
     designColor: "#FFDEE2",
-    rating: 5
+    rating: 5,
+    initials: "LM",
+    bgColor: "#8B5CF6"
   },
   {
     name: "Ahmed Q.",
@@ -60,7 +71,9 @@ const testimonials = [
     avatar: "/placeholder.svg",
     design: "/placeholder.svg",
     designColor: "#F2FCE2",
-    rating: 5
+    rating: 5,
+    initials: "AQ",
+    bgColor: "#1EAEDB"
   },
   {
     name: "Noor K.",
@@ -69,7 +82,9 @@ const testimonials = [
     avatar: "/placeholder.svg",
     design: "/placeholder.svg",
     designColor: "#F1F0FB",
-    rating: 5
+    rating: 5,
+    initials: "NK",
+    bgColor: "#6E59A5"
   }
 ];
 
@@ -381,9 +396,17 @@ const Index = () => {
                       <div className="bg-white rounded-xl p-6 shadow-md border border-elegant-secondary/10 flex flex-col md:flex-row gap-6">
                         <div className="flex flex-col items-center md:items-start md:w-1/3">
                           <div className="relative mb-3">
-                            <div className="h-20 w-20 rounded-full overflow-hidden border-4 border-elegant-beige shadow-md">
-                              <img src={testimonial.avatar} alt={testimonial.name} className="h-full w-full object-cover" />
-                            </div>
+                            <Avatar className="h-20 w-20 border-4 border-elegant-beige shadow-md">
+                              <AvatarFallback 
+                                className="text-white font-medium text-lg"
+                                style={{ backgroundColor: testimonial.bgColor }}
+                              >
+                                <div className="relative">
+                                  <div className="absolute -inset-1 rounded-full bg-white/20 blur-sm"></div>
+                                  <span className="relative">{testimonial.initials}</span>
+                                </div>
+                              </AvatarFallback>
+                            </Avatar>
                             <div className="absolute -bottom-2 -right-2 bg-white rounded-full p-1 shadow-md">
                               {renderStars(testimonial.rating)}
                             </div>
@@ -446,3 +469,4 @@ const Index = () => {
 };
 
 export default Index;
+
