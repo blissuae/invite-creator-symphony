@@ -19,10 +19,10 @@ interface DeadlinePickerProps {
 
 export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
   const today = startOfDay(new Date());
-  const urgentMinDate = addDays(today, 6);
-  const urgentMaxDate = addDays(today, 14);
-  const regularMinDate = addDays(today, 15);
-  const discountDate25 = addDays(today, 25);
+  const urgentMinDate = addDays(today, 10);
+  const urgentMaxDate = addDays(today, 18);
+  const regularMinDate = addDays(today, 19);
+  const discountDate30 = addDays(today, 30);
   const discountDate50 = addDays(today, 50);
   
   const [isUrgentDelivery, setIsUrgentDelivery] = useState(false);
@@ -43,7 +43,7 @@ export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
       return { amount: -500, label: "500 AED URGENT FEE", color: "purple", bgColor: "#f3e8ff", textColor: "#7e22ce", selectedBg: "#7e22ce" };
     } else if (compareDate >= discountDate50) {
       return { amount: 500, label: "500 AED OFF!", color: "green", bgColor: "#e6ffed", textColor: "#15803d", selectedBg: "#15803d" };
-    } else if (compareDate >= discountDate25) {
+    } else if (compareDate >= discountDate30) {
       return { amount: 300, label: "300 AED OFF!", color: "blue", bgColor: "#e6f3ff", textColor: "#1e40af", selectedBg: "#1e40af" };
     } else if (compareDate >= regularMinDate) {
       return { amount: 0, label: "Regular price", color: "orange", bgColor: "#fff7ed", textColor: "#9a3412", selectedBg: "#9a3412" };
@@ -94,7 +94,7 @@ export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
             {isUrgentDelivery ? (
               <>
                 <span className="font-semibold">URGENT DELIVERY: </span>
-                Need your invitation sooner? Select a date between 6-14 days from today for urgent delivery with an additional fee of 500 AED. Our team will prioritize your order for a faster turnaround.
+                Need your invitation sooner? Select a date between 10-18 days from today for urgent delivery with an additional fee of 500 AED. Our team will prioritize your order for a faster turnaround.
               </>
             ) : (
               <>
@@ -125,10 +125,10 @@ export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
               },
               regular: { 
                 from: regularMinDate,
-                to: addDays(discountDate25, -1)
+                to: addDays(discountDate30, -1)
               },
               discount300: { 
-                from: discountDate25, 
+                from: discountDate30, 
                 to: addDays(discountDate50, -1)
               },
               discount500: { 
@@ -233,8 +233,8 @@ export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
           )
         ) : (
           isUrgentDelivery
-            ? "Please select an urgent delivery date (6-14 days from today)"
-            : "We require a minimum of 15 days to create your perfect invitation"
+            ? "Please select an urgent delivery date (10-18 days from today)"
+            : "We require a minimum of 19 days to create your perfect invitation"
         )}
       </p>
     </div>

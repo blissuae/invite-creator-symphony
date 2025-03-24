@@ -38,13 +38,13 @@ export function calculateExactPrice(data: InviteFormData): string {
     
     const days = Math.floor((deadlineDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
     
-    if (days >= 6 && days <= 14) {
+    if (days >= 10 && days <= 18) {
       return `${basePrice + 500} AED (Urgent Delivery)`;
     }
     
     if (days >= 50) {
       return `${basePrice - 500} AED (500 AED OFF!)`;
-    } else if (days >= 25) {
+    } else if (days >= 30) {
       return `${basePrice - 300} AED (300 AED OFF!)`;
     }
   }

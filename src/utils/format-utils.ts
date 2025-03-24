@@ -30,7 +30,7 @@ export function formatDeadline(deadline: Date | null): string {
   const days = Math.floor((deadlineDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
   const formattedDate = deadline.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
   
-  const isUrgent = days >= 6 && days <= 14;
+  const isUrgent = days >= 10 && days <= 18;
   return isUrgent ? `${formattedDate} (Urgent Delivery)` : formattedDate;
 }
 
