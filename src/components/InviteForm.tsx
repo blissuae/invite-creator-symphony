@@ -1,3 +1,4 @@
+
 import { FormProgress } from "./form/FormProgress";
 import { BasicDetails } from "./form/BasicDetails";
 import { CharacterOptions } from "./form/CharacterOptions";
@@ -11,6 +12,7 @@ import { FormNavigation } from "./form/FormNavigation";
 import { DeliveryFormats } from "./form/DeliveryFormats";
 import { useInviteForm, FORM_STEPS } from "@/hooks/use-invite-form";
 import { useEffect } from "react";
+import { IntroPopup } from "./IntroPopup";
 
 export const InviteForm = () => {
   const {
@@ -125,6 +127,7 @@ export const InviteForm = () => {
 
   return (
     <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-elegant-secondary/20 overflow-hidden animate-fadeIn flex flex-col">
+      <IntroPopup />
       <FormProgress 
         steps={FORM_STEPS} 
         currentStep={currentStep}
