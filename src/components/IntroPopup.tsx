@@ -4,12 +4,11 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
-  DialogTitle,
   DialogDescription,
   DialogFooter
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Check, MousePointerClick, Calendar, ChevronLeft, ChevronRight } from "lucide-react";
+import { Check, MousePointerClick, Calendar } from "lucide-react";
 import {
   Carousel,
   CarouselContent,
@@ -85,7 +84,7 @@ export const IntroPopup = () => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-lg border-elegant-secondary/30 shadow-lg bg-gradient-to-b from-white to-elegant-beige/30 px-6 sm:px-8">
+      <DialogContent className="sm:max-w-lg border-elegant-secondary/30 shadow-lg bg-gradient-to-b from-white to-elegant-beige/30 px-8 sm:px-10">
         <DialogHeader className="text-center">
           <div className="mx-auto w-20 h-20 bg-elegant-beige/50 rounded-full flex items-center justify-center mb-4">
             {/* Bliss logo */}
@@ -95,9 +94,8 @@ export const IntroPopup = () => {
               className="h-14 w-14 object-contain"
             />
           </div>
-          <DialogTitle className="text-xl font-serif text-elegant-brown">Welcome to Your Invitation Journey</DialogTitle>
-          <DialogDescription className="text-elegant-secondary pt-2">
-            We're excited to create your perfect invitation
+          <DialogDescription className="text-elegant-secondary pt-2 text-center">
+            Yayy! We're super excited to craft a magical invitation for your special occasion 💛✨
           </DialogDescription>
         </DialogHeader>
         
@@ -111,7 +109,7 @@ export const IntroPopup = () => {
                       {step.icon}
                     </div>
                     <h3 className="text-lg font-medium text-elegant-brown mb-2">{step.title}</h3>
-                    <p className="text-sm text-gray-500 max-w-md mx-auto">
+                    <p className="text-sm text-gray-500 max-w-[240px] mx-auto">
                       {step.description}
                     </p>
                   </div>
