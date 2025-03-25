@@ -41,13 +41,13 @@ export const IntroPopup = () => {
     setOpen(false);
   };
 
-  // Auto-scroll functionality with 5 seconds delay
+  // Auto-scroll functionality with 6 seconds delay
   useInterval(() => {
     if (api && open) {
       const nextIndex = (current + 1) % steps.length; // Loop back to first item
       api.scrollTo(nextIndex);
     }
-  }, 5000); // Increased from 3000 to 5000ms for longer viewing time
+  }, 6000); // Increased from 5000 to 6000ms for longer viewing time
 
   const onSelect = useCallback(() => {
     if (!api) return;
@@ -65,12 +65,6 @@ export const IntroPopup = () => {
 
   const steps = [
     {
-      icon: <Receipt className="h-6 w-6 text-amber-600" />,
-      color: "bg-amber-100",
-      title: "Key information affects pricing",
-      description: "Your choices on delivery formats, characters, and deadline directly influence the final price."
-    },
-    {
       icon: <Check className="h-6 w-6 text-green-600" />,
       color: "bg-green-100",
       title: "Fill in what you know",
@@ -81,6 +75,12 @@ export const IntroPopup = () => {
       color: "bg-purple-100",
       title: "Easily navigate steps",
       description: "Use the progress bar at the top to jump to any section you'd like to work on."
+    },
+    {
+      icon: <Receipt className="h-6 w-6 text-amber-600" />,
+      color: "bg-amber-100",
+      title: "Key information affects pricing",
+      description: "Your choices on delivery formats, characters, and deadline directly influence the final price."
     },
     {
       icon: <Calendar className="h-6 w-6 text-blue-600" />,
@@ -104,7 +104,7 @@ export const IntroPopup = () => {
           </div>
           <DialogTitle className="sr-only">Welcome to Bliss</DialogTitle>
           <DialogDescription className="text-elegant-secondary pt-2 text-center text-base">
-            Yayy! We're super excited to craft a magical invitation for your special occasion 💛✨
+            We can't wait to get started! But before we do, please keep these things in mind. 💛✨
           </DialogDescription>
         </DialogHeader>
         
