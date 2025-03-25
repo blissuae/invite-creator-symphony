@@ -5,10 +5,11 @@ import {
   DialogContent,
   DialogHeader,
   DialogDescription,
-  DialogFooter
+  DialogFooter,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Check, MousePointerClick, Calendar } from "lucide-react";
+import { Check, MousePointerClick, Calendar, Package, Receipt } from "lucide-react";
 import {
   Carousel,
   CarouselContent,
@@ -64,6 +65,12 @@ export const IntroPopup = () => {
 
   const steps = [
     {
+      icon: <Receipt className="h-6 w-6 text-amber-600" />,
+      color: "bg-amber-100",
+      title: "Key information affects pricing",
+      description: "Your choices on delivery formats, characters, and deadline directly influence the final price."
+    },
+    {
       icon: <Check className="h-6 w-6 text-green-600" />,
       color: "bg-green-100",
       title: "Fill in what you know",
@@ -95,6 +102,7 @@ export const IntroPopup = () => {
               className="h-16 w-16 object-contain"
             />
           </div>
+          <DialogTitle className="sr-only">Welcome to Bliss</DialogTitle>
           <DialogDescription className="text-elegant-secondary pt-2 text-center text-base">
             Yayy! We're super excited to craft a magical invitation for your special occasion 💛✨
           </DialogDescription>
