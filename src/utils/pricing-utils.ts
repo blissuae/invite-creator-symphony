@@ -5,62 +5,24 @@ export function calculateExactPrice(data: InviteFormData): string {
   let basePrice = 0;
   
   if (data.deliveryFormats.videoInvite) {
-    if (!data.hasCharacters || data.characters.length === 0) {
-      basePrice = 2000; // Basic Video (No Characters)
-    } else {
-      const characterCount = data.characters.length;
-      const facesCount = data.characters.filter(char => char.showFace).length;
-      
-      if (facesCount > 0) {
-        // Video with Characters & Faces
-        switch (characterCount) {
-          case 1: basePrice = 2400; break;
-          case 2: basePrice = 2600; break;
-          case 3: basePrice = 2800; break;
-          case 4: basePrice = 3000; break;
-          case 5: basePrice = 3200; break;
-          default: basePrice = 3200 + ((characterCount - 5) * 200); break;
-        }
-      } else {
-        // Video with Characters but no Faces
-        switch (characterCount) {
-          case 1: basePrice = 2200; break;
-          case 2: basePrice = 2300; break;
-          case 3: basePrice = 2400; break;
-          case 4: basePrice = 2500; break;
-          case 5: basePrice = 2600; break;
-          default: basePrice = 2600 + ((characterCount - 5) * 100); break;
-        }
-      }
+    // Video pricing
+    basePrice = 2000; // Basic Video (No Characters)
+    
+    if (data.hasCharacters && data.characters.length > 0) {
+      // Add cost for each character based on face selection
+      data.characters.forEach(char => {
+        basePrice += char.showFace ? 200 : 100;
+      });
     }
   } else if (data.deliveryFormats.stillInvite) {
-    if (!data.hasCharacters || data.characters.length === 0) {
-      basePrice = 1100; // Basic Still (No Characters)
-    } else {
-      const characterCount = data.characters.length;
-      const facesCount = data.characters.filter(char => char.showFace).length;
-      
-      if (facesCount > 0) {
-        // Still with Characters & Faces
-        switch (characterCount) {
-          case 1: basePrice = 1400; break;
-          case 2: basePrice = 1600; break;
-          case 3: basePrice = 1700; break;
-          case 4: basePrice = 1800; break;
-          case 5: basePrice = 1900; break;
-          default: basePrice = 1900 + ((characterCount - 5) * 100); break;
-        }
-      } else {
-        // Still with Characters but no Faces
-        switch (characterCount) {
-          case 1: basePrice = 1200; break;
-          case 2: basePrice = 1300; break;
-          case 3: basePrice = 1400; break;
-          case 4: basePrice = 1500; break;
-          case 5: basePrice = 1600; break;
-          default: basePrice = 1600 + ((characterCount - 5) * 100); break;
-        }
-      }
+    // Still pricing
+    basePrice = 1100; // Basic Still (No Characters)
+    
+    if (data.hasCharacters && data.characters.length > 0) {
+      // Add cost for each character based on face selection
+      data.characters.forEach(char => {
+        basePrice += char.showFace ? 100 : 50;
+      });
     }
   } else {
     return "Contact us for pricing";
