@@ -46,12 +46,38 @@ function generateEmailMessage(formData: InviteFormData): string {
     ).join('\n');
   }
 
+  // Get pricing information with discount details
+  const priceString = calculateExactPrice(formData);
+  let discountInfo = "";
+  
+  // Parse deadline discount/fee information
+  if (formData.deadline) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const deadlineDate = new Date(formData.deadline);
+    deadlineDate.setHours(0, 0, 0, 0);
+    
+    const days = Math.floor((deadlineDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    
+    if (days >= 10 && days <= 18) {
+      discountInfo = "Urgent Delivery Fee: +500 AED (for delivery within 10-18 days)";
+    } else if (days >= 50) {
+      discountInfo = "Early Booking Discount: -500 AED (for booking 50+ days in advance)";
+    } else if (days >= 30) {
+      discountInfo = "Standard Booking Discount: -300 AED (for booking 30-49 days in advance)";
+    } else if (days >= 19) {
+      discountInfo = "Regular pricing (no discount or urgent fee)";
+    }
+  }
+
   return `
 Digital Invitation Request
 
 DETAILS:
 --------
-Price: ${calculateExactPrice(formData)}
+Price: ${priceString}
+${discountInfo ? `Discount/Fee: ${discountInfo}` : ""}
 
 Full Name: ${formData.fullName}
 Email: ${formData.email}
