@@ -9,7 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Check, MousePointerClick, Calendar, Package, Receipt } from "lucide-react";
+import { Check, MousePointerClick, Calendar, Receipt } from "lucide-react";
 import {
   Carousel,
   CarouselContent,
@@ -19,12 +19,22 @@ import {
 } from "@/components/ui/carousel";
 import { useInterval } from "@/hooks/use-interval";
 
-export const IntroPopup = () => {
+interface IntroPopupProps {
+  forceShow?: boolean;
+}
+
+export const IntroPopup = ({ forceShow }: IntroPopupProps) => {
   const [open, setOpen] = useState(false);
   const [api, setApi] = useState<any>();
   const [current, setCurrent] = useState(0);
   
   useEffect(() => {
+    // If forceShow is true, always show the popup regardless of localStorage
+    if (forceShow) {
+      setOpen(true);
+      return;
+    }
+    
     const hasSeenPopup = localStorage.getItem("hasSeenFormIntroPopup");
     if (!hasSeenPopup) {
       // Add a small delay for better UX - let the form render first
@@ -34,7 +44,7 @@ export const IntroPopup = () => {
       
       return () => clearTimeout(timer);
     }
-  }, []);
+  }, [forceShow]);
   
   const handleClose = () => {
     localStorage.setItem("hasSeenFormIntroPopup", "true");

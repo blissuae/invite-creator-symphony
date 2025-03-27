@@ -1,4 +1,3 @@
-
 import { FormProgress } from "./form/FormProgress";
 import { BasicDetails } from "./form/BasicDetails";
 import { CharacterOptions } from "./form/CharacterOptions";
@@ -46,6 +45,14 @@ export const InviteForm = () => {
     });
     window.dispatchEvent(progressEvent);
   }, [currentStep, maxStep, isSubmitted]);
+
+  useEffect(() => {
+    // Only reset if user hasn't seen the popup in this session
+    if (!sessionStorage.getItem("popupShownThisSession")) {
+      localStorage.removeItem("hasSeenFormIntroPopup");
+      sessionStorage.setItem("popupShownThisSession", "true");
+    }
+  }, []);
 
   const renderStep = () => {
     if (isSubmitted) {
