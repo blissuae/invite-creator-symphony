@@ -39,10 +39,8 @@ export const DetailsSection = ({ formData }: DetailsSectionProps) => {
             <p>Include Characters: {formData.hasCharacters ? "Yes" : "No"}</p>
             {formData.hasCharacters && (
               <>
+                <p>Number of Characters: {formData.characterCount}</p>
                 <p>Show Faces: {formData.showFaces ? "Yes" : "No"}</p>
-                {formData.showFaces && (
-                  <p>Number of Characters: {formData.characterCount}</p>
-                )}
               </>
             )}
           </div>
