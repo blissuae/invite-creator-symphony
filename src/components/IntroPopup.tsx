@@ -21,9 +21,10 @@ import { useInterval } from "@/hooks/use-interval";
 
 interface IntroPopupProps {
   forceShow?: boolean;
+  onClose?: () => void;
 }
 
-export const IntroPopup = ({ forceShow }: IntroPopupProps) => {
+export const IntroPopup = ({ forceShow, onClose }: IntroPopupProps) => {
   const [open, setOpen] = useState(false);
   const [api, setApi] = useState<any>();
   const [current, setCurrent] = useState(0);
@@ -49,6 +50,11 @@ export const IntroPopup = ({ forceShow }: IntroPopupProps) => {
   const handleClose = () => {
     localStorage.setItem("hasSeenFormIntroPopup", "true");
     setOpen(false);
+    
+    // Call the onClose callback if provided
+    if (onClose) {
+      onClose();
+    }
   };
 
   // Auto-scroll functionality with 6 seconds delay
