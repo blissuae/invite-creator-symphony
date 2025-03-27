@@ -41,9 +41,9 @@ export function calculateExactPrice(data: InviteFormData): string {
       return `${basePrice + 500} AED (Urgent Delivery)`;
     }
     
-    if (days >= 50) {
+    if (days >= 70) {
       return `${basePrice - 500} AED (500 AED OFF!)`;
-    } else if (days >= 30) {
+    } else if (days >= 40) {
       return `${basePrice - 300} AED (300 AED OFF!)`;
     }
   }

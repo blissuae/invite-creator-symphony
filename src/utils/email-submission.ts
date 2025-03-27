@@ -62,10 +62,10 @@ function generateEmailMessage(formData: InviteFormData): string {
     
     if (days >= 10 && days <= 18) {
       discountInfo = "Urgent Delivery Fee: +500 AED (for delivery within 10-18 days)";
-    } else if (days >= 50) {
-      discountInfo = "Early Booking Discount: -500 AED (for booking 50+ days in advance)";
-    } else if (days >= 30) {
-      discountInfo = "Standard Booking Discount: -300 AED (for booking 30-49 days in advance)";
+    } else if (days >= 70) {
+      discountInfo = "Early Booking Discount: -500 AED (for booking 70+ days in advance)";
+    } else if (days >= 40) {
+      discountInfo = "Standard Booking Discount: -300 AED (for booking 40-69 days in advance)";
     } else if (days >= 19) {
       discountInfo = "Regular pricing (no discount or urgent fee)";
     }

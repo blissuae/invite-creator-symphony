@@ -22,8 +22,8 @@ export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
   const urgentMinDate = addDays(today, 10);
   const urgentMaxDate = addDays(today, 18);
   const regularMinDate = addDays(today, 19);
-  const discountDate30 = addDays(today, 30);
-  const discountDate50 = addDays(today, 50);
+  const discountDate40 = addDays(today, 40);
+  const discountDate70 = addDays(today, 70);
   
   const [isUrgentDelivery, setIsUrgentDelivery] = useState(false);
 
@@ -41,9 +41,9 @@ export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
     
     if (compareDate >= urgentMinDate && compareDate <= urgentMaxDate) {
       return { amount: -500, label: "500 AED URGENT FEE", color: "purple", bgColor: "#f3e8ff", textColor: "#7e22ce", selectedBg: "#7e22ce" };
-    } else if (compareDate >= discountDate50) {
+    } else if (compareDate >= discountDate70) {
       return { amount: 500, label: "500 AED OFF!", color: "green", bgColor: "#e6ffed", textColor: "#15803d", selectedBg: "#15803d" };
-    } else if (compareDate >= discountDate30) {
+    } else if (compareDate >= discountDate40) {
       return { amount: 300, label: "300 AED OFF!", color: "blue", bgColor: "#e6f3ff", textColor: "#1e40af", selectedBg: "#1e40af" };
     } else if (compareDate >= regularMinDate) {
       return { amount: 0, label: "Regular price", color: "orange", bgColor: "#fff7ed", textColor: "#9a3412", selectedBg: "#9a3412" };
@@ -125,14 +125,14 @@ export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
               },
               regular: { 
                 from: regularMinDate,
-                to: addDays(discountDate30, -1)
+                to: addDays(discountDate40, -1)
               },
               discount300: { 
-                from: discountDate30, 
-                to: addDays(discountDate50, -1)
+                from: discountDate40, 
+                to: addDays(discountDate70, -1)
               },
               discount500: { 
-                from: discountDate50,
+                from: discountDate70,
                 to: addDays(today, 365)
               }
             }}
