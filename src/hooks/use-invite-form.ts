@@ -27,6 +27,7 @@ export const useInviteForm = () => {
     occasion: "",
     customOccasion: "",
     hasCharacters: false,
+    characters: [],
     showFaces: false,
     characterCount: "",
     colorPalette: "",

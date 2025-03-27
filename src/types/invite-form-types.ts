@@ -1,4 +1,9 @@
 
+export interface Character {
+  id: string;
+  showFace: boolean;
+}
+
 export interface InviteFormData {
   fullName: string;
   instagramId: string;
@@ -6,8 +11,9 @@ export interface InviteFormData {
   occasion: string;
   customOccasion: string;
   hasCharacters: boolean;
-  showFaces: boolean;
-  characterCount: string;
+  characters: Character[];
+  showFaces: boolean; // Keeping for backward compatibility
+  characterCount: string; // Keeping for backward compatibility
   colorPalette: string;
   animationStyles: string[];
   deadline: Date | null;

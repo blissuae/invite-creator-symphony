@@ -37,11 +37,15 @@ export const DetailsSection = ({ formData }: DetailsSectionProps) => {
         content={
           <div className="space-y-2">
             <p>Include Characters: {formData.hasCharacters ? "Yes" : "No"}</p>
-            {formData.hasCharacters && (
-              <>
-                <p>Number of Characters: {formData.characterCount}</p>
-                <p>Show Faces: {formData.showFaces ? "Yes" : "No"}</p>
-              </>
+            {formData.hasCharacters && formData.characters && formData.characters.length > 0 && (
+              <div className="space-y-2 mt-2">
+                <p>Number of Characters: {formData.characters.length}</p>
+                {formData.characters.map((char, index) => (
+                  <div key={char.id} className="bg-white p-2 rounded border border-gray-100">
+                    <p>Character {index + 1}: {char.showFace ? "With face" : "No face"}</p>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
         }

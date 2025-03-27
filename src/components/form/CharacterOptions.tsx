@@ -1,11 +1,14 @@
 
-import { Check, X, User, Users, Heart, Camera, Shield, Eye, MessageCircle } from "lucide-react";
+import { Check, X, User, Users, Heart, Camera, Shield, Eye, MessageCircle, Plus, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Character } from "@/types/invite-form-types";
+import { useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 interface CharacterOptionsProps {
   formData: {
     hasCharacters: boolean;
-    showFaces: boolean;
-    characterCount: string;
+    characters: Character[];
   };
   onChange: (field: string, value: any) => void;
 }
@@ -37,8 +40,43 @@ export const CharacterOptions = ({
   formData,
   onChange
 }: CharacterOptionsProps) => {
-  const handleCharacterCountChange = (value: string) => {
-    onChange("characterCount", value);
+  const [showCharacterLimit, setShowCharacterLimit] = useState(false);
+  
+  const handleAddCharacter = () => {
+    if (formData.characters.length < 5) {
+      const newCharacters = [...formData.characters, { id: uuidv4(), showFace: false }];
+      onChange("characters", newCharacters);
+      
+      // Update legacy fields for compatibility
+      onChange("characterCount", String(newCharacters.length));
+      onChange("showFaces", newCharacters.some(char => char.showFace));
+    } else {
+      setShowCharacterLimit(true);
+      setTimeout(() => setShowCharacterLimit(false), 3000);
+    }
+  };
+  
+  const handleRemoveCharacter = (id: string) => {
+    const newCharacters = formData.characters.filter(char => char.id !== id);
+    onChange("characters", newCharacters);
+    
+    // Update legacy fields for compatibility
+    onChange("characterCount", String(newCharacters.length));
+    onChange("showFaces", newCharacters.some(char => char.showFace));
+    
+    if (newCharacters.length === 0) {
+      onChange("hasCharacters", false);
+    }
+  };
+  
+  const handleToggleFace = (id: string, showFace: boolean) => {
+    const newCharacters = formData.characters.map(char => 
+      char.id === id ? { ...char, showFace } : char
+    );
+    onChange("characters", newCharacters);
+    
+    // Update legacy fields for compatibility
+    onChange("showFaces", newCharacters.some(char => char.showFace));
   };
 
   const randomFact = CHARACTER_FACTS[Math.floor(Math.random() * CHARACTER_FACTS.length)];
@@ -46,7 +84,7 @@ export const CharacterOptions = ({
 
   return (
     <div className="space-y-8">
-      {/* Random Fact Display - Updated to purple */}
+      {/* Random Fact Display */}
       <div className="bg-[#9b87f5] p-6 rounded-lg border border-[#9b87f5]/20 shadow-sm">
         <div className="flex items-start gap-4">
           <div className="p-2 bg-[#9b87f5]/20 rounded-full">
@@ -66,7 +104,12 @@ export const CharacterOptions = ({
         </h3>
         <div className="flex justify-center gap-4">
           <button 
-            onClick={() => onChange("hasCharacters", true)} 
+            onClick={() => {
+              onChange("hasCharacters", true);
+              if (formData.characters.length === 0) {
+                handleAddCharacter();
+              }
+            }} 
             className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-all ${formData.hasCharacters ? "bg-elegant-primary text-white" : "border border-elegant-secondary hover:border-elegant-primary"}`}
           >
             <Check className="w-5 h-5" />
@@ -75,8 +118,9 @@ export const CharacterOptions = ({
           <button 
             onClick={() => {
               onChange("hasCharacters", false);
-              onChange("showFaces", false);
+              onChange("characters", []);
               onChange("characterCount", "");
+              onChange("showFaces", false);
             }} 
             className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-all ${formData.hasCharacters === false ? "bg-elegant-primary text-white" : "border border-elegant-secondary hover:border-elegant-primary"}`}
           >
@@ -86,51 +130,66 @@ export const CharacterOptions = ({
         </div>
       </div>
 
-      {/* Character Count Selection - Now the second question */}
+      {/* Character Management */}
       {formData.hasCharacters && (
-        <div className="space-y-4">
+        <div className="space-y-6">
           <h3 className="text-lg font-serif text-elegant-brown text-center">
-            Total number of characters
+            Add up to 5 characters
           </h3>
-          <div className="flex flex-wrap justify-center gap-4">
-            {["1", "2", "3", "4", "5"].map(count => (
-              <button 
-                key={count} 
-                onClick={() => handleCharacterCountChange(count)} 
-                className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-all ${formData.characterCount === count ? "bg-elegant-primary text-white" : "border border-elegant-secondary hover:border-elegant-primary"}`}
-              >
-                {count === "1" ? <User className="w-5 h-5" /> : <Users className="w-5 h-5" />}
-                {count}
-              </button>
+          
+          {/* Character List */}
+          <div className="space-y-4">
+            {formData.characters.map((character, index) => (
+              <div key={character.id} className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <div className="flex justify-between items-center mb-3">
+                  <h4 className="font-medium text-elegant-brown">Character {index + 1}</h4>
+                  <button 
+                    onClick={() => handleRemoveCharacter(character.id)}
+                    className="text-red-500 hover:text-red-700 p-1"
+                    aria-label="Remove character"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+                
+                <div className="space-y-3">
+                  <p className="text-sm text-gray-600">Would you like us to draw the face for this character?</p>
+                  <div className="flex gap-3">
+                    <button 
+                      onClick={() => handleToggleFace(character.id, true)} 
+                      className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg transition-all ${character.showFace ? "bg-elegant-primary text-white" : "border border-elegant-secondary hover:border-elegant-primary"}`}
+                    >
+                      <Check className="w-4 h-4" />
+                      Yes, draw face
+                    </button>
+                    <button 
+                      onClick={() => handleToggleFace(character.id, false)} 
+                      className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg transition-all ${!character.showFace ? "bg-elegant-primary text-white" : "border border-elegant-secondary hover:border-elegant-primary"}`}
+                    >
+                      <X className="w-4 h-4" />
+                      No face
+                    </button>
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
-        </div>
-      )}
-
-      {/* Show Faces Selection - Now the third question */}
-      {formData.hasCharacters && (
-        <div className="space-y-4">
-          <h3 className="text-lg font-serif text-elegant-brown text-center">
-            Do you want us to draw the faces?<br />
-            Note: If selected yes, we'd need photos as reference to draw human faces.
-          </h3>
-          <div className="flex justify-center gap-4">
-            <button 
-              onClick={() => onChange("showFaces", true)} 
-              className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-all ${formData.showFaces ? "bg-elegant-primary text-white" : "border border-elegant-secondary hover:border-elegant-primary"}`}
-            >
-              <Check className="w-5 h-5" />
-              Yes
-            </button>
-            <button 
-              onClick={() => {
-                onChange("showFaces", false);
-              }} 
-              className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-all ${formData.showFaces === false ? "bg-elegant-primary text-white" : "border border-elegant-secondary hover:border-elegant-primary"}`}
-            >
-              <X className="w-5 h-5" />
-              No
-            </button>
+          
+          {/* Add Character Button */}
+          <div className="flex justify-center">
+            {formData.characters.length < 5 ? (
+              <Button 
+                onClick={handleAddCharacter}
+                className="bg-elegant-brown hover:bg-elegant-brown/90 text-white"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Add Character
+              </Button>
+            ) : (
+              <p className={`text-sm text-orange-600 font-medium p-2 rounded-lg bg-orange-50 transition-opacity ${showCharacterLimit ? 'opacity-100' : 'opacity-0'}`}>
+                Maximum 5 characters allowed
+              </p>
+            )}
           </div>
         </div>
       )}

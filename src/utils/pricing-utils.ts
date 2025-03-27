@@ -5,12 +5,13 @@ export function calculateExactPrice(data: InviteFormData): string {
   let basePrice = 0;
   
   if (data.deliveryFormats.videoInvite) {
-    if (!data.hasCharacters) {
+    if (!data.hasCharacters || data.characters.length === 0) {
       basePrice = 2000; // Basic Video (No Characters)
     } else {
-      const characterCount = parseInt(data.characterCount) || 0;
+      const characterCount = data.characters.length;
+      const facesCount = data.characters.filter(char => char.showFace).length;
       
-      if (data.showFaces) {
+      if (facesCount > 0) {
         // Video with Characters & Faces
         switch (characterCount) {
           case 1: basePrice = 2400; break;
@@ -33,12 +34,13 @@ export function calculateExactPrice(data: InviteFormData): string {
       }
     }
   } else if (data.deliveryFormats.stillInvite) {
-    if (!data.hasCharacters) {
+    if (!data.hasCharacters || data.characters.length === 0) {
       basePrice = 1100; // Basic Still (No Characters)
     } else {
-      const characterCount = parseInt(data.characterCount) || 0;
+      const characterCount = data.characters.length;
+      const facesCount = data.characters.filter(char => char.showFace).length;
       
-      if (data.showFaces) {
+      if (facesCount > 0) {
         // Still with Characters & Faces
         switch (characterCount) {
           case 1: basePrice = 1400; break;
