@@ -1,16 +1,13 @@
 
 import { Calendar } from "@/components/ui/calendar";
 import { addDays, startOfDay, isSameDay, endOfDay } from "date-fns";
-import { Wand2, AlertTriangle } from "lucide-react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import { useState, useEffect } from "react";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { InfoBox } from "./deadline/InfoBox";
+import { UrgentDeliveryOption } from "./deadline/UrgentDeliveryOption";
+import { StatusMessage } from "./deadline/StatusMessage";
+import { CalendarTooltip } from "./deadline/CalendarTooltip";
+import { calculateDateRanges, getDateDiscount } from "./deadline/dateUtils";
 
 interface DeadlinePickerProps {
   selected: Date | null;
@@ -19,11 +16,8 @@ interface DeadlinePickerProps {
 
 export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
   const today = startOfDay(new Date());
-  const urgentMinDate = addDays(today, 10);
-  const urgentMaxDate = addDays(today, 18);
-  const regularMinDate = addDays(today, 19);
-  const discountDate40 = addDays(today, 40);
-  const discountDate70 = addDays(today, 70);
+  const dateRanges = calculateDateRanges(today);
+  const { urgentMinDate, urgentMaxDate, regularMinDate, discountDate40, discountDate70 } = dateRanges;
   
   const [isUrgentDelivery, setIsUrgentDelivery] = useState(false);
 
@@ -35,20 +29,9 @@ export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
       setIsUrgentDelivery(isInUrgentRange);
     }
   }, []);
-
-  const getDateDiscount = (date: Date) => {
-    const compareDate = startOfDay(date);
-    
-    if (compareDate >= urgentMinDate && compareDate <= urgentMaxDate) {
-      return { amount: -500, label: "500 AED URGENT FEE", color: "purple", bgColor: "#f3e8ff", textColor: "#7e22ce", selectedBg: "#7e22ce" };
-    } else if (compareDate >= discountDate70) {
-      return { amount: 500, label: "500 AED OFF!", color: "green", bgColor: "#e6ffed", textColor: "#15803d", selectedBg: "#15803d" };
-    } else if (compareDate >= discountDate40) {
-      return { amount: 300, label: "300 AED OFF!", color: "blue", bgColor: "#e6f3ff", textColor: "#1e40af", selectedBg: "#1e40af" };
-    } else if (compareDate >= regularMinDate) {
-      return { amount: 0, label: "Regular price", color: "orange", bgColor: "#fff7ed", textColor: "#9a3412", selectedBg: "#9a3412" };
-    }
-    return null;
+  
+  const getDateDiscountWithRanges = (date: Date) => {
+    return getDateDiscount(date, dateRanges);
   };
 
   return (
@@ -57,54 +40,12 @@ export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
         Choose Your Deadline
       </h2>
 
-      {/* Delivery Options */}
-      <div className="flex justify-center mb-6">
-        <div className="flex items-center space-x-2">
-          <Checkbox 
-            id="urgentDelivery" 
-            checked={isUrgentDelivery} 
-            onCheckedChange={(checked) => {
-              setIsUrgentDelivery(checked === true);
-            }}
-            className="data-[state=checked]:bg-purple-600"
-          />
-          <Label 
-            htmlFor="urgentDelivery" 
-            className="text-base cursor-pointer font-medium flex items-center gap-2"
-          >
-            <span>Enable Urgent Delivery</span>
-            <span className="inline-flex items-center px-2 py-1 rounded text-xs font-semibold bg-purple-100 text-purple-800">
-              +500 AED
-            </span>
-          </Label>
-        </div>
-      </div>
+      <UrgentDeliveryOption 
+        isChecked={isUrgentDelivery} 
+        onChange={setIsUrgentDelivery} 
+      />
 
-      {/* Fact Box - Changed to match the social validation purple */}
-      <div className={`p-6 rounded-lg border shadow-sm mb-8 ${isUrgentDelivery ? 'bg-purple-50 border-purple-200' : 'bg-[#8B5CF6]/10 border-[#8B5CF6]/20'}`}>
-        <div className="flex items-start gap-4">
-          <div className={`p-2 rounded-full ${isUrgentDelivery ? 'bg-purple-100' : 'bg-[#8B5CF6]/20'}`}>
-            {isUrgentDelivery ? (
-              <AlertTriangle className="w-5 h-5 text-purple-600" />
-            ) : (
-              <Wand2 className="w-5 h-5 text-[#8B5CF6]" />
-            )}
-          </div>
-          <div className={`text-sm flex-1 ${isUrgentDelivery ? 'text-purple-800' : 'text-gray-700'}`}>
-            {isUrgentDelivery ? (
-              <>
-                <span className="font-semibold">URGENT DELIVERY: </span>
-                Need your invitation sooner? Select a date between 10-18 days from today for urgent delivery with an additional fee of 500 AED. Our team will prioritize your order for a faster turnaround.
-              </>
-            ) : (
-              <>
-                <span className="font-semibold">DID YOU KNOW: </span>
-                By booking in advance, you can save up to 500 AED! Dates marked in blue offer a 300 AED discount, while dates in green give you an amazing 500 AED discount. The earlier you book, the more you save!
-              </>
-            )}
-          </div>
-        </div>
-      </div>
+      <InfoBox isUrgentDelivery={isUrgentDelivery} />
 
       <TooltipProvider>
         <div className="flex justify-center">
@@ -171,7 +112,7 @@ export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
             }}
             components={{
               DayContent: ({ date }) => {
-                const discount = getDateDiscount(date);
+                const discount = getDateDiscountWithRanges(date);
                 if (!discount) return <span>{date.getDate()}</span>;
 
                 // Make purple dates initially unavailable if urgent delivery is not checked
@@ -187,27 +128,18 @@ export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
                 const style = isSelectedDate ? { color: 'white', backgroundColor: discount.selectedBg } : {};
 
                 return (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div 
-                        className="w-full h-full flex items-center justify-center"
-                        style={style}
-                      >
-                        <span>{date.getDate()}</span>
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent 
-                      side="right" 
-                      className="font-medium text-xs md:text-sm px-2 py-1 md:px-3 md:py-1.5"
-                      style={{
-                        backgroundColor: discount.bgColor,
-                        color: discount.textColor,
-                        border: `1px solid ${discount.textColor}20`
-                      }}
+                  <CalendarTooltip 
+                    label={discount.label}
+                    bgColor={discount.bgColor}
+                    textColor={discount.textColor}
+                  >
+                    <div 
+                      className="w-full h-full flex items-center justify-center"
+                      style={style}
                     >
-                      {discount.label}
-                    </TooltipContent>
-                  </Tooltip>
+                      <span>{date.getDate()}</span>
+                    </div>
+                  </CalendarTooltip>
                 );
               }
             }}
@@ -215,28 +147,11 @@ export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
         </div>
       </TooltipProvider>
 
-      <p className="text-sm text-gray-500 text-center max-w-md mx-auto mt-4">
-        {selected ? (
-          getDateDiscount(selected)?.amount ? (
-            <span className={`font-medium ${
-              getDateDiscount(selected)?.amount < 0 
-              ? "text-purple-600" 
-              : "text-green-600"
-            }`}>
-              {getDateDiscount(selected)?.amount < 0 
-                ? `Urgent delivery fee: ${getDateDiscount(selected)?.label}`
-                : `You'll get ${getDateDiscount(selected)?.label} on this date! 🎉`
-              }
-            </span>
-          ) : (
-            "Select a later date to get up to 500 AED discount!"
-          )
-        ) : (
-          isUrgentDelivery
-            ? "Please select an urgent delivery date (10-18 days from today)"
-            : "We require a minimum of 19 days to create your perfect invitation"
-        )}
-      </p>
+      <StatusMessage 
+        selected={selected} 
+        getDateDiscount={getDateDiscountWithRanges} 
+        isUrgentDelivery={isUrgentDelivery} 
+      />
     </div>
   );
 };
