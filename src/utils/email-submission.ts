@@ -37,6 +37,15 @@ export async function submitInviteForm(formData: InviteFormData): Promise<boolea
 }
 
 function generateEmailMessage(formData: InviteFormData): string {
+  // Generate detailed character descriptions
+  let characterDetails = "No characters selected";
+  
+  if (formData.hasCharacters && formData.characters.length > 0) {
+    characterDetails = formData.characters.map((char, index) => 
+      `- Character ${index + 1}: ${char.showFace ? "With face" : "No face"}`
+    ).join('\n');
+  }
+
   return `
 Digital Invitation Request
 
@@ -52,8 +61,8 @@ Delivery Formats: ${formatDeliveryFormats(formData)}
 
 Character Details: 
 - Include Characters: ${formData.hasCharacters ? "Yes" : "No"}
-${formData.hasCharacters ? `- Show Faces: ${formData.showFaces ? "Yes" : "No"}` : ""}
-${formData.hasCharacters && formData.showFaces ? `- Number of Characters: ${formData.characterCount}` : ""}
+${formData.hasCharacters ? `- Number of Characters: ${formData.characters.length}
+${characterDetails}` : ""}
 
 Video Idea: ${formData.hasVideoIdea ? formData.videoIdea : "No specific idea provided"}
 Animation Styles: ${formatAnimationStyles(formData.animationStyles)}
