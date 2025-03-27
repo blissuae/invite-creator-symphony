@@ -6,23 +6,58 @@ export function calculateExactPrice(data: InviteFormData): string {
   
   if (data.deliveryFormats.videoInvite) {
     if (!data.hasCharacters) {
-      basePrice = 2000;
-    } else if (!data.showFaces) {
-      basePrice = 2200;
+      basePrice = 2000; // Basic Video (No Characters)
     } else {
       const characterCount = parseInt(data.characterCount) || 0;
-      basePrice = 2400 + (characterCount - 1) * 200;
+      
+      if (data.showFaces) {
+        // Video with Characters & Faces
+        switch (characterCount) {
+          case 1: basePrice = 2400; break;
+          case 2: basePrice = 2600; break;
+          case 3: basePrice = 2800; break;
+          case 4: basePrice = 3000; break;
+          case 5: basePrice = 3200; break;
+          default: basePrice = 3200 + ((characterCount - 5) * 200); break;
+        }
+      } else {
+        // Video with Characters but no Faces
+        switch (characterCount) {
+          case 1: basePrice = 2200; break;
+          case 2: basePrice = 2300; break;
+          case 3: basePrice = 2400; break;
+          case 4: basePrice = 2500; break;
+          case 5: basePrice = 2600; break;
+          default: basePrice = 2600 + ((characterCount - 5) * 100); break;
+        }
+      }
     }
   } else if (data.deliveryFormats.stillInvite) {
-    if (!data.hasCharacters || !data.showFaces) {
-      basePrice = 1100;
+    if (!data.hasCharacters) {
+      basePrice = 1100; // Basic Still (No Characters)
     } else {
       const characterCount = parseInt(data.characterCount) || 0;
-      switch (characterCount) {
-        case 1: basePrice = 1300; break;
-        case 2: basePrice = 1500; break;
-        case 3: basePrice = 1600; break;
-        default: basePrice = 1700; break;
+      
+      if (data.showFaces) {
+        // Still with Characters & Faces
+        switch (characterCount) {
+          case 1: basePrice = 1400; break;
+          case 2: basePrice = 1600; break;
+          case 3: basePrice = 1700; break;
+          case 4: basePrice = 1800; break;
+          case 5: basePrice = 1900; break;
+          default: basePrice = 1900 + ((characterCount - 5) * 100); break;
+        }
+      } else {
+        // Still with Characters but no Faces
+        switch (characterCount) {
+          case 1: basePrice = 1200; break;
+          case 2: basePrice = 1300; break;
+          case 3: basePrice = 1400; break;
+          case 4: basePrice = 1500; break;
+          case 5: basePrice = 1600; break;
+          default: basePrice = 1600 + ((characterCount - 5) * 100); break;
+        }
       }
     }
   } else {
