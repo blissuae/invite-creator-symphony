@@ -1,4 +1,3 @@
-
 import { useEffect, useState, useCallback } from "react";
 import { 
   Dialog,
@@ -30,7 +29,6 @@ export const IntroPopup = ({ forceShow, onClose }: IntroPopupProps) => {
   const [current, setCurrent] = useState(0);
   
   useEffect(() => {
-    // If forceShow is true, always show the popup regardless of localStorage
     if (forceShow) {
       setOpen(true);
       return;
@@ -38,7 +36,6 @@ export const IntroPopup = ({ forceShow, onClose }: IntroPopupProps) => {
     
     const hasSeenPopup = localStorage.getItem("hasSeenFormIntroPopup");
     if (!hasSeenPopup) {
-      // Add a small delay for better UX - let the form render first
       const timer = setTimeout(() => {
         setOpen(true);
       }, 800);
@@ -51,19 +48,17 @@ export const IntroPopup = ({ forceShow, onClose }: IntroPopupProps) => {
     localStorage.setItem("hasSeenFormIntroPopup", "true");
     setOpen(false);
     
-    // Call the onClose callback if provided
     if (onClose) {
       onClose();
     }
   };
 
-  // Auto-scroll functionality with 6 seconds delay
   useInterval(() => {
     if (api && open) {
-      const nextIndex = (current + 1) % steps.length; // Loop back to first item
+      const nextIndex = (current + 1) % steps.length;
       api.scrollTo(nextIndex);
     }
-  }, 6000); // Increased from 5000 to 6000ms for longer viewing time
+  }, 6000);
 
   const onSelect = useCallback(() => {
     if (!api) return;
@@ -96,7 +91,7 @@ export const IntroPopup = ({ forceShow, onClose }: IntroPopupProps) => {
       icon: <Receipt className="h-6 w-6 text-amber-600" />,
       color: "bg-amber-100",
       title: "Key information affects pricing",
-      description: "Your choices on delivery formats, characters, and deadline directly influence the final price."
+      description: "Please choose the delivery formats, characters and deadline correctly, as these choices determine the final price."
     },
     {
       icon: <Calendar className="h-6 w-6 text-blue-600" />,
@@ -111,7 +106,6 @@ export const IntroPopup = ({ forceShow, onClose }: IntroPopupProps) => {
       <DialogContent className="sm:max-w-lg border-elegant-secondary/30 shadow-lg bg-gradient-to-b from-white to-elegant-beige/30 px-8 sm:px-10">
         <DialogHeader className="text-center">
           <div className="mx-auto w-24 h-24 bg-elegant-beige/50 rounded-full flex items-center justify-center mb-5">
-            {/* Bliss logo */}
             <img 
               src="/lovable-uploads/f566f022-debc-49f9-85e0-e54a4d70cfbd.png" 
               alt="Bliss" 
