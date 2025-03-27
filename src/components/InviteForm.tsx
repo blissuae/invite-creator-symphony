@@ -1,3 +1,4 @@
+
 import { FormProgress } from "./form/FormProgress";
 import { BasicDetails } from "./form/BasicDetails";
 import { CharacterOptions } from "./form/CharacterOptions";
@@ -10,7 +11,7 @@ import { AnimationStyleSelector } from "./form/AnimationStyleSelector";
 import { FormNavigation } from "./form/FormNavigation";
 import { DeliveryFormats } from "./form/DeliveryFormats";
 import { useInviteForm, FORM_STEPS } from "@/hooks/use-invite-form";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { IntroPopup } from "./IntroPopup";
 
 export const InviteForm = () => {
@@ -25,6 +26,8 @@ export const InviteForm = () => {
     handleSubmit,
     setCurrentStep,
   } = useInviteForm();
+
+  const [showIntro, setShowIntro] = useState(true);
 
   const handleStepClick = (step: number) => {
     if (step <= maxStep) {
@@ -45,14 +48,6 @@ export const InviteForm = () => {
     });
     window.dispatchEvent(progressEvent);
   }, [currentStep, maxStep, isSubmitted]);
-
-  useEffect(() => {
-    // Only reset if user hasn't seen the popup in this session
-    if (!sessionStorage.getItem("popupShownThisSession")) {
-      localStorage.removeItem("hasSeenFormIntroPopup");
-      sessionStorage.setItem("popupShownThisSession", "true");
-    }
-  }, []);
 
   const renderStep = () => {
     if (isSubmitted) {
@@ -134,7 +129,12 @@ export const InviteForm = () => {
 
   return (
     <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-elegant-secondary/20 overflow-hidden animate-fadeIn flex flex-col">
-      <IntroPopup />
+      {showIntro && (
+        <IntroPopup 
+          forceShow={true} 
+          onClose={() => setShowIntro(false)}
+        />
+      )}
       <FormProgress 
         steps={FORM_STEPS} 
         currentStep={currentStep}
