@@ -26,6 +26,7 @@ export const InviteForm = () => {
     prevStep,
     handleSubmit,
     setCurrentStep,
+    setMaxStep,
     skipCustomization,
     setSkipCustomization,
     showCustomizationPages,
@@ -158,3 +159,4 @@ export const InviteForm = () => {
     </div>
   );
 };
+

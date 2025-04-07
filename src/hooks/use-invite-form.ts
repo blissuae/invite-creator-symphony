@@ -147,6 +147,7 @@ export const useInviteForm = () => {
     prevStep,
     handleSubmit,
     setCurrentStep,
+    setMaxStep,
     skipCustomization,
     setSkipCustomization,
     showCustomizationPages,
@@ -155,3 +156,4 @@ export const useInviteForm = () => {
     getFormSteps
   };
 };
+
