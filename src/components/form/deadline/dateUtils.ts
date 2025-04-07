@@ -87,7 +87,13 @@ export const isDateBooked = (date: Date, dateRanges: ReturnType<typeof calculate
   const dateFactor = (day * month) % 11;
   const dateProduct = (day * (month + 1) * year) % 100;
   
-  // Make the pattern different for each bracket
+  // Check if the date is 90+ days in the future
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const dayDiff = Math.floor((date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+  const is90PlusDays = dayDiff >= 90;
+  
+  // Make dates in the urgent bracket very limited
   if (isWithinInterval(date, { start: urgentMinDate, end: urgentMaxDate })) {
     // Urgent bracket - Make 80% of dates unavailable (very limited availability)
     // Preserve a few specific days to ensure some options
@@ -100,31 +106,36 @@ export const isDateBooked = (date: Date, dateRanges: ReturnType<typeof calculate
     return (dateFactor % 10 > 2); // Make 70% booked
   }
   else if (isWithinInterval(date, { start: discountDate40, end: addDays(discountDate70, -1) })) {
-    // Discount 300 bracket - Make 60% of dates unavailable with more variation toward the end
+    // Discount 300 bracket - Make 60% of dates unavailable with a pattern that feels more natural
     if (dayOfWeek === 0 || dayOfWeek === 3) return false; // Always keep Sundays and Wednesdays available
     
-    // Create more variation toward the end of this bracket
+    // Make more dates available toward the end of this bracket
     const daysFromDiscount40 = Math.floor((date.getTime() - discountDate40.getTime()) / (1000 * 60 * 60 * 24));
-    const halfwayPoint = Math.floor((discountDate70.getTime() - discountDate40.getTime()) / (1000 * 60 * 60 * 24)) / 2;
+    const totalDaysInBracket = Math.floor((discountDate70.getTime() - discountDate40.getTime()) / (1000 * 60 * 60 * 24));
+    const percentThroughBracket = daysFromDiscount40 / totalDaysInBracket;
     
-    if (daysFromDiscount40 > halfwayPoint) {
-      // Fewer days available toward the end (70% booked)
-      return ((day + month + dayOfWeek) % 10 > 2);
-    }
-    
-    // More days available at the start (50% booked)
-    return (day % 2 === 0 && month % 2 === 0);
+    // More dates available toward the end - from 60% booked to 40% booked
+    const threshold = Math.floor(3 + (percentThroughBracket * 3)); // Threshold increases from 3 to 6
+    return ((day + month) % 10) < threshold;
   }
   else if (date >= discountDate70) {
-    // Discount 500 bracket - Make availability more randomized, about 50% booked
-    if (dayOfWeek === 6) return true; // Make Saturdays unavailable
+    // Discount 500 bracket - Make most dates available, especially 90+ days out
     
-    // Create a more complex pattern to avoid obvious patterns
-    const isBooked = (dateProduct % 2 === 0 && day % 3 === 0) || 
-                     (dateSum % 7 === 0) || 
-                     (day % 5 === 0 && month % 2 === 1);
-                     
-    return isBooked;
+    // Always make weekends (Saturday/Sunday) available in this bracket
+    if (dayOfWeek === 0 || dayOfWeek === 6) return false;
+    
+    // Make almost all dates available from 90+ days
+    if (is90PlusDays) {
+      // Only about 10% of dates are unavailable after 90 days
+      return (day * month) % 20 === 0;
+    }
+    
+    // For dates before 90 days in the 500 AED bracket, make about 30% unavailable
+    if ((day % 7 === 3 && month % 2 === 1) || (dateProduct % 25 === 0)) {
+      return true;
+    }
+    
+    return false;
   }
   
   return false;
