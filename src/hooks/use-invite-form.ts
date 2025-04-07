@@ -55,14 +55,14 @@ export const useInviteForm = () => {
         return validateBasicDetails(formData);
       case 1: // Delivery Formats
         return validateDeliveryFormats(formData);
-      case 3: // Content page validation
-        return validateVideoIdea(formData);
-      case 4: // Color Palette validation
-        return validateColorPalette(formData);
-      case 5: // Animation styles
-        return validateAnimationStyles(formData);
-      case 6: // Deadline validation
+      case 3: // Deadline validation
         return validateDeadline(formData);
+      case 4: // Content page validation
+        return validateVideoIdea(formData);
+      case 5: // Color Palette validation
+        return validateColorPalette(formData);
+      case 6: // Animation styles
+        return validateAnimationStyles(formData);
       default:
         return true;
     }
