@@ -1,5 +1,6 @@
 
 import { InviteFormData } from "@/types/invite-form-types";
+import { calculateDateRanges, isDateBooked, isAlwaysAvailableDate } from "@/components/form/deadline/dateUtils";
 
 export function calculateExactPrice(data: InviteFormData): string {
   let basePrice = 0;
@@ -36,6 +37,18 @@ export function calculateExactPrice(data: InviteFormData): string {
     deadlineDate.setHours(0, 0, 0, 0);
     
     const days = Math.floor((deadlineDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    const dateRanges = calculateDateRanges(today);
+    
+    // Check if date is one of our special available dates
+    if (isAlwaysAvailableDate(deadlineDate)) {
+      // Special promotion discount
+      return `${basePrice - 200} AED (Special Date Discount!)`;
+    }
+    
+    // Check if the selected date is supposedly booked
+    if (isDateBooked(deadlineDate, dateRanges)) {
+      return `${basePrice + 300} AED (Premium Date Fee)`;
+    }
     
     if (days >= 10 && days <= 18) {
       return `${basePrice + 500} AED (Urgent Delivery)`;
