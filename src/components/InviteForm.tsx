@@ -10,6 +10,7 @@ import { SuccessScreen } from "./form/SuccessScreen";
 import { AnimationStyleSelector } from "./form/AnimationStyleSelector";
 import { FormNavigation } from "./form/FormNavigation";
 import { DeliveryFormats } from "./form/DeliveryFormats";
+import { CustomizationChoice } from "./form/CustomizationChoice";
 import { useInviteForm, FORM_STEPS } from "@/hooks/use-invite-form";
 import { useEffect, useState } from "react";
 import { IntroPopup } from "./IntroPopup";
@@ -25,9 +26,12 @@ export const InviteForm = () => {
     prevStep,
     handleSubmit,
     setCurrentStep,
+    skipCustomization,
+    setSkipCustomization
   } = useInviteForm();
 
   const [showIntro, setShowIntro] = useState(true);
+  const [showCustomizationChoice, setShowCustomizationChoice] = useState(false);
 
   const handleStepClick = (step: number) => {
     if (step <= maxStep) {
@@ -49,9 +53,29 @@ export const InviteForm = () => {
     window.dispatchEvent(progressEvent);
   }, [currentStep, maxStep, isSubmitted]);
 
+  // Show customization choice after deadline page
+  useEffect(() => {
+    if (currentStep === 3 && formData.deadline !== null) {
+      setShowCustomizationChoice(true);
+    } else {
+      setShowCustomizationChoice(false);
+    }
+  }, [currentStep, formData.deadline]);
+
+  const handleCustomizationChoice = (skip: boolean) => {
+    setSkipCustomization(skip);
+    setShowCustomizationChoice(false);
+    nextStep();
+  };
+
   const renderStep = () => {
     if (isSubmitted) {
       return <SuccessScreen formData={formData} />;
+    }
+
+    // If showing the customization choice overlay
+    if (showCustomizationChoice && currentStep === 3) {
+      return <CustomizationChoice onChoiceMade={handleCustomizationChoice} />;
     }
 
     switch (currentStep) {
@@ -146,13 +170,15 @@ export const InviteForm = () => {
           <div className="sm:min-h-[400px]">{renderStep()}</div>
         </div>
         <div className="sticky bottom-0 p-4 sm:p-8 border-t border-elegant-secondary/20 bg-white">
-          <FormNavigation
-            currentStep={currentStep}
-            totalSteps={FORM_STEPS.length}
-            onNext={nextStep}
-            onPrev={prevStep}
-            onSubmit={handleSubmit}
-          />
+          {!showCustomizationChoice && (
+            <FormNavigation
+              currentStep={currentStep}
+              totalSteps={FORM_STEPS.length}
+              onNext={nextStep}
+              onPrev={prevStep}
+              onSubmit={handleSubmit}
+            />
+          )}
         </div>
       </div>
     </div>

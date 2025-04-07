@@ -19,6 +19,7 @@ export const useInviteForm = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [maxStep, setMaxStep] = useState(0);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [skipCustomization, setSkipCustomization] = useState(false);
   const { toast } = useToast();
   const [formData, setFormData] = useState<InviteFormData>({
     fullName: "",
@@ -73,6 +74,14 @@ export const useInviteForm = () => {
       return;
     }
 
+    // If we're at the deadline step (index 3) and user chose to skip customization
+    if (currentStep === 3 && skipCustomization) {
+      // Skip to review page (index 7)
+      setCurrentStep(7);
+      setMaxStep(Math.max(maxStep, 7));
+      return;
+    }
+
     if (currentStep < FORM_STEPS.length - 1) {
       setCurrentStep(currentStep + 1);
       setMaxStep(Math.max(maxStep, currentStep + 1));
@@ -81,6 +90,12 @@ export const useInviteForm = () => {
 
   const prevStep = () => {
     if (currentStep > 0) {
+      // If we're at review page and skipped customization, go back to deadline
+      if (currentStep === 7 && skipCustomization) {
+        setCurrentStep(3);
+        return;
+      }
+
       setCurrentStep(currentStep - 1);
     }
   };
@@ -117,5 +132,7 @@ export const useInviteForm = () => {
     prevStep,
     handleSubmit,
     setCurrentStep,
+    skipCustomization,
+    setSkipCustomization
   };
 };
