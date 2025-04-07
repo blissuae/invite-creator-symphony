@@ -14,10 +14,7 @@ export const CustomizationChoice = ({ onChoiceMade }: CustomizationChoiceProps) 
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-2xl font-serif text-elegant-brown mb-4">Customize Your Invitation</h2>
-        <p className="text-gray-600 mb-6">
-          Would you like to customize the design details now or let our designers handle it?
-        </p>
+        <h2 className="text-2xl font-serif text-elegant-brown mb-4">Do you want to customize your video now by picking the colors, animation style, and idea?</h2>
       </div>
 
       <RadioGroup className="space-y-4" value={choice || ""} onValueChange={setChoice}>
@@ -25,22 +22,16 @@ export const CustomizationChoice = ({ onChoiceMade }: CustomizationChoiceProps) 
           <RadioGroupItem value="customize" id="customize" />
           <div className="grid gap-1.5">
             <Label className="font-medium text-lg" htmlFor="customize">
-              I want to customize the design details
+              Yes, let's do it now
             </Label>
-            <p className="text-muted-foreground text-sm">
-              Choose colors, animation styles, and provide specific design ideas
-            </p>
           </div>
         </div>
         <div className="flex items-start space-x-3 p-4 rounded-md border border-elegant-secondary/20 hover:bg-elegant-beige/10">
           <RadioGroupItem value="skip" id="skip" />
           <div className="grid gap-1.5">
             <Label className="font-medium text-lg" htmlFor="skip">
-              I'll let the designers handle it
+              I'll do it later
             </Label>
-            <p className="text-muted-foreground text-sm">
-              Skip detailed customization and let our expert designers create something beautiful for you
-            </p>
           </div>
         </div>
       </RadioGroup>
