@@ -77,6 +77,7 @@ export const isDateBooked = (date: Date, dateRanges: ReturnType<typeof calculate
   const day = date.getDate();
   const month = date.getMonth();
   const dayOfWeek = date.getDay();
+  const year = date.getFullYear();
   
   // Create a deterministic pattern based on the date's properties
   // This ensures consistency for the same dates
@@ -84,6 +85,7 @@ export const isDateBooked = (date: Date, dateRanges: ReturnType<typeof calculate
   // Base availability on numeric properties of the date
   const dateSum = day + month;
   const dateFactor = (day * month) % 11;
+  const dateProduct = (day * (month + 1) * year) % 100;
   
   // Make the pattern different for each bracket
   if (isWithinInterval(date, { start: urgentMinDate, end: urgentMaxDate })) {
@@ -98,14 +100,31 @@ export const isDateBooked = (date: Date, dateRanges: ReturnType<typeof calculate
     return (dateFactor % 10 > 2); // Make 70% booked
   }
   else if (isWithinInterval(date, { start: discountDate40, end: addDays(discountDate70, -1) })) {
-    // Discount 300 bracket - Make 50% of dates unavailable
+    // Discount 300 bracket - Make 60% of dates unavailable with more variation toward the end
     if (dayOfWeek === 0 || dayOfWeek === 3) return false; // Always keep Sundays and Wednesdays available
-    return (day % 2 === 0 && month % 2 === 0); // Make 50% booked
+    
+    // Create more variation toward the end of this bracket
+    const daysFromDiscount40 = Math.floor((date.getTime() - discountDate40.getTime()) / (1000 * 60 * 60 * 24));
+    const halfwayPoint = Math.floor((discountDate70.getTime() - discountDate40.getTime()) / (1000 * 60 * 60 * 24)) / 2;
+    
+    if (daysFromDiscount40 > halfwayPoint) {
+      // Fewer days available toward the end (70% booked)
+      return ((day + month + dayOfWeek) % 10 > 2);
+    }
+    
+    // More days available at the start (50% booked)
+    return (day % 2 === 0 && month % 2 === 0);
   }
   else if (date >= discountDate70) {
-    // Discount 500 bracket - Make 30% of dates unavailable (more availability)
+    // Discount 500 bracket - Make availability more randomized, about 50% booked
     if (dayOfWeek === 6) return true; // Make Saturdays unavailable
-    return (dateSum % 7 === 0); // Make 30% booked
+    
+    // Create a more complex pattern to avoid obvious patterns
+    const isBooked = (dateProduct % 2 === 0 && day % 3 === 0) || 
+                     (dateSum % 7 === 0) || 
+                     (day % 5 === 0 && month % 2 === 1);
+                     
+    return isBooked;
   }
   
   return false;

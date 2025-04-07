@@ -7,6 +7,7 @@ import { Testimonials } from "@/components/home/Testimonials";
 import { CustomerCounter } from "@/components/home/CustomerCounter";
 import { GetStartedButton } from "@/components/home/GetStartedButton";
 import { FormProgressBar } from "@/components/home/FormProgressBar";
+import { UserActivityPopup } from "@/components/home/UserActivityPopup";
 import { progressMessages, getPreviousStepKey } from "@/utils/progress-messages";
 
 const Index = () => {
@@ -57,6 +58,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-elegant-beige to-white">
       <FAQButton onClick={() => setShowFAQ(true)} />
+      <UserActivityPopup />
       
       {showFAQ && <FAQAccordion onClose={() => setShowFAQ(false)} />}
       
