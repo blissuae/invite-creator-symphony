@@ -29,7 +29,17 @@ export interface InviteFormData {
   };
 }
 
-export const FORM_STEPS = [
+// Initial visible steps (5 pages)
+export const INITIAL_FORM_STEPS = [
+  "Basic Details",
+  "Delivery Formats",
+  "Character Options",
+  "Deadline",
+  "Review"
+] as const;
+
+// All possible steps (8 pages)
+export const ALL_FORM_STEPS = [
   "Basic Details",
   "Delivery Formats",
   "Character Options",
@@ -39,3 +49,4 @@ export const FORM_STEPS = [
   "Animation Style",
   "Review"
 ] as const;
+

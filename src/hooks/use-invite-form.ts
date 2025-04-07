@@ -10,16 +10,17 @@ import {
   validateAnimationStyles, 
   validateDeadline
 } from "@/utils/form-validation";
-import { InviteFormData, FORM_STEPS } from "@/types/invite-form-types";
+import { InviteFormData, INITIAL_FORM_STEPS, ALL_FORM_STEPS } from "@/types/invite-form-types";
 
 export type { InviteFormData };
-export { FORM_STEPS };
+export { INITIAL_FORM_STEPS, ALL_FORM_STEPS };
 
 export const useInviteForm = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [maxStep, setMaxStep] = useState(0);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [skipCustomization, setSkipCustomization] = useState(false);
+  const [showCustomizationPages, setShowCustomizationPages] = useState(false);
   const { toast } = useToast();
   const [formData, setFormData] = useState<InviteFormData>({
     fullName: "",
@@ -46,23 +47,33 @@ export const useInviteForm = () => {
     }
   });
 
+  // Get the appropriate steps based on whether customization pages are shown
+  const getFormSteps = () => {
+    return showCustomizationPages ? ALL_FORM_STEPS : INITIAL_FORM_STEPS;
+  };
+
   const updateFormData = (field: keyof InviteFormData, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const validateCurrentStep = (): boolean => {
-    switch (currentStep) {
-      case 0: // Basic Details
+    // Get the actual step content based on current navigation
+    const currentPageContent = showCustomizationPages 
+      ? ALL_FORM_STEPS[currentStep] 
+      : INITIAL_FORM_STEPS[currentStep];
+      
+    switch (currentPageContent) {
+      case "Basic Details":
         return validateBasicDetails(formData);
-      case 1: // Delivery Formats
+      case "Delivery Formats":
         return validateDeliveryFormats(formData);
-      case 3: // Deadline validation
+      case "Deadline":
         return validateDeadline(formData);
-      case 4: // Content page validation
+      case "Idea & Content":
         return validateVideoIdea(formData);
-      case 5: // Color Palette validation
+      case "Color Palette":
         return validateColorPalette(formData);
-      case 6: // Animation styles
+      case "Animation Style":
         return validateAnimationStyles(formData);
       default:
         return true;
@@ -74,15 +85,9 @@ export const useInviteForm = () => {
       return;
     }
 
-    // If we're at the deadline step (index 3) and user chose to skip customization
-    if (currentStep === 3 && skipCustomization) {
-      // Skip to review page (index 7)
-      setCurrentStep(7);
-      setMaxStep(Math.max(maxStep, 7));
-      return;
-    }
+    const steps = getFormSteps();
 
-    if (currentStep < FORM_STEPS.length - 1) {
+    if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
       setMaxStep(Math.max(maxStep, currentStep + 1));
     }
@@ -91,7 +96,7 @@ export const useInviteForm = () => {
   const prevStep = () => {
     if (currentStep > 0) {
       // If we're at review page and skipped customization, go back to deadline
-      if (currentStep === 7 && skipCustomization) {
+      if (currentStep === (showCustomizationPages ? 7 : 4) && skipCustomization) {
         setCurrentStep(3);
         return;
       }
@@ -122,6 +127,16 @@ export const useInviteForm = () => {
     }
   };
 
+  // Function to enable customization pages
+  const enableCustomizationPages = () => {
+    setShowCustomizationPages(true);
+    // If we were on step 4 (deadline), move to step 4 in the expanded view (which is Idea & Content)
+    if (currentStep === 3) {
+      setCurrentStep(4);
+      setMaxStep(Math.max(maxStep, 4));
+    }
+  };
+
   return {
     currentStep,
     maxStep,
@@ -133,6 +148,10 @@ export const useInviteForm = () => {
     handleSubmit,
     setCurrentStep,
     skipCustomization,
-    setSkipCustomization
+    setSkipCustomization,
+    showCustomizationPages,
+    setShowCustomizationPages,
+    enableCustomizationPages,
+    getFormSteps
   };
 };

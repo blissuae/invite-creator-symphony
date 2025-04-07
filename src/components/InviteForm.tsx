@@ -11,7 +11,7 @@ import { AnimationStyleSelector } from "./form/AnimationStyleSelector";
 import { FormNavigation } from "./form/FormNavigation";
 import { DeliveryFormats } from "./form/DeliveryFormats";
 import { CustomizationChoice } from "./form/CustomizationChoice";
-import { useInviteForm, FORM_STEPS } from "@/hooks/use-invite-form";
+import { useInviteForm } from "@/hooks/use-invite-form";
 import { useEffect, useState } from "react";
 import { IntroPopup } from "./IntroPopup";
 
@@ -27,11 +27,17 @@ export const InviteForm = () => {
     handleSubmit,
     setCurrentStep,
     skipCustomization,
-    setSkipCustomization
+    setSkipCustomization,
+    showCustomizationPages,
+    enableCustomizationPages,
+    getFormSteps
   } = useInviteForm();
 
   const [showIntro, setShowIntro] = useState(true);
   const [showCustomizationChoice, setShowCustomizationChoice] = useState(false);
+  
+  // Get the current form steps based on customization choice
+  const formSteps = getFormSteps();
 
   const handleStepClick = (step: number) => {
     if (step <= maxStep) {
@@ -42,7 +48,7 @@ export const InviteForm = () => {
   useEffect(() => {
     const progressValue = isSubmitted 
       ? 100 
-      : Math.min(95, Math.ceil((maxStep / (FORM_STEPS.length - 1)) * 100));
+      : Math.min(95, Math.ceil((maxStep / (formSteps.length - 1)) * 100));
     
     const progressEvent = new CustomEvent('formProgressUpdate', { 
       detail: { 
@@ -51,21 +57,29 @@ export const InviteForm = () => {
       } 
     });
     window.dispatchEvent(progressEvent);
-  }, [currentStep, maxStep, isSubmitted]);
+  }, [currentStep, maxStep, isSubmitted, formSteps.length]);
 
   // Show customization choice after deadline page
   useEffect(() => {
-    if (currentStep === 3 && formData.deadline !== null) {
+    if (currentStep === 3 && formData.deadline !== null && !showCustomizationPages) {
       setShowCustomizationChoice(true);
     } else {
       setShowCustomizationChoice(false);
     }
-  }, [currentStep, formData.deadline]);
+  }, [currentStep, formData.deadline, showCustomizationPages]);
 
   const handleCustomizationChoice = (skip: boolean) => {
     setSkipCustomization(skip);
     setShowCustomizationChoice(false);
-    nextStep();
+    
+    if (skip) {
+      // Skip to review page (which is now page 4 in the initial view)
+      setCurrentStep(4);
+      setMaxStep(Math.max(maxStep, 4));
+    } else {
+      // Show the customization pages and move to the first one
+      enableCustomizationPages();
+    }
   };
 
   const renderStep = () => {
@@ -78,66 +92,26 @@ export const InviteForm = () => {
       return <CustomizationChoice onChoiceMade={handleCustomizationChoice} />;
     }
 
-    switch (currentStep) {
-      case 0:
-        return (
-          <BasicDetails
-            formData={formData}
-            onChange={updateFormData}
-          />
-        );
-      case 1:
-        return (
-          <DeliveryFormats
-            formData={formData}
-            onChange={updateFormData}
-          />
-        );
-      case 2:
-        return (
-          <CharacterOptions
-            formData={formData}
-            onChange={updateFormData}
-          />
-        );
-      case 3:
-        return (
-          <DeadlinePicker
-            selected={formData.deadline}
-            onSelect={(value) => updateFormData("deadline", value)}
-          />
-        );
-      case 4:
-        return (
-          <ContentEditor
-            formData={{
-              content: formData.content,
-              hasVideoIdea: formData.hasVideoIdea,
-              videoIdea: formData.videoIdea
-            }}
-            onChange={updateFormData}
-          />
-        );
-      case 5:
-        return (
-          <ColorPalette
-            selected={formData.colorPalette}
-            onSelect={(value) => updateFormData("colorPalette", value)}
-          />
-        );
-      case 6:
-        return (
-          <AnimationStyleSelector
-            selected={formData.animationStyles}
-            onSelect={(value) => updateFormData("animationStyles", value)}
-          />
-        );
-      case 7:
-        return (
-          <ReviewDetails
-            formData={formData}
-          />
-        );
+    // Determine the content to show based on current step and whether customization pages are shown
+    const currentStepContent = formSteps[currentStep];
+    
+    switch (currentStepContent) {
+      case "Basic Details":
+        return <BasicDetails formData={formData} onChange={updateFormData} />;
+      case "Delivery Formats":
+        return <DeliveryFormats formData={formData} onChange={updateFormData} />;
+      case "Character Options":
+        return <CharacterOptions formData={formData} onChange={updateFormData} />;
+      case "Deadline":
+        return <DeadlinePicker selected={formData.deadline} onSelect={(value) => updateFormData("deadline", value)} />;
+      case "Idea & Content":
+        return <ContentEditor formData={{ content: formData.content, hasVideoIdea: formData.hasVideoIdea, videoIdea: formData.videoIdea }} onChange={updateFormData} />;
+      case "Color Palette":
+        return <ColorPalette selected={formData.colorPalette} onSelect={(value) => updateFormData("colorPalette", value)} />;
+      case "Animation Style":
+        return <AnimationStyleSelector selected={formData.animationStyles} onSelect={(value) => updateFormData("animationStyles", value)} />;
+      case "Review":
+        return <ReviewDetails formData={formData} />;
       default:
         return null;
     }
@@ -160,7 +134,7 @@ export const InviteForm = () => {
         />
       )}
       <FormProgress 
-        steps={FORM_STEPS} 
+        steps={formSteps} 
         currentStep={currentStep}
         maxStep={maxStep}
         onStepClick={handleStepClick}
@@ -173,7 +147,7 @@ export const InviteForm = () => {
           {!showCustomizationChoice && (
             <FormNavigation
               currentStep={currentStep}
-              totalSteps={FORM_STEPS.length}
+              totalSteps={formSteps.length}
               onNext={nextStep}
               onPrev={prevStep}
               onSubmit={handleSubmit}
