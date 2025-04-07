@@ -52,6 +52,7 @@ export const UserActivityPopup: React.FC = () => {
         </p>
       ),
       duration: 5000,
+      className: "bottom-left-toast",
     });
     
     // Set next popup delay
