@@ -78,6 +78,13 @@ export const InviteForm = () => {
         );
       case 3:
         return (
+          <DeadlinePicker
+            selected={formData.deadline}
+            onSelect={(value) => updateFormData("deadline", value)}
+          />
+        );
+      case 4:
+        return (
           <ContentEditor
             formData={{
               content: formData.content,
@@ -87,25 +94,18 @@ export const InviteForm = () => {
             onChange={updateFormData}
           />
         );
-      case 4:
+      case 5:
         return (
           <ColorPalette
             selected={formData.colorPalette}
             onSelect={(value) => updateFormData("colorPalette", value)}
           />
         );
-      case 5:
+      case 6:
         return (
           <AnimationStyleSelector
             selected={formData.animationStyles}
             onSelect={(value) => updateFormData("animationStyles", value)}
-          />
-        );
-      case 6:
-        return (
-          <DeadlinePicker
-            selected={formData.deadline}
-            onSelect={(value) => updateFormData("deadline", value)}
           />
         );
       case 7:

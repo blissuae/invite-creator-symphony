@@ -33,9 +33,9 @@ export const FORM_STEPS = [
   "Basic Details",
   "Delivery Formats",
   "Character Options",
+  "Deadline",
   "Idea & Content",
   "Color Palette",
   "Animation Style",
-  "Deadline",
   "Review"
 ] as const;
