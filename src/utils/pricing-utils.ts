@@ -45,7 +45,7 @@ export function calculateExactPrice(data: InviteFormData): string {
       return `${basePrice - 200} AED (Special Date Discount!)`;
     }
     
-    // Check if the selected date is supposedly booked
+    // Check if the selected date is supposedly booked (won't happen for 100+ days)
     if (isDateBooked(deadlineDate, dateRanges)) {
       return `${basePrice + 300} AED (Premium Date Fee)`;
     }

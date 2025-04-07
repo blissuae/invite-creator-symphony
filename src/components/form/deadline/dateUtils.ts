@@ -87,11 +87,16 @@ export const isDateBooked = (date: Date, dateRanges: ReturnType<typeof calculate
   const dateFactor = (day * month) % 11;
   const dateProduct = (day * (month + 1) * year) % 100;
   
-  // Check if the date is 90+ days in the future
+  // Check if the date is 100+ days in the future
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const dayDiff = Math.floor((date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-  const is90PlusDays = dayDiff >= 90;
+  const is100PlusDays = dayDiff >= 100;
+  
+  // All dates 100+ days in the future are always available
+  if (is100PlusDays) {
+    return false; // Not booked
+  }
   
   // Make dates in the urgent bracket very limited
   if (isWithinInterval(date, { start: urgentMinDate, end: urgentMaxDate })) {
@@ -119,14 +124,13 @@ export const isDateBooked = (date: Date, dateRanges: ReturnType<typeof calculate
     return ((day + month) % 10) < threshold;
   }
   else if (date >= discountDate70) {
-    // Discount 500 bracket - Make most dates available, especially 90+ days out
+    // Discount 500 bracket - Make most dates available
     
     // Always make weekends (Saturday/Sunday) available in this bracket
     if (dayOfWeek === 0 || dayOfWeek === 6) return false;
     
-    // Make almost all dates available from 90+ days
-    if (is90PlusDays) {
-      // Only about 10% of dates are unavailable after 90 days
+    // Make almost all dates available from 90-100 days (only about 10% unavailable)
+    if (dayDiff >= 90) {
       return (day * month) % 20 === 0;
     }
     
