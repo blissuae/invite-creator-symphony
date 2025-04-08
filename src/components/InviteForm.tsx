@@ -43,6 +43,10 @@ export const InviteForm = () => {
   const handleStepClick = (step: number) => {
     if (step <= maxStep) {
       setCurrentStep(step);
+      // Reset customization choice when manually navigating
+      if (step !== 3) {
+        setShowCustomizationChoice(false);
+      }
     }
   };
 
@@ -60,14 +64,15 @@ export const InviteForm = () => {
     window.dispatchEvent(progressEvent);
   }, [currentStep, maxStep, isSubmitted, formSteps.length]);
 
-  // Show customization choice after deadline page
-  useEffect(() => {
+  // Modified behavior: don't automatically show customization choice on deadline page
+  // Instead, show it after user clicks 'Continue' on deadline page
+  const handleDeadlineContinue = () => {
     if (currentStep === 3 && formData.deadline !== null && !showCustomizationPages) {
       setShowCustomizationChoice(true);
     } else {
-      setShowCustomizationChoice(false);
+      nextStep();
     }
-  }, [currentStep, formData.deadline, showCustomizationPages]);
+  };
 
   const handleCustomizationChoice = (skip: boolean) => {
     setSkipCustomization(skip);
@@ -89,7 +94,7 @@ export const InviteForm = () => {
     }
 
     // If showing the customization choice overlay
-    if (showCustomizationChoice && currentStep === 3) {
+    if (showCustomizationChoice) {
       return <CustomizationChoice onChoiceMade={handleCustomizationChoice} />;
     }
 
@@ -149,7 +154,7 @@ export const InviteForm = () => {
             <FormNavigation
               currentStep={currentStep}
               totalSteps={formSteps.length}
-              onNext={nextStep}
+              onNext={currentStep === 3 ? handleDeadlineContinue : nextStep}
               onPrev={prevStep}
               onSubmit={handleSubmit}
             />
@@ -159,4 +164,3 @@ export const InviteForm = () => {
     </div>
   );
 };
-
