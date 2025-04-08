@@ -1,5 +1,5 @@
 
-import { addDays, startOfDay, isWithinInterval, isSameDay } from "date-fns";
+import { addDays, startOfDay, isWithinInterval } from "date-fns";
 
 export interface DateDiscount {
   amount: number;
@@ -143,24 +143,4 @@ export const isDateBooked = (date: Date, dateRanges: ReturnType<typeof calculate
   }
   
   return false;
-};
-
-// Fixed special dates that are always available regardless of the algorithm
-// These could be promotional dates or special occasions
-export const getAlwaysAvailableDates = (): Date[] => {
-  const specialDates = [
-    new Date(2025, 3, 15), // April 15, 2025
-    new Date(2025, 4, 1),  // May 1, 2025
-    new Date(2025, 5, 10), // June 10, 2025
-    new Date(2025, 6, 4),  // July 4, 2025
-  ];
-  
-  return specialDates.map(date => startOfDay(date));
-};
-
-// Helper method to check if a date is in the list of always available dates
-export const isAlwaysAvailableDate = (date: Date): boolean => {
-  return getAlwaysAvailableDates().some(availableDate => 
-    isSameDay(date, availableDate)
-  );
 };

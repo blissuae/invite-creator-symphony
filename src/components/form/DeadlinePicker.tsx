@@ -10,8 +10,7 @@ import { CalendarTooltip } from "./deadline/CalendarTooltip";
 import { 
   calculateDateRanges, 
   getDateDiscount, 
-  isDateBooked,
-  isAlwaysAvailableDate
+  isDateBooked
 } from "./deadline/dateUtils";
 
 interface DeadlinePickerProps {
@@ -48,10 +47,7 @@ export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
       if (date < regularMinDate) return true;
     }
     
-    // Check if this is a special date that's always available
-    if (isAlwaysAvailableDate(date)) return false;
-    
-    // Then check if the date is "booked"
+    // Check if the date is "booked"
     return isDateBooked(date, dateRanges);
   };
 
@@ -99,7 +95,7 @@ export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
                 from: discountDate70,
                 to: addDays(today, 365)
               },
-              booked: (date) => !isAlwaysAvailableDate(date) && isDateBooked(date, dateRanges)
+              booked: (date) => isDateBooked(date, dateRanges)
             }}
             modifiersStyles={{
               urgent: {
@@ -154,7 +150,7 @@ export const DeadlinePicker = ({ selected, onSelect }: DeadlinePickerProps) => {
                 }
 
                 const isSelectedDate = selected && isSameDay(date, selected);
-                const isBooked = !isAlwaysAvailableDate(date) && isDateBooked(date, dateRanges);
+                const isBooked = isDateBooked(date, dateRanges);
                 
                 const style = isSelectedDate ? { 
                   color: 'white', 
