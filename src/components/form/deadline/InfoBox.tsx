@@ -41,9 +41,9 @@ export const InfoBox = ({ isUrgentDelivery }: InfoBoxProps) => {
           ) : (
             <>
               <span className="font-semibold">DID YOU KNOW: </span>
-              By booking in advance, you can save up to 500 AED! Dates marked in
-              blue offer a 300 AED discount, while dates in green give you an
-              amazing 500 AED discount. The earlier you book, the more you save!
+              By booking in advance, you can save up to 300 AED! Dates marked in
+              blue offer a 150 AED discount, while dates in green give you an
+              amazing 300 AED discount. The earlier you book, the more you save!
             </>
           )}
         </div>
