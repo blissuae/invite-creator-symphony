@@ -31,7 +31,7 @@ export const StatusMessage = ({
               : `You'll get ${getDateDiscount(selected)?.label} on this date! 🎉`}
           </span>
         ) : (
-          "Select a later date to get up to 500 AED discount!"
+          "Select a later date to get up to 300 AED discount!"
         )
       ) : isUrgentDelivery ? (
         "Please select an urgent delivery date (10-18 days from today)"
