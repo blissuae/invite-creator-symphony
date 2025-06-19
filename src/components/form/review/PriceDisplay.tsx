@@ -13,7 +13,7 @@ export const PriceDisplay = ({ formData }: PriceDisplayProps) => {
   
   if (hasDiscount) {
     const [discountedPrice, discount] = priceString.split(" (");
-    const discountAmount = discount.includes("500") ? 500 : 300;
+    const discountAmount = discount.includes("300") ? 300 : 150;
     const originalPrice = `${parseInt(discountedPrice.replace(" AED", "")) + discountAmount} AED`;
     
     return (

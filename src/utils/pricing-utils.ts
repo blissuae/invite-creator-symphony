@@ -49,9 +49,9 @@ export function calculateExactPrice(data: InviteFormData): string {
     }
     
     if (days >= 70) {
-      return `${basePrice - 500} AED (500 AED OFF!)`;
-    } else if (days >= 40) {
       return `${basePrice - 300} AED (300 AED OFF!)`;
+    } else if (days >= 40) {
+      return `${basePrice - 150} AED (150 AED OFF!)`;
     }
   }
 

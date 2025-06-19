@@ -41,8 +41,8 @@ export const getDateDiscount = (date: Date, dateRanges: ReturnType<typeof calcul
     };
   } else if (compareDate >= discountDate70) {
     return { 
-      amount: 500, 
-      label: "500 AED OFF!", 
+      amount: 300, 
+      label: "300 AED OFF!", 
       color: "green", 
       bgColor: "#e6ffed", 
       textColor: "#15803d", 
@@ -50,8 +50,8 @@ export const getDateDiscount = (date: Date, dateRanges: ReturnType<typeof calcul
     };
   } else if (compareDate >= discountDate40) {
     return { 
-      amount: 300, 
-      label: "300 AED OFF!", 
+      amount: 150, 
+      label: "150 AED OFF!", 
       color: "blue", 
       bgColor: "#e6f3ff", 
       textColor: "#1e40af", 
