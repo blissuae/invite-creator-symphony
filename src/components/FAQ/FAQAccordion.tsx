@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { X } from 'lucide-react';
@@ -127,8 +126,8 @@ export const FAQAccordion = ({ onClose }: FAQAccordionProps) => {
           <div className="mt-8 pt-4 border-t border-elegant-brown/10 text-center">
             <p className="text-sm text-gray-600">
               If you have any questions, please reach out to us at{" "}
-              <a href="mailto:hello@bliss-go.com" className="text-elegant-brown hover:underline">
-                hello@bliss-go.com
+              <a href="mailto:legal@bliss-go.com" className="text-elegant-brown hover:underline">
+                legal@bliss-go.com
               </a>
             </p>
           </div>
